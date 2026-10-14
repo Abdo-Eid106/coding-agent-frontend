@@ -2,12 +2,14 @@ import { useState, useCallback } from "react";
 import "./App.css";
 import Sidebar from "./components/Sidebar";
 import ChatArea from "./components/ChatArea";
+import SettingsModal from "./components/SettingsModal";
 import { useProjectStore } from "./store/useProjectStore";
 import { INITIAL_TURNS } from "./store/initialTurns";
 import type { ConversationTurn } from "./store/types";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null,
   );
@@ -121,6 +123,7 @@ export function NewFeature({ enabled, model }: FeatureConfig) {
           onAddSession={addSession}
           onSelectSession={selectSession}
           onNewConversation={handleNewConversation}
+          onOpenSettings={() => setSettingsOpen(true)}
         />
         <ChatArea
           isSidebarOpen={sidebarOpen}
@@ -130,6 +133,11 @@ export function NewFeature({ enabled, model }: FeatureConfig) {
           onSelectProject={setSelectedProjectId}
           turns={turns}
           onSendMessage={handleSendMessage}
+        />
+
+        <SettingsModal
+          isOpen={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
         />
       </div>
     </div>

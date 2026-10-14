@@ -15,29 +15,13 @@ import Dropdown from "./Dropdown";
 import ToolCallsAccordion from "./ToolCallsAccordion";
 import MarkdownRenderer from "./MarkdownRenderer";
 
-interface Model {
-  name: string;
-  tag?: string;
-  available: boolean;
-}
+import { AVAILABLE_MODELS } from "../store/models";
 
-const MODELS: Model[] = [
-  { name: "Gemini 3.8 Flash", tag: "Medium", available: true },
-  { name: "Claude Sonnet 4.6 (Thinking)", tag: "Notice", available: true },
-  { name: "Claude Opus 4.6 (Thinking)", tag: "Notice", available: true },
-  { name: "GPT-OSS 120B (Medium)", tag: "Notice", available: true },
-  { name: "Claude 3.7 Sonnet (Thinking)", tag: "Notice", available: true },
-  { name: "Claude 3.5 Haiku", tag: "Fast", available: true },
-  { name: "GPT-4o", tag: "Omni", available: true },
-  { name: "GPT-4o mini", tag: "Fast", available: true },
-  { name: "o3-mini (High)", tag: "Reasoning", available: true },
-  { name: "o1-preview", tag: "Reasoning", available: true },
-  { name: "DeepSeek R1", tag: "Open", available: true },
-  { name: "Llama 3.3 70B", tag: "Open", available: true },
-  { name: "Qwen 2.5 Coder 32B", tag: "Local", available: true },
-  { name: "Mistral Large 2", tag: "Notice", available: true },
-  { name: "Gemini 4 Argon", tag: "Unavailable", available: false },
-];
+const MODELS = AVAILABLE_MODELS.map((m) => ({
+  name: m.name,
+  tag: m.tag,
+  available: m.available,
+}));
 
 interface ChatAreaProps {
   isSidebarOpen: boolean;

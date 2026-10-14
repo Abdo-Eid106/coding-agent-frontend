@@ -13,6 +13,7 @@ interface SidebarProps {
   onAddSession: (projectId: string, name: string) => void;
   onSelectSession: (sessionId: string) => void;
   onNewConversation: () => void;
+  onOpenSettings?: () => void;
 }
 
 export default function Sidebar({
@@ -25,6 +26,7 @@ export default function Sidebar({
   onAddSession,
   onSelectSession,
   onNewConversation,
+  onOpenSettings,
 }: SidebarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -121,7 +123,10 @@ export default function Sidebar({
 
         {/* Bottom section */}
         <div className="p-3 border-t border-border">
-          <button className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors cursor-pointer">
+          <button
+            onClick={onOpenSettings}
+            className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors cursor-pointer"
+          >
             <Settings className="size-4 text-muted-foreground" />
             Settings
           </button>
