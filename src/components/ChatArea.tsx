@@ -1,30 +1,17 @@
-import { useState, useRef, useEffect } from "react";
-import { PanelLeft, MoreVertical } from "lucide-react";
-import type { Project, ConversationTurn } from "../store/types";
+import { useRef, useEffect } from "react";
+import { PanelLeft } from "lucide-react";
+import { useUIStore } from "../store/useUIStore";
+import { useChatStore } from "../store/useChatStore";
 import TurnItem from "./chat/TurnItem";
 import ProjectSelector from "./chat/ProjectSelector";
 import ChatInput from "./chat/ChatInput";
+import ThemeToggle from "./ThemeToggle";
 
-interface ChatAreaProps {
-  isSidebarOpen: boolean;
-  onToggleSidebar: () => void;
-  projects: Project[];
-  selectedProjectId: string | null;
-  onSelectProject: (projectId: string | null) => void;
-  turns: ConversationTurn[];
-  onSendMessage: (text: string, model: string) => void;
-}
+export default function ChatArea() {
+  const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
+  const toggleSidebar = useUIStore((s) => s.toggleSidebar);
+  const turns = useChatStore((s) => s.turns);
 
-export default function ChatArea({
-  isSidebarOpen,
-  onToggleSidebar,
-  projects,
-  selectedProjectId,
-  onSelectProject,
-  turns,
-  onSendMessage,
-}: ChatAreaProps) {
-  const [selectedModel, setSelectedModel] = useState("Claude Opus 4.6 (Thinking)");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,19 +23,14 @@ export default function ChatArea({
       {/* Top Header */}
       <header className="flex items-center justify-between px-3 py-2 border-b border-border">
         <button
-          onClick={onToggleSidebar}
+          onClick={toggleSidebar}
           className="p-1.5 rounded-md hover:bg-accent transition-colors cursor-pointer"
           title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
         >
           <PanelLeft className="size-4 text-muted-foreground" />
         </button>
 
-        <button
-          className="p-1.5 rounded-md hover:bg-accent transition-colors cursor-pointer"
-          title="More options"
-        >
-          <MoreVertical className="size-4 text-muted-foreground" />
-        </button>
+        <ThemeToggle />
       </header>
 
       {/* Messages Scroll Area */}
@@ -68,18 +50,10 @@ export default function ChatArea({
       {/* Bottom Input Area */}
       <div className="max-w-3xl mx-auto w-full px-4 pb-4 space-y-3">
         <div className="flex justify-start">
-          <ProjectSelector
-            projects={projects}
-            selectedProjectId={selectedProjectId}
-            onSelectProject={onSelectProject}
-          />
+          <ProjectSelector />
         </div>
 
-        <ChatInput
-          onSendMessage={onSendMessage}
-          selectedModel={selectedModel}
-          onSelectModel={setSelectedModel}
-        />
+        <ChatInput />
       </div>
     </div>
   );

@@ -1,21 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { FolderOpen, ChevronDown, Check } from "lucide-react";
-import type { Project } from "../../store/types";
+import { useProjectStore } from "../../store/useProjectStore";
 import Dropdown from "../Dropdown";
 
-interface ProjectSelectorProps {
-  projects: Project[];
-  selectedProjectId: string | null;
-  onSelectProject: (projectId: string | null) => void;
-}
-
-export default function ProjectSelector({
-  projects,
-  selectedProjectId,
-  onSelectProject,
-}: ProjectSelectorProps) {
+export default function ProjectSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  const projects = useProjectStore((s) => s.projects);
+  const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
+  const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -56,7 +50,7 @@ export default function ProjectSelector({
                 <button
                   key={project.id}
                   onClick={() => {
-                    onSelectProject(isSelected ? null : project.id);
+                    setSelectedProjectId(isSelected ? null : project.id);
                     setIsOpen(false);
                   }}
                   className={`flex items-center justify-between w-full px-3 py-2 text-sm cursor-pointer transition-colors ${

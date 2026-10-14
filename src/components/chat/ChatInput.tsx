@@ -1,25 +1,18 @@
 import { useRef, useState } from "react";
 import { Plus, Send } from "lucide-react";
 import ModelSelector from "./ModelSelector";
+import { useChatStore } from "../../store/useChatStore";
 
-interface ChatInputProps {
-  onSendMessage: (text: string, model: string) => void;
-  selectedModel: string;
-  onSelectModel: (model: string) => void;
-}
-
-export default function ChatInput({
-  onSendMessage,
-  selectedModel,
-  onSelectModel,
-}: ChatInputProps) {
+export default function ChatInput() {
   const [message, setMessage] = useState("");
+  const [selectedModel, setSelectedModel] = useState("Claude Opus 4.6 (Thinking)");
+  const sendMessage = useChatStore((s) => s.sendMessage);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = () => {
     const trimmed = message.trim();
     if (!trimmed) return;
-    onSendMessage(trimmed, selectedModel);
+    sendMessage(trimmed, selectedModel);
     setMessage("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -64,7 +57,7 @@ export default function ChatInput({
 
           <ModelSelector
             selectedModel={selectedModel}
-            onSelectModel={onSelectModel}
+            onSelectModel={setSelectedModel}
           />
 
           <span className="text-xs text-muted-foreground/60 select-none">•</span>

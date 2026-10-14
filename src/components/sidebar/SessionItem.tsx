@@ -1,19 +1,18 @@
 import type { Session } from "../../store/types";
+import { useProjectStore } from "../../store/useProjectStore";
 
 interface SessionItemProps {
   session: Session;
-  isActive: boolean;
-  onSelect: (sessionId: string) => void;
 }
 
-export default function SessionItem({
-  session,
-  isActive,
-  onSelect,
-}: SessionItemProps) {
+export default function SessionItem({ session }: SessionItemProps) {
+  const activeSessionId = useProjectStore((s) => s.activeSessionId);
+  const selectSession = useProjectStore((s) => s.selectSession);
+  const isActive = activeSessionId === session.id;
+
   return (
     <button
-      onClick={() => onSelect(session.id)}
+      onClick={() => selectSession(session.id)}
       className={`flex items-center justify-between w-full px-2 py-1.5 rounded-md text-sm transition-colors cursor-pointer ${
         isActive
           ? "bg-sidebar-accent text-sidebar-accent-foreground"

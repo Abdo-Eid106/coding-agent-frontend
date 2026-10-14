@@ -4,15 +4,26 @@ import type { SettingsTab } from "./settings/types";
 import SettingsSidebar from "./settings/SettingsSidebar";
 import ProvidersTab from "./settings/ProvidersTab";
 import ModelsTab from "./settings/ModelsTab";
+import AppearanceTab from "./settings/AppearanceTab";
+import { useUIStore } from "../store/useUIStore";
 
 const STORAGE_KEY = "coding_agent_provider_keys";
 
 interface SettingsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export default function SettingsModal({
+  isOpen: propIsOpen,
+  onClose: propOnClose,
+}: SettingsModalProps = {}) {
+  const storeIsOpen = useUIStore((s) => s.isSettingsOpen);
+  const storeClose = useUIStore((s) => s.closeSettings);
+
+  const isOpen = propIsOpen ?? storeIsOpen;
+  const onClose = propOnClose ?? storeClose;
+
   const [activeTab, setActiveTab] = useState<SettingsTab>("providers");
   const [savedKeys, setSavedKeys] = useState<Record<string, string>>(() => {
     try {
@@ -139,11 +150,13 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               />
             )}
 
-            {(activeTab === "general" || activeTab === "appearance") && (
+            {activeTab === "appearance" && <AppearanceTab />}
+
+            {activeTab === "general" && (
               <div className="h-64 flex flex-col items-center justify-center text-center p-8 border border-dashed border-border rounded-xl">
                 <Sliders className="size-10 text-muted-foreground mb-3 opacity-60" />
                 <h4 className="text-sm font-medium text-foreground">
-                  {tabTitles[activeTab].title} Settings
+                  General Settings
                 </h4>
                 <p className="text-xs text-muted-foreground mt-1 max-w-sm">
                   This section will be configurable in a future update.

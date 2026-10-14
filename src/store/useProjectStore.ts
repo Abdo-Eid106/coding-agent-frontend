@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { create } from "zustand";
 import type { Project, Session } from "./types";
 
 const generateId = () => crypto.randomUUID();
@@ -119,60 +119,69 @@ const SAMPLE_PROJECTS: Project[] = [
   },
 ];
 
-export function useProjectStore() {
-  const [projects, setProjects] = useState<Project[]>(SAMPLE_PROJECTS);
-  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
-
-  const toggleProject = useCallback((projectId: string) => {
-    setProjects((prev) =>
-      prev.map((p) =>
-        p.id === projectId ? { ...p, isExpanded: !p.isExpanded } : p
-      )
-    );
-  }, []);
-
-  const addProject = useCallback((name: string, workingDirectory: string) => {
-    const newProject: Project = {
-      id: generateId(),
-      name,
-      workingDirectory,
-      sessions: [],
-      isExpanded: false,
-    };
-    setProjects((prev) => [newProject, ...prev]);
-  }, []);
-
-  const deleteProject = useCallback((projectId: string) => {
-    setProjects((prev) => prev.filter((p) => p.id !== projectId));
-  }, []);
-
-  const addSession = useCallback((projectId: string, sessionName: string) => {
-    const newSession: Session = {
-      id: generateId(),
-      name: sessionName,
-      lastActive: "now",
-    };
-    setProjects((prev) =>
-      prev.map((p) =>
-        p.id === projectId
-          ? { ...p, sessions: [newSession, ...p.sessions], isExpanded: true }
-          : p
-      )
-    );
-    setActiveSessionId(newSession.id);
-  }, []);
-
-  const selectSession = useCallback((sessionId: string) => {
-    setActiveSessionId(sessionId);
-  }, []);
-
-  return {
-    projects,
-    activeSessionId,
-    toggleProject,
-    addProject,
-    deleteProject,
-    addSession,
-    selectSession,
-  };
+export interface ProjectState {
+  projects: Project[];
+  activeSessionId: string | null;
+  selectedProjectId: string | null;
+  toggleProject: (projectId: string) => void;
+  addProject: (name: string, workingDirectory: string) => void;
+  deleteProject: (projectId: string) => void;
+  addSession: (projectId: string, sessionName: string) => void;
+  selectSession: (sessionId: string) => void;
+  setSelectedProjectId: (projectId: string | null) => void;
 }
+
+export const useProjectStore = create<ProjectState>((set) => ({
+  projects: SAMPLE_PROJECTS,
+  activeSessionId: null,
+  selectedProjectId: null,
+
+  toggleProject: (projectId: string) =>
+    set((state) => ({
+      projects: state.projects.map((p) =>
+        p.id === projectId ? { ...p, isExpanded: !p.isExpanded } : p
+      ),
+    })),
+
+  addProject: (name: string, workingDirectory: string) =>
+    set((state) => {
+      const newProject: Project = {
+        id: generateId(),
+        name,
+        workingDirectory,
+        sessions: [],
+        isExpanded: false,
+      };
+      return { projects: [newProject, ...state.projects] };
+    }),
+
+  deleteProject: (projectId: string) =>
+    set((state) => ({
+      projects: state.projects.filter((p) => p.id !== projectId),
+      selectedProjectId:
+        state.selectedProjectId === projectId ? null : state.selectedProjectId,
+    })),
+
+  addSession: (projectId: string, sessionName: string) =>
+    set((state) => {
+      const newSession: Session = {
+        id: generateId(),
+        name: sessionName,
+        lastActive: "now",
+      };
+      return {
+        activeSessionId: newSession.id,
+        projects: state.projects.map((p) =>
+          p.id === projectId
+            ? { ...p, sessions: [newSession, ...p.sessions], isExpanded: true }
+            : p
+        ),
+      };
+    }),
+
+  selectSession: (sessionId: string) =>
+    set({ activeSessionId: sessionId }),
+
+  setSelectedProjectId: (projectId: string | null) =>
+    set({ selectedProjectId: projectId }),
+}));

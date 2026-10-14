@@ -1,25 +1,15 @@
 import { FolderOpen, ChevronDown, ChevronRight } from "lucide-react";
 import type { Project } from "../store/types";
+import { useProjectStore } from "../store/useProjectStore";
 import SessionItem from "./sidebar/SessionItem";
 import ProjectMenu from "./sidebar/ProjectMenu";
 
 interface ProjectItemProps {
   project: Project;
-  activeSessionId: string | null;
-  onToggle: (id: string) => void;
-  onDelete: (id: string) => void;
-  onAddSession: (projectId: string, name: string) => void;
-  onSelectSession: (sessionId: string) => void;
 }
 
-export default function ProjectItem({
-  project,
-  activeSessionId,
-  onToggle,
-  onDelete,
-  onAddSession,
-  onSelectSession,
-}: ProjectItemProps) {
+export default function ProjectItem({ project }: ProjectItemProps) {
+  const toggleProject = useProjectStore((s) => s.toggleProject);
   const ChevronIcon = project.isExpanded ? ChevronDown : ChevronRight;
 
   return (
@@ -27,7 +17,7 @@ export default function ProjectItem({
       {/* Project header row */}
       <div className="group flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-sidebar-accent cursor-pointer text-sidebar-foreground">
         <button
-          onClick={() => onToggle(project.id)}
+          onClick={() => toggleProject(project.id)}
           className="flex items-center gap-1.5 flex-1 min-w-0 text-left cursor-pointer"
         >
           <ChevronIcon className="size-3.5 shrink-0 text-muted-foreground" />
@@ -35,11 +25,7 @@ export default function ProjectItem({
           <span className="text-sm truncate">{project.name}</span>
         </button>
 
-        <ProjectMenu
-          projectId={project.id}
-          onAddSession={onAddSession}
-          onDelete={onDelete}
-        />
+        <ProjectMenu projectId={project.id} />
       </div>
 
       {/* Collapsible sessions list */}
@@ -52,12 +38,7 @@ export default function ProjectItem({
       >
         <div className="ml-4 pl-3 border-l border-border/50">
           {project.sessions.map((session) => (
-            <SessionItem
-              key={session.id}
-              session={session}
-              isActive={activeSessionId === session.id}
-              onSelect={onSelectSession}
-            />
+            <SessionItem key={session.id} session={session} />
           ))}
         </div>
       </div>

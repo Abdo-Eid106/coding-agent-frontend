@@ -1,20 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { Plus, MessageSquarePlus, Trash2 } from "lucide-react";
 import Dropdown from "../Dropdown";
+import { useProjectStore } from "../../store/useProjectStore";
 
 interface ProjectMenuProps {
   projectId: string;
-  onAddSession: (projectId: string, name: string) => void;
-  onDelete: (projectId: string) => void;
 }
 
-export default function ProjectMenu({
-  projectId,
-  onAddSession,
-  onDelete,
-}: ProjectMenuProps) {
+export default function ProjectMenu({ projectId }: ProjectMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  const addSession = useProjectStore((s) => s.addSession);
+  const deleteProject = useProjectStore((s) => s.deleteProject);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -48,7 +46,7 @@ export default function ProjectMenu({
         <div className="min-w-[160px] rounded-md border border-border bg-popover text-popover-foreground shadow-md py-1">
           <button
             onClick={() => {
-              onAddSession(projectId, "New Session");
+              addSession(projectId, "New Session");
               setIsOpen(false);
             }}
             className="flex items-center gap-2 w-full px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
@@ -59,7 +57,7 @@ export default function ProjectMenu({
           <div className="h-px bg-border my-1" />
           <button
             onClick={() => {
-              onDelete(projectId);
+              deleteProject(projectId);
               setIsOpen(false);
             }}
             className="flex items-center gap-2 w-full px-3 py-1.5 text-sm text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
