@@ -1,13 +1,15 @@
 import { Plus, Trash2 } from "lucide-react";
 import { useProjectStore } from "../../store/useProjectStore";
 import { useChatStore } from "../../store/useChatStore";
+import { useDeleteProject } from "../../queries/project.queries";
 
 interface ProjectMenuProps {
   projectId: string;
 }
 
 export default function ProjectMenu({ projectId }: ProjectMenuProps) {
-  const deleteProject = useProjectStore((s) => s.deleteProject);
+  const { mutate: deleteProject, isPending } = useDeleteProject();
+  const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
   const newConversation = useChatStore((s) => s.newConversation);
 
@@ -21,6 +23,9 @@ export default function ProjectMenu({ projectId }: ProjectMenuProps) {
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
+    if (selectedProjectId === projectId) {
+      setSelectedProjectId(null);
+    }
     deleteProject(projectId);
   };
 
@@ -43,8 +48,9 @@ export default function ProjectMenu({ projectId }: ProjectMenuProps) {
       <button
         type="button"
         onClick={handleDelete}
+        disabled={isPending}
         onMouseDown={(e) => e.stopPropagation()}
-        className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+        className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors cursor-pointer disabled:opacity-50"
         title="Delete project"
       >
         <Trash2 className="size-3.5" />

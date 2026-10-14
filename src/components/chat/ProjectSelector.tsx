@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { FolderOpen, ChevronDown, Check } from "lucide-react";
 import { useProjectStore } from "../../store/useProjectStore";
+import { useFetchProjects } from "../../queries/project.queries";
 import Dropdown from "../Dropdown";
 
 export default function ProjectSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const projects = useProjectStore((s) => s.projects);
+  const { data: projects = [] } = useFetchProjects();
   const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
 
@@ -44,29 +45,35 @@ export default function ProjectSelector() {
             Project
           </div>
           <div className="overflow-y-auto py-1">
-            {projects.map((project) => {
-              const isSelected = project.id === selectedProjectId;
-              return (
-                <button
-                  key={project.id}
-                  onClick={() => {
-                    setSelectedProjectId(isSelected ? null : project.id);
-                    setIsOpen(false);
-                  }}
-                  className={`flex items-center justify-between w-full px-3 py-2 text-sm cursor-pointer transition-colors ${
-                    isSelected
-                      ? "bg-accent text-accent-foreground"
-                      : "hover:bg-accent/50 text-popover-foreground"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <FolderOpen className="size-4 text-muted-foreground" />
-                    <span>{project.name}</span>
-                  </div>
-                  {isSelected && <Check className="size-4 text-primary" />}
-                </button>
-              );
-            })}
+            {projects.length === 0 ? (
+              <div className="px-3 py-2 text-xs text-muted-foreground">
+                No projects found
+              </div>
+            ) : (
+              projects.map((project) => {
+                const isSelected = project.id === selectedProjectId;
+                return (
+                  <button
+                    key={project.id}
+                    onClick={() => {
+                      setSelectedProjectId(isSelected ? null : project.id);
+                      setIsOpen(false);
+                    }}
+                    className={`flex items-center justify-between w-full px-3 py-2 text-sm cursor-pointer transition-colors ${
+                      isSelected
+                        ? "bg-accent text-accent-foreground"
+                        : "hover:bg-accent/50 text-popover-foreground"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <FolderOpen className="size-4 text-muted-foreground" />
+                      <span>{project.name}</span>
+                    </div>
+                    {isSelected && <Check className="size-4 text-primary" />}
+                  </button>
+                );
+              })
+            )}
           </div>
         </div>
       </Dropdown>

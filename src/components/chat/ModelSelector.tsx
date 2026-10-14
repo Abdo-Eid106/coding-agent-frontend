@@ -6,7 +6,7 @@ import Dropdown from "../Dropdown";
 
 interface ModelSelectorProps {
   selectedModel?: string;
-  onSelectModel?: (model: string) => void;
+  onSelectModel?: (model: string, modelId?: string) => void;
 }
 
 export default function ModelSelector({
@@ -61,7 +61,7 @@ export default function ModelSelector({
                   type="button"
                   onClick={() => {
                     if (!model.available) return;
-                    onSelectModel(model.name);
+                    onSelectModel(model.name, model.id);
                     setIsOpen(false);
                   }}
                   disabled={!model.available}

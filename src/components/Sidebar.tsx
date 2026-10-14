@@ -1,16 +1,17 @@
 import { Plus, Settings } from "lucide-react";
 import ProjectItem from "./ProjectItem";
 import AddProjectButton from "./sidebar/AddProjectButton";
-import { useProjectStore } from "../store/useProjectStore";
 import { useUIStore } from "../store/useUIStore";
 import { useChatStore } from "../store/useChatStore";
+import { useProjectStore } from "../store/useProjectStore";
+import { useFetchProjects } from "../queries/project.queries";
 
 export default function Sidebar() {
   const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
   const openSettings = useUIStore((s) => s.openSettings);
   const newConversation = useChatStore((s) => s.newConversation);
-  const projects = useProjectStore((s) => s.projects);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
+  const { data: projects = [], isLoading } = useFetchProjects();
 
   const handleNewConversation = () => {
     newConversation();
@@ -49,9 +50,19 @@ export default function Sidebar() {
 
         {/* Project list */}
         <div className="space-y-0.5">
-          {projects.map((project) => (
-            <ProjectItem key={project.id} project={project} />
-          ))}
+          {isLoading ? (
+            <div className="px-2 py-3 text-xs text-muted-foreground animate-pulse">
+              Loading projects...
+            </div>
+          ) : projects.length === 0 ? (
+            <div className="px-2 py-3 text-xs text-muted-foreground">
+              No projects added yet
+            </div>
+          ) : (
+            projects.map((project) => (
+              <ProjectItem key={project.id} project={project} />
+            ))
+          )}
         </div>
       </div>
 

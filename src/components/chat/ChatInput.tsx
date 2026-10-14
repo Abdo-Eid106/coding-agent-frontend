@@ -1,18 +1,44 @@
 import { useRef, useState } from "react";
-import { Plus, Send } from "lucide-react";
+import { Plus, Send, Loader2 } from "lucide-react";
 import ModelSelector from "./ModelSelector";
 import { useChatStore } from "../../store/useChatStore";
+import { useProjectStore } from "../../store/useProjectStore";
+import { useCreateSession } from "../../queries/session.queries";
+import { useAddMessage } from "../../queries/message.queries";
 
 export default function ChatInput() {
   const [message, setMessage] = useState("");
-  const sendMessage = useChatStore((s) => s.sendMessage);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const currentSessionId = useChatStore((s) => s.currentSessionId);
+  const selectedModelId = useChatStore((s) => s.selectedModelId);
+  const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
+
+  const { mutate: createSession, isPending: isCreating } = useCreateSession();
+  const { mutate: addMessage, isPending: isAdding } = useAddMessage(
+    currentSessionId ?? undefined
+  );
+
+  const isSending = isCreating || isAdding;
 
   const handleSend = () => {
     const trimmed = message.trim();
-    if (!trimmed) return;
+    if (!trimmed || isSending) return;
 
-    sendMessage(trimmed);
+    if (currentSessionId) {
+      addMessage({
+        sessionId: currentSessionId,
+        messageContent: trimmed,
+        modelId: selectedModelId,
+      });
+    } else {
+      createSession({
+        messageContent: trimmed,
+        modelId: selectedModelId,
+        projectId: selectedProjectId ?? undefined,
+      });
+    }
+
     setMessage("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -61,11 +87,15 @@ export default function ChatInput() {
         <button
           type="button"
           onClick={handleSend}
-          disabled={!message.trim()}
-          className="p-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs"
+          disabled={!message.trim() || isSending}
+          className="p-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs flex items-center justify-center"
           title="Send message"
         >
-          <Send className="size-3.5" />
+          {isSending ? (
+            <Loader2 className="size-3.5 animate-spin" />
+          ) : (
+            <Send className="size-3.5" />
+          )}
         </button>
       </div>
     </div>

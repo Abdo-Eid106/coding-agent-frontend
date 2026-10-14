@@ -1,20 +1,18 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { PanelLeft } from "lucide-react";
 import { useUIStore } from "../store/useUIStore";
 import { useChatStore } from "../store/useChatStore";
+import { useFetchMessages } from "../queries/message.queries";
+import { messagesToTurns } from "../queries/utils";
 import TurnItem from "./chat/TurnItem";
 import ProjectSelector from "./chat/ProjectSelector";
 import ChatInput from "./chat/ChatInput";
 import ThemeToggle from "./ThemeToggle";
 
-import type { ConversationTurn } from "../store/types";
-
-const EMPTY_TURNS: ConversationTurn[] = [];
-
 function ChatHeader() {
   const isSidebarOpen = useUIStore((state) => state.isSidebarOpen);
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
-  const sessionTitle = useChatStore((state) => state.currentSession?.title);
+  const sessionTitle = useChatStore((state) => state.currentSessionTitle);
 
   return (
     <header className="flex items-center justify-between border-b border-border px-3 py-2">
@@ -42,12 +40,25 @@ function ChatHeader() {
 }
 
 function MessageList() {
-  const turns = useChatStore((state) => state.currentSession?.turns ?? EMPTY_TURNS);
+  const currentSessionId = useChatStore((state) => state.currentSessionId);
+  const { data, isLoading } = useFetchMessages(currentSessionId ?? undefined);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const turns = useMemo(() => {
+    return messagesToTurns(data?.items ?? []);
+  }, [data?.items]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [turns]);
+
+  if (isLoading && currentSessionId) {
+    return (
+      <div className="flex flex-1 items-center justify-center px-4 py-20 text-sm text-muted-foreground animate-pulse">
+        Loading messages...
+      </div>
+    );
+  }
 
   if (turns.length === 0) {
     return (
@@ -85,9 +96,8 @@ function ChatComposer({ isNewChat }: { isNewChat: boolean }) {
 }
 
 export default function ChatArea() {
-  const isNewChat = useChatStore(
-    (state) => !state.currentSession || state.currentSession.turns.length === 0
-  );
+  const currentSessionId = useChatStore((state) => state.currentSessionId);
+  const isNewChat = !currentSessionId;
 
   return (
     <main className="flex h-screen flex-1 flex-col bg-background">

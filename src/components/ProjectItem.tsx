@@ -1,19 +1,25 @@
 import { FolderOpen, ChevronDown, ChevronRight } from "lucide-react";
-import type { Project } from "../store/types";
+import type { ProjectDto } from "../queries";
 import { useProjectStore } from "../store/useProjectStore";
+import { useFetchSessions } from "../queries/session.queries";
 import SessionItem from "./sidebar/SessionItem";
 import ProjectMenu from "./sidebar/ProjectMenu";
 
 interface ProjectItemProps {
-  project: Project;
+  project: ProjectDto;
 }
 
 export default function ProjectItem({ project }: ProjectItemProps) {
   const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
+  const { data: allSessions = [] } = useFetchSessions();
 
   const isSelected = selectedProjectId === project.id;
   const ChevronIcon = isSelected ? ChevronDown : ChevronRight;
+
+  const projectSessions = allSessions.filter(
+    (s) => s.project?.id === project.id
+  );
 
   const handleToggleSelect = () => {
     setSelectedProjectId(isSelected ? null : project.id);
@@ -44,14 +50,22 @@ export default function ProjectItem({ project }: ProjectItemProps) {
       <div
         className="overflow-hidden transition-all duration-200"
         style={{
-          maxHeight: isSelected ? `${project.sessions.length * 40 + 8}px` : "0px",
+          maxHeight: isSelected
+            ? `${Math.max(projectSessions.length, 1) * 40 + 8}px`
+            : "0px",
           opacity: isSelected ? 1 : 0,
         }}
       >
         <div className="ml-4 pl-3 border-l border-border/50">
-          {project.sessions.map((session) => (
-            <SessionItem key={session.id} session={session} />
-          ))}
+          {projectSessions.length === 0 ? (
+            <div className="py-1 px-2 text-xs text-muted-foreground italic">
+              No sessions yet
+            </div>
+          ) : (
+            projectSessions.map((session) => (
+              <SessionItem key={session.id} session={session} />
+            ))
+          )}
         </div>
       </div>
     </div>

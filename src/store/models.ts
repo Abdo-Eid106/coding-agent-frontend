@@ -11,7 +11,7 @@ export interface ModelInfo {
 
 export const AVAILABLE_MODELS: ModelInfo[] = [
   {
-    id: "gemini-3.8-flash",
+    id: "00000000-0000-4000-8000-000000000001",
     name: "Gemini 3.8 Flash",
     provider: "Google",
     providerId: "gemini",
@@ -21,7 +21,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "High-speed multimodal intelligence with expansive context window.",
   },
   {
-    id: "claude-sonnet-4.6",
+    id: "00000000-0000-4000-8000-000000000002",
     name: "Claude Sonnet 4.6 (Thinking)",
     provider: "Anthropic",
     providerId: "anthropic",
@@ -31,7 +31,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "State-of-the-art coding and nuanced reasoning with extended thinking.",
   },
   {
-    id: "claude-opus-4.6",
+    id: "00000000-0000-4000-8000-000000000003",
     name: "Claude Opus 4.6 (Thinking)",
     provider: "Anthropic",
     providerId: "anthropic",
@@ -41,7 +41,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "Deepest cognitive capabilities for complex architecture and system design.",
   },
   {
-    id: "gpt-oss-120b",
+    id: "00000000-0000-4000-8000-000000000004",
     name: "GPT-OSS 120B (Medium)",
     provider: "Open Source",
     tag: "Notice",
@@ -50,7 +50,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "High-throughput open foundation model running on optimized inference.",
   },
   {
-    id: "claude-3.7-sonnet",
+    id: "00000000-0000-4000-8000-000000000005",
     name: "Claude 3.7 Sonnet (Thinking)",
     provider: "Anthropic",
     providerId: "anthropic",
@@ -60,7 +60,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "Hybrid reasoning model capable of instantaneous responses and deep contemplation.",
   },
   {
-    id: "claude-3.5-haiku",
+    id: "00000000-0000-4000-8000-000000000006",
     name: "Claude 3.5 Haiku",
     provider: "Anthropic",
     providerId: "anthropic",
@@ -70,7 +70,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "Ultra-fast response latency optimized for rapid code edits and lookups.",
   },
   {
-    id: "gpt-4o",
+    id: "00000000-0000-4000-8000-000000000007",
     name: "GPT-4o",
     provider: "OpenAI",
     providerId: "openai",
@@ -80,7 +80,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "Flagship multimodal foundation model across text, vision, and complex problem solving.",
   },
   {
-    id: "gpt-4o-mini",
+    id: "00000000-0000-4000-8000-000000000008",
     name: "GPT-4o mini",
     provider: "OpenAI",
     providerId: "openai",
@@ -90,7 +90,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "Cost-efficient, lightweight omni model for quick iterations and formatting.",
   },
   {
-    id: "o3-mini",
+    id: "00000000-0000-4000-8000-000000000009",
     name: "o3-mini (High)",
     provider: "OpenAI",
     providerId: "openai",
@@ -100,7 +100,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "Specialized math, coding, and scientific reasoning with high reasoning effort.",
   },
   {
-    id: "o1-preview",
+    id: "00000000-0000-4000-8000-000000000010",
     name: "o1-preview",
     provider: "OpenAI",
     providerId: "openai",
@@ -110,7 +110,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "Pioneering chain-of-thought model thinking before output generation.",
   },
   {
-    id: "deepseek-r1",
+    id: "00000000-0000-4000-8000-000000000011",
     name: "DeepSeek R1",
     provider: "Open Source",
     tag: "Open",
@@ -119,7 +119,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "Open-source reasoning model trained with reinforcement learning.",
   },
   {
-    id: "llama-3.3-70b",
+    id: "00000000-0000-4000-8000-000000000012",
     name: "Llama 3.3 70B",
     provider: "Open Source",
     tag: "Open",
@@ -128,7 +128,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "High-capability open weights model for general reasoning and code synthesis.",
   },
   {
-    id: "qwen-2.5-coder",
+    id: "00000000-0000-4000-8000-000000000013",
     name: "Qwen 2.5 Coder 32B",
     provider: "Open Source",
     tag: "Local",
@@ -137,7 +137,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "Specialized code generation model with competitive developer benchmarks.",
   },
   {
-    id: "mistral-large-2",
+    id: "00000000-0000-4000-8000-000000000014",
     name: "Mistral Large 2",
     provider: "Open Source",
     tag: "Notice",
@@ -146,7 +146,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     description: "Multilingual frontier model with large context reasoning capabilities.",
   },
   {
-    id: "gemini-4-argon",
+    id: "00000000-0000-4000-8000-000000000015",
     name: "Gemini 4 Argon",
     provider: "Google",
     providerId: "gemini",
