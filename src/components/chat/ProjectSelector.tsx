@@ -39,7 +39,7 @@ export default function ProjectSelector() {
         direction="up"
         className="absolute bottom-full mb-2 left-0 z-50"
       >
-        <div className="min-w-[240px] max-h-60 flex flex-col rounded-lg border border-border bg-popover text-popover-foreground shadow-lg overflow-hidden">
+        <div className="min-w-60 max-h-60 flex flex-col rounded-lg border border-border bg-popover text-popover-foreground shadow-lg overflow-hidden">
           <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider shrink-0 border-b border-border/50">
             Project
           </div>
