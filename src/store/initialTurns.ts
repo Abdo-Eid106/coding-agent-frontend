@@ -18,7 +18,49 @@ export const INITIAL_TURNS: ConversationTurn[] = [
         id: "tc-1-2",
         tool: "write_to_file",
         summary: "src/components/Sidebar.tsx",
-        output: "Created file src/components/Sidebar.tsx with slide-out left animation and project hierarchy.",
+        filePath: "src/components/Sidebar.tsx",
+        output: `import { useState } from "react";
+import { Plus, Filter, FolderPlus, Settings } from "lucide-react";
+import ProjectItem from "./ProjectItem";
+import NewProjectDialog from "./NewProjectDialog";
+import type { Project } from "../store/types";
+
+interface SidebarProps {
+  isOpen: boolean;
+  projects: Project[];
+  activeSessionId: string | null;
+  onToggleProject: (id: string) => void;
+  onDeleteProject: (id: string) => void;
+  onAddProject: (name: string, directory: string) => void;
+  onAddSession: (projectId: string, name: string) => void;
+  onSelectSession: (sessionId: string) => void;
+  onNewConversation: () => void;
+}
+
+export default function Sidebar({
+  isOpen,
+  projects,
+  activeSessionId,
+  onToggleProject,
+  onDeleteProject,
+  onAddProject,
+  onAddSession,
+  onSelectSession,
+  onNewConversation,
+}: SidebarProps) {
+  const [showNewProject, setShowNewProject] = useState(false);
+
+  return (
+    <aside className="flex flex-col h-screen bg-sidebar border-r border-border transition-all">
+      <div className="p-3">
+        <button onClick={onNewConversation} className="flex items-center gap-2 w-full px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium">
+          <Plus className="size-4" />
+          New Conversation
+        </button>
+      </div>
+    </aside>
+  );
+}`,
         duration: "0.8s",
         status: "success",
       },
@@ -51,7 +93,26 @@ export const INITIAL_TURNS: ConversationTurn[] = [
         id: "tc-2-1",
         tool: "view_file",
         summary: "src/components/ChatArea.tsx",
-        output: "Examined project selector pill and model picker dropdown structure.\nTargeting scroll overflow containers with bounded height.",
+        filePath: "src/components/ChatArea.tsx",
+        output: `// Lines 110-128 of src/components/ChatArea.tsx
+<Dropdown
+  isOpen={projectDropdownOpen}
+  direction="up"
+  className="absolute bottom-full mb-2 left-0 z-50"
+>
+  <div className="min-w-[240px] max-h-60 flex flex-col rounded-lg border border-border bg-popover shadow-lg overflow-hidden">
+    <div className="px-3 py-2 text-xs font-semibold uppercase shrink-0 border-b border-border/50">
+      Project
+    </div>
+    <div className="overflow-y-auto py-1">
+      {projects.map((project) => (
+        <button key={project.id} onClick={() => onSelectProject(project.id)}>
+          {project.name}
+        </button>
+      ))}
+    </div>
+  </div>
+</Dropdown>`,
         duration: "0.2s",
         status: "success",
       },

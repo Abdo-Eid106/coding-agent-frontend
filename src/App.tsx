@@ -35,16 +35,21 @@ function App() {
         {
           id: crypto.randomUUID(),
           tool: "run_command",
-          summary: "inspect workspace context",
-          output: `Inspecting directory...\nLoaded model: ${model}\nContext refreshed successfully.`,
-          duration: "0.3s",
+          summary: "git status --short",
+          output: " M src/App.tsx\n M src/components/ChatArea.tsx\n?? src/components/CodeBlock.tsx",
+          duration: "0.2s",
           status: "success",
         },
         {
           id: crypto.randomUUID(),
           tool: "view_file",
           summary: "src/App.tsx",
-          output: "Read 60 lines of src/App.tsx.\nState verified.",
+          filePath: "src/App.tsx",
+          output: `// Inspecting src/App.tsx state
+const [turns, setTurns] = useState<ConversationTurn[]>(INITIAL_TURNS);
+const handleNewConversation = useCallback(() => {
+  setTurns([]);
+}, []);`,
           duration: "0.2s",
           status: "success",
         },
@@ -61,6 +66,31 @@ function App() {
 +  const taskResult = "${userText.slice(0, 32)}...";
 +  applyUpdates(taskResult);`,
           duration: "0.4s",
+          status: "success",
+        },
+        {
+          id: crypto.randomUUID(),
+          tool: "write_to_file",
+          summary: "src/components/NewFeature.tsx",
+          filePath: "src/components/NewFeature.tsx",
+          output: `// Complete generated file
+export interface FeatureConfig {
+  enabled: boolean;
+  model: string;
+}
+
+export function NewFeature({ enabled, model }: FeatureConfig) {
+  return <div>Feature enabled with {model}</div>;
+}`,
+          duration: "0.5s",
+          status: "success",
+        },
+        {
+          id: crypto.randomUUID(),
+          tool: "text",
+          summary: "validation note",
+          output: `All files validated against schema. Model: \`${model}\`. Ready for compilation.`,
+          duration: "0.1s",
           status: "success",
         },
       ],

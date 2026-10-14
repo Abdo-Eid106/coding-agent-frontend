@@ -7,6 +7,7 @@ import {
   FilePlus,
   CheckCircle2,
   AlertCircle,
+  FileText,
   Wrench,
 } from "lucide-react";
 import type { ToolCall } from "../store/types";
@@ -29,8 +30,38 @@ function getToolIcon(toolName: string) {
       return <FileEdit className="size-3.5 text-primary shrink-0" />;
     case "write_to_file":
       return <FilePlus className="size-3.5 text-primary shrink-0" />;
+    case "text":
+      return <FileText className="size-3.5 text-muted-foreground shrink-0" />;
     default:
       return <Wrench className="size-3.5 text-muted-foreground shrink-0" />;
+  }
+}
+
+function detectLanguageFromPath(filePath?: string): string {
+  if (!filePath) return "typescript";
+  const ext = filePath.split(".").pop()?.toLowerCase();
+  switch (ext) {
+    case "ts":
+    case "tsx":
+      return "typescript";
+    case "js":
+    case "jsx":
+      return "javascript";
+    case "json":
+      return "json";
+    case "css":
+      return "css";
+    case "html":
+      return "html";
+    case "sh":
+    case "bash":
+      return "bash";
+    case "py":
+      return "python";
+    case "md":
+      return "markdown";
+    default:
+      return "typescript";
   }
 }
 
@@ -48,32 +79,58 @@ function isDiffToolCall(tc: ToolCall): boolean {
 }
 
 function formatToolOutputAsMarkdown(tc: ToolCall): string {
-  const isDiff = isDiffToolCall(tc);
-  if (isDiff) {
-    const diffContent = (tc.diff || tc.output).trim();
-    const fileHeader =
-      tc.filePath || tc.summary ? `\`${tc.filePath || tc.summary}\`\n\n` : "";
-    return `${fileHeader}\`\`\`diff\n${diffContent}\n\`\`\``;
-  }
+  const filePath = tc.filePath || tc.summary;
+  const lang = detectLanguageFromPath(filePath);
 
-  const raw = tc.output.trim();
-  // If already formatted with markdown blocks/headers
-  if (
-    raw.startsWith("```") ||
-    raw.includes("\n```") ||
-    raw.startsWith("#") ||
-    raw.startsWith("> ")
-  ) {
-    return raw;
-  }
+  switch (tc.tool) {
+    case "run_command": {
+      // Shell command: command line prompt ($ cmd) + execution output
+      const cmd = tc.summary ? `$ ${tc.summary}\n` : "";
+      return `\`\`\`bash\n${cmd}${tc.output.trim()}\n\`\`\``;
+    }
 
-  // Format terminal commands as bash code blocks in markdown
-  if (tc.tool === "run_command") {
-    return `\`\`\`bash\n${raw}\n\`\`\``;
-  }
+    case "replace_file_content":
+    case "edit_file": {
+      // Code diff: unified diff output
+      const diffContent = (tc.diff || tc.output).trim();
+      const header = filePath ? `\`${filePath}\`\n\n` : "";
+      return `${header}\`\`\`diff\n${diffContent}\n\`\`\``;
+    }
 
-  // Format all other tool outputs as clean markdown code blocks
-  return `\`\`\`\n${raw}\n\`\`\``;
+    case "view_file":
+    case "read_resource": {
+      // View file: displays viewed file content with language syntax highlighting
+      const header = filePath ? `\`${filePath}\`\n\n` : "";
+      return `${header}\`\`\`${lang}\n${tc.output.trim()}\n\`\`\``;
+    }
+
+    case "write_to_file": {
+      // Write file: displays the whole file with language syntax highlighting
+      const header = filePath ? `\`${filePath}\`\n\n` : "";
+      return `${header}\`\`\`${lang}\n${tc.output.trim()}\n\`\`\``;
+    }
+
+    case "text": {
+      // Plain text / markdown notes
+      return tc.output.trim();
+    }
+
+    default: {
+      if (isDiffToolCall(tc)) {
+        const diffContent = (tc.diff || tc.output).trim();
+        return `\`\`\`diff\n${diffContent}\n\`\`\``;
+      }
+      const raw = tc.output.trim();
+      if (
+        raw.startsWith("```") ||
+        raw.startsWith("#") ||
+        raw.startsWith("> ")
+      ) {
+        return raw;
+      }
+      return `\`\`\`\n${raw}\n\`\`\``;
+    }
+  }
 }
 
 export default function ToolCallsAccordion({

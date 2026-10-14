@@ -1,4 +1,5 @@
 import Markdown from "react-markdown";
+import CodeBlock from "./CodeBlock";
 
 interface MarkdownRendererProps {
   content: string;
@@ -55,62 +56,13 @@ export default function MarkdownRenderer({
           code: ({ className, children, ...props }) => {
             const isBlock = Boolean(className) || String(children).includes("\n");
             if (isBlock) {
-              const isDiff =
-                className?.includes("language-diff") || className?.includes("diff");
-              const textContent = String(children);
-
-              if (isDiff) {
-                const diffLines = textContent.split("\n");
-                const containerClass = boxless
-                  ? "my-1.5 overflow-x-auto text-xs font-mono"
-                  : "my-2 rounded-lg border border-border bg-popover text-popover-foreground p-3 overflow-x-auto text-xs font-mono";
-
-                return (
-                  <div className={containerClass}>
-                    <pre className="font-mono leading-relaxed">
-                      {diffLines.map((line, idx) => {
-                        let lineStyle = "text-foreground";
-                        if (line.startsWith("+") && !line.startsWith("+++")) {
-                          lineStyle = boxless
-                            ? "text-primary block"
-                            : "text-primary bg-primary/10 block -mx-3 px-3";
-                        } else if (line.startsWith("-") && !line.startsWith("---")) {
-                          lineStyle = boxless
-                            ? "text-destructive block"
-                            : "text-destructive bg-destructive/10 block -mx-3 px-3";
-                        } else if (line.startsWith("@@")) {
-                          lineStyle = boxless
-                            ? "text-muted-foreground font-semibold block"
-                            : "text-muted-foreground font-semibold block -mx-3 px-3 bg-muted/40";
-                        } else if (
-                          line.startsWith("---") ||
-                          line.startsWith("+++")
-                        ) {
-                          lineStyle = "text-muted-foreground font-semibold";
-                        }
-
-                        return (
-                          <span key={idx} className={lineStyle}>
-                            {line}
-                            {idx < diffLines.length - 1 ? "\n" : ""}
-                          </span>
-                        );
-                      })}
-                    </pre>
-                  </div>
-                );
-              }
-
-              const containerClass = boxless
-                ? "my-1.5 overflow-x-auto text-xs font-mono text-foreground"
-                : "my-2 rounded-lg border border-border bg-popover text-popover-foreground p-3 overflow-x-auto text-xs font-mono";
-
+              const codeString = String(children).replace(/\n$/, "");
               return (
-                <div className={containerClass}>
-                  <pre className="font-mono whitespace-pre-wrap leading-relaxed">
-                    <code>{children}</code>
-                  </pre>
-                </div>
+                <CodeBlock
+                  code={codeString}
+                  language={className}
+                  boxless={boxless}
+                />
               );
             }
             return (
