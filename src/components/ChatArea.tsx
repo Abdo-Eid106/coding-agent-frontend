@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import {
   PanelLeft,
   MoreVertical,
-  Mic,
   Send,
   ChevronDown,
   ChevronUp,
@@ -312,11 +311,6 @@ export default function ChatArea({
             </div>
 
             <div className="flex items-center gap-1.5">
-              {/* Mic button */}
-              <button className="p-1.5 rounded-md hover:bg-accent transition-colors cursor-pointer">
-                <Mic className="size-4 text-muted-foreground" />
-              </button>
-
               {/* Send button */}
               <button
                 onClick={handleSend}

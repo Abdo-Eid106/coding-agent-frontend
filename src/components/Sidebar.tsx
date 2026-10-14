@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useRef } from "react";
 import { Plus, Filter, FolderPlus, Settings } from "lucide-react";
 import ProjectItem from "./ProjectItem";
-import NewProjectDialog from "./NewProjectDialog";
 import type { Project } from "../store/types";
 
 interface SidebarProps {
@@ -27,7 +26,37 @@ export default function Sidebar({
   onSelectSession,
   onNewConversation,
 }: SidebarProps) {
-  const [showNewProject, setShowNewProject] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSelectDirectory = async () => {
+    // 1. Try modern File System Access API (opens native OS directory picker)
+    if ("showDirectoryPicker" in window) {
+      try {
+        const dirHandle = await (window as Window & { showDirectoryPicker: () => Promise<{ name: string }> }).showDirectoryPicker();
+        if (dirHandle?.name) {
+          onAddProject(dirHandle.name, dirHandle.name);
+        }
+        return;
+      } catch (err: unknown) {
+        // If user cancelled the picker dialog, simply return
+        if (err instanceof Error && err.name === "AbortError") return;
+      }
+    }
+
+    // 2. Fallback to hidden directory input
+    fileInputRef.current?.click();
+  };
+
+  const handleDirectoryInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const relativePath = files[0].webkitRelativePath || files[0].name;
+      const folderName = relativePath.split("/")[0] || files[0].name;
+      onAddProject(folderName, folderName);
+    }
+    // reset input so the same folder can be picked again
+    e.target.value = "";
+  };
 
   return (
     <>
@@ -44,7 +73,7 @@ export default function Sidebar({
           {/* New Conversation button */}
           <button
             onClick={onNewConversation}
-            className="flex items-center gap-2 w-full px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer text-nowrap"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer"
           >
             <Plus className="size-4" />
             New Conversation
@@ -66,8 +95,8 @@ export default function Sidebar({
               </button>
               <button
                 className="p-1 rounded hover:bg-accent transition-colors cursor-pointer"
-                title="New project"
-                onClick={() => setShowNewProject(true)}
+                title="Open folder to add project"
+                onClick={handleSelectDirectory}
               >
                 <FolderPlus className="size-3.5 text-muted-foreground" />
               </button>
@@ -99,10 +128,15 @@ export default function Sidebar({
         </div>
       </aside>
 
-      <NewProjectDialog
-        isOpen={showNewProject}
-        onClose={() => setShowNewProject(false)}
-        onConfirm={onAddProject}
+      {/* Hidden system directory picker input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        // @ts-expect-error webkitdirectory is standard in browsers but not typed in React
+        webkitdirectory=""
+        directory=""
+        className="hidden"
+        onChange={handleDirectoryInputChange}
       />
     </>
   );
