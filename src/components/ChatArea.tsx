@@ -11,8 +11,10 @@ import {
   Check,
   Info,
 } from "lucide-react";
-import type { Project } from "../store/types";
+import type { Project, ConversationTurn } from "../store/types";
 import Dropdown from "./Dropdown";
+import ToolCallsAccordion from "./ToolCallsAccordion";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface Model {
   name: string;
@@ -45,6 +47,8 @@ interface ChatAreaProps {
   projects: Project[];
   selectedProjectId: string | null;
   onSelectProject: (projectId: string | null) => void;
+  turns: ConversationTurn[];
+  onSendMessage: (text: string, model: string) => void;
 }
 
 export default function ChatArea({
@@ -53,6 +57,8 @@ export default function ChatArea({
   projects,
   selectedProjectId,
   onSelectProject,
+  turns,
+  onSendMessage,
 }: ChatAreaProps) {
   const [message, setMessage] = useState("");
   const [selectedModel, setSelectedModel] = useState("Claude Opus 4.6 (Thinking)");
@@ -62,6 +68,8 @@ export default function ChatArea({
 
   const modelRef = useRef<HTMLDivElement>(null);
   const projectRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -76,6 +84,21 @@ export default function ChatArea({
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
+
+  // Scroll to bottom when turns change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [turns]);
+
+  const handleSend = () => {
+    const trimmed = message.trim();
+    if (!trimmed) return;
+    onSendMessage(trimmed, selectedModel);
+    setMessage("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+  };
 
   const selectedProjectObj = projects.find((p) => p.id === selectedProjectId);
 
@@ -100,9 +123,35 @@ export default function ChatArea({
       </header>
 
       {/* Chat content area */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-4 py-8">
-          {/* Placeholder for conversation content - empty for now */}
+      <div className="flex-1 overflow-y-auto px-4 py-6">
+        <div className="max-w-3xl mx-auto space-y-8 pb-4">
+          {turns.length === 0 ? (
+            <div className="h-full flex items-center justify-center py-20 text-muted-foreground text-sm">
+              Start a new conversation by typing below...
+            </div>
+          ) : (
+            turns.map((turn) => (
+              <div key={turn.id} className="space-y-4">
+                {/* 1. User message - displayed in a distinct rounded card box with theme color bg-popover */}
+                <div className="rounded-2xl border border-border bg-popover text-popover-foreground p-3 sm:p-4 text-sm shadow-xs">
+                  <p className="whitespace-pre-wrap leading-relaxed">
+                    {turn.userMessage}
+                  </p>
+                </div>
+
+                {/* 2. Tool calls accordion - collapsible output for each tool call */}
+                {turn.toolCalls && turn.toolCalls.length > 0 && (
+                  <ToolCallsAccordion toolCalls={turn.toolCalls} />
+                )}
+
+                {/* 3. AI response - markdown rendered directly on page background without outer box */}
+                <div className="px-1 text-sm text-foreground">
+                  <MarkdownRenderer content={turn.aiResponse} />
+                </div>
+              </div>
+            ))
+          )}
+          <div ref={messagesEndRef} />
         </div>
       </div>
 
@@ -113,7 +162,7 @@ export default function ChatArea({
           <div className="relative" ref={projectRef}>
             <button
               onClick={() => setProjectDropdownOpen((v) => !v)}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border text-sm text-foreground hover:bg-accent transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-popover border border-border text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
             >
               <FolderOpen className="size-3.5 text-muted-foreground" />
               <span>{selectedProjectObj?.name || "Select Project"}</span>
@@ -161,12 +210,19 @@ export default function ChatArea({
         </div>
 
         {/* Input box */}
-        <div className="rounded-xl border border-border bg-card shadow-sm">
+        <div className="rounded-xl border border-border bg-popover text-popover-foreground shadow-xs">
           {/* Text input */}
           <div className="px-4 pt-3 pb-2">
             <textarea
+              ref={textareaRef}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
               placeholder="Type your message…"
               rows={1}
               className="w-full resize-none bg-transparent text-foreground text-sm placeholder:text-muted-foreground focus:outline-none"
@@ -263,6 +319,7 @@ export default function ChatArea({
 
               {/* Send button */}
               <button
+                onClick={handleSend}
                 className="p-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                 disabled={!message.trim()}
               >

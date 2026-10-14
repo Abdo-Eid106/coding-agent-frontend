@@ -44,7 +44,7 @@ export default function Sidebar({
           {/* New Conversation button */}
           <button
             onClick={onNewConversation}
-            className="flex items-center gap-2 w-full px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer text-nowrap"
           >
             <Plus className="size-4" />
             New Conversation
@@ -59,13 +59,13 @@ export default function Sidebar({
             </span>
             <div className="flex items-center gap-0.5">
               <button
-                className="p-1 rounded hover:bg-accent transition-colors"
+                className="p-1 rounded hover:bg-accent transition-colors cursor-pointer"
                 title="Filter projects"
               >
                 <Filter className="size-3.5 text-muted-foreground" />
               </button>
               <button
-                className="p-1 rounded hover:bg-accent transition-colors"
+                className="p-1 rounded hover:bg-accent transition-colors cursor-pointer"
                 title="New project"
                 onClick={() => setShowNewProject(true)}
               >
@@ -92,7 +92,7 @@ export default function Sidebar({
 
         {/* Bottom section */}
         <div className="p-3 border-t border-border">
-          <button className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
+          <button className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors cursor-pointer">
             <Settings className="size-4 text-muted-foreground" />
             Settings
           </button>
