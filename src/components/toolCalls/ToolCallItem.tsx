@@ -66,31 +66,38 @@ function detectLanguageFromPath(filePath?: string): string {
 
 function isDiffOutput(tc: ToolCall): boolean {
   if (tc.diff) return true;
-  if (tc.tool === "replace_file_content" || tc.tool === "edit_file") return true;
+  const toolName = tc.type || tc.tool;
+  if (toolName === "replace_file_content" || toolName === "edit_file") return true;
   return tc.output.includes("@@ -") || tc.output.startsWith("--- ");
 }
 
 function formatMarkdown(tc: ToolCall): string {
-  const filePath = tc.filePath || tc.summary;
+  const toolName = tc.type || tc.tool;
+  const inputObj = tc.input as Record<string, string> | undefined;
+  const filePath =
+    tc.filePath ||
+    tc.summary ||
+    (typeof tc.input === "string" ? tc.input : inputObj?.path || inputObj?.file);
   const lang = detectLanguageFromPath(filePath);
 
-  if (tc.tool === "run_command") {
-    const cmd = tc.summary ? `$ ${tc.summary}\n` : "";
-    return `\`\`\`bash\n${cmd}${tc.output.trim()}\n\`\`\``;
+  if (toolName === "run_command") {
+    const cmd = tc.summary || inputObj?.command;
+    const cmdPrefix = cmd ? `$ ${cmd}\n` : "";
+    return `\`\`\`bash\n${cmdPrefix}${tc.output.trim()}\n\`\`\``;
   }
 
-  if (tc.tool === "replace_file_content" || tc.tool === "edit_file") {
+  if (toolName === "replace_file_content" || toolName === "edit_file") {
     const diffContent = (tc.diff || tc.output).trim();
     const header = filePath ? `\`${filePath}\`\n\n` : "";
     return `${header}\`\`\`diff\n${diffContent}\n\`\`\``;
   }
 
-  if (tc.tool === "view_file" || tc.tool === "read_resource" || tc.tool === "write_to_file") {
+  if (toolName === "view_file" || toolName === "read_resource" || toolName === "write_to_file") {
     const header = filePath ? `\`${filePath}\`\n\n` : "";
     return `${header}\`\`\`${lang}\n${tc.output.trim()}\n\`\`\``;
   }
 
-  if (tc.tool === "text") {
+  if (toolName === "text") {
     return tc.output.trim();
   }
 
@@ -109,6 +116,13 @@ function formatMarkdown(tc: ToolCall): string {
 
 export default function ToolCallItem({ toolCall }: ToolCallItemProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const toolName = toolCall.type || toolCall.tool || "tool";
+  const inputObj = toolCall.input as Record<string, string> | undefined;
+  const displaySummary =
+    toolCall.summary ||
+    (typeof toolCall.input === "string"
+      ? toolCall.input
+      : inputObj?.command || inputObj?.path || inputObj?.file);
 
   return (
     <div className="text-xs">
@@ -123,13 +137,13 @@ export default function ToolCallItem({ toolCall }: ToolCallItemProps) {
               isOpen ? "rotate-90" : "rotate-0"
             }`}
           />
-          {getToolIcon(toolCall.tool)}
+          {getToolIcon(toolName)}
           <span className="font-mono font-medium text-foreground truncate">
-            {toolCall.tool}
+            {toolName}
           </span>
-          {toolCall.summary && (
+          {displaySummary && (
             <span className="font-mono text-muted-foreground truncate hidden sm:inline">
-              ({toolCall.summary})
+              ({displaySummary})
             </span>
           )}
         </div>

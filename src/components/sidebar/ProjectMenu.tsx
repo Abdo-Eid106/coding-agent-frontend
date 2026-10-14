@@ -9,14 +9,12 @@ interface ProjectMenuProps {
 export default function ProjectMenu({ projectId }: ProjectMenuProps) {
   const deleteProject = useProjectStore((s) => s.deleteProject);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
-  const selectSession = useProjectStore((s) => s.selectSession);
   const newConversation = useChatStore((s) => s.newConversation);
 
   const handleStartNewChatForProject = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     setSelectedProjectId(projectId);
-    selectSession(null);
     newConversation();
   };
 

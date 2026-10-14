@@ -7,21 +7,34 @@ import ProjectSelector from "./chat/ProjectSelector";
 import ChatInput from "./chat/ChatInput";
 import ThemeToggle from "./ThemeToggle";
 
+import type { ConversationTurn } from "../store/types";
+
+const EMPTY_TURNS: ConversationTurn[] = [];
+
 function ChatHeader() {
   const isSidebarOpen = useUIStore((state) => state.isSidebarOpen);
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
+  const sessionTitle = useChatStore((state) => state.currentSession?.title);
 
   return (
     <header className="flex items-center justify-between border-b border-border px-3 py-2">
-      <button
-        type="button"
-        onClick={toggleSidebar}
-        className="cursor-pointer rounded-md p-1.5 transition-colors hover:bg-accent"
-        title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
-        aria-label={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
-      >
-        <PanelLeft className="size-4 text-muted-foreground" />
-      </button>
+      <div className="flex items-center gap-2 min-w-0">
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          className="cursor-pointer rounded-md p-1.5 transition-colors hover:bg-accent"
+          title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
+          aria-label={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
+        >
+          <PanelLeft className="size-4 text-muted-foreground" />
+        </button>
+
+        {sessionTitle && (
+          <span className="text-xs font-medium text-foreground truncate max-w-xs sm:max-w-md">
+            {sessionTitle}
+          </span>
+        )}
+      </div>
 
       <ThemeToggle />
     </header>
@@ -29,7 +42,7 @@ function ChatHeader() {
 }
 
 function MessageList() {
-  const turns = useChatStore((state) => state.turns);
+  const turns = useChatStore((state) => state.currentSession?.turns ?? EMPTY_TURNS);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -72,8 +85,9 @@ function ChatComposer({ isNewChat }: { isNewChat: boolean }) {
 }
 
 export default function ChatArea() {
-  const turns = useChatStore((state) => state.turns);
-  const isNewChat = turns.length === 0;
+  const isNewChat = useChatStore(
+    (state) => !state.currentSession || state.currentSession.turns.length === 0
+  );
 
   return (
     <main className="flex h-screen flex-1 flex-col bg-background">

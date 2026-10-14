@@ -2,11 +2,9 @@ import { useRef, useState } from "react";
 import { Plus, Send } from "lucide-react";
 import ModelSelector from "./ModelSelector";
 import { useChatStore } from "../../store/useChatStore";
-import { useProjectStore } from "../../store/useProjectStore";
 
 export default function ChatInput() {
   const [message, setMessage] = useState("");
-  const [selectedModel, setSelectedModel] = useState("Claude Opus 4.6 (Thinking)");
   const sendMessage = useChatStore((s) => s.sendMessage);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -14,15 +12,7 @@ export default function ChatInput() {
     const trimmed = message.trim();
     if (!trimmed) return;
 
-    // Create session for the selected project upon first message send
-    const { selectedProjectId, activeSessionId, addSession } = useProjectStore.getState();
-    const turns = useChatStore.getState().turns;
-    if (selectedProjectId && !activeSessionId && turns.length === 0) {
-      const sessionTitle = trimmed.length > 25 ? `${trimmed.slice(0, 22)}…` : trimmed;
-      addSession(selectedProjectId, sessionTitle);
-    }
-
-    sendMessage(trimmed, selectedModel);
+    sendMessage(trimmed);
     setMessage("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -65,16 +55,7 @@ export default function ChatInput() {
             <Plus className="size-4 text-muted-foreground" />
           </button>
 
-          <ModelSelector
-            selectedModel={selectedModel}
-            onSelectModel={setSelectedModel}
-          />
-
-          <span className="text-xs text-muted-foreground/60 select-none">•</span>
-
-          <span className="text-xs text-muted-foreground px-2 py-0.5 rounded bg-muted/50 border border-border/50">
-            Local
-          </span>
+          <ModelSelector />
         </div>
 
         <button

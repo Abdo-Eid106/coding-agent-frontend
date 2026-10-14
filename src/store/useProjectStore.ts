@@ -3,7 +3,7 @@ import type { Project, Session } from "./types";
 
 const generateId = () => crypto.randomUUID();
 
-const SAMPLE_PROJECTS: Project[] = [
+const RAW_SAMPLE_PROJECTS = [
   {
     id: generateId(),
     name: "mcp",
@@ -119,29 +119,29 @@ const SAMPLE_PROJECTS: Project[] = [
   },
 ];
 
+const SAMPLE_PROJECTS: Project[] = RAW_SAMPLE_PROJECTS.map((project) => ({
+  ...project,
+  sessions: project.sessions.map((s) => ({
+    id: s.id,
+    title: s.name,
+    name: s.name,
+    lastActive: s.lastActive,
+    turns: [],
+  })),
+}));
+
 export interface ProjectState {
   projects: Project[];
-  activeSessionId: string | null;
   selectedProjectId: string | null;
-  toggleProject: (projectId: string) => void;
   addProject: (name: string, workingDirectory: string) => void;
   deleteProject: (projectId: string) => void;
-  addSession: (projectId: string, sessionName: string) => void;
-  selectSession: (sessionId: string | null) => void;
+  addSession: (projectId: string, sessionName: string) => string;
   setSelectedProjectId: (projectId: string | null) => void;
 }
 
 export const useProjectStore = create<ProjectState>((set) => ({
   projects: SAMPLE_PROJECTS,
-  activeSessionId: null,
   selectedProjectId: null,
-
-  toggleProject: (projectId: string) =>
-    set((state) => ({
-      projects: state.projects.map((p) =>
-        p.id === projectId ? { ...p, isExpanded: !p.isExpanded } : p
-      ),
-    })),
 
   addProject: (name: string, workingDirectory: string) =>
     set((state) => {
@@ -150,7 +150,6 @@ export const useProjectStore = create<ProjectState>((set) => ({
         name,
         workingDirectory,
         sessions: [],
-        isExpanded: false,
       };
       return { projects: [newProject, ...state.projects] };
     }),
@@ -162,25 +161,24 @@ export const useProjectStore = create<ProjectState>((set) => ({
         state.selectedProjectId === projectId ? null : state.selectedProjectId,
     })),
 
-  addSession: (projectId: string, sessionName: string) =>
-    set((state) => {
-      const newSession: Session = {
-        id: generateId(),
-        name: sessionName,
-        lastActive: "now",
-      };
-      return {
-        activeSessionId: newSession.id,
-        projects: state.projects.map((p) =>
-          p.id === projectId
-            ? { ...p, sessions: [newSession, ...p.sessions], isExpanded: true }
-            : p
-        ),
-      };
-    }),
-
-  selectSession: (sessionId: string | null) =>
-    set({ activeSessionId: sessionId }),
+  addSession: (projectId: string, sessionName: string): string => {
+    const newSession: Session = {
+      id: generateId(),
+      title: sessionName,
+      name: sessionName,
+      turns: [],
+      lastActive: "now",
+    };
+    set((state) => ({
+      selectedProjectId: projectId,
+      projects: state.projects.map((p) =>
+        p.id === projectId
+          ? { ...p, sessions: [newSession, ...p.sessions] }
+          : p
+      ),
+    }));
+    return newSession.id;
+  },
 
   setSelectedProjectId: (projectId: string | null) =>
     set({ selectedProjectId: projectId }),

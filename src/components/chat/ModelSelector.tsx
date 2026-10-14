@@ -1,17 +1,24 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, ChevronUp, Check, Info } from "lucide-react";
 import { AVAILABLE_MODELS } from "../../store/models";
+import { useChatStore } from "../../store/useChatStore";
 import Dropdown from "../Dropdown";
 
 interface ModelSelectorProps {
-  selectedModel: string;
-  onSelectModel: (model: string) => void;
+  selectedModel?: string;
+  onSelectModel?: (model: string) => void;
 }
 
 export default function ModelSelector({
-  selectedModel,
-  onSelectModel,
-}: ModelSelectorProps) {
+  selectedModel: propModel,
+  onSelectModel: propOnSelect,
+}: ModelSelectorProps = {}) {
+  const storeSelectedModel = useChatStore((s) => s.selectedModel);
+  const storeSetSelectedModel = useChatStore((s) => s.setSelectedModel);
+
+  const selectedModel = propModel ?? storeSelectedModel;
+  const onSelectModel = propOnSelect ?? storeSetSelectedModel;
+
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -28,6 +35,7 @@ export default function ModelSelector({
   return (
     <div className="relative" ref={ref}>
       <button
+        type="button"
         onClick={() => setIsOpen((v) => !v)}
         className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs text-muted-foreground hover:bg-accent transition-colors cursor-pointer"
       >
@@ -50,6 +58,7 @@ export default function ModelSelector({
               return (
                 <button
                   key={model.name}
+                  type="button"
                   onClick={() => {
                     if (!model.available) return;
                     onSelectModel(model.name);

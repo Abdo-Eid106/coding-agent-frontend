@@ -9,14 +9,21 @@ interface ProjectItemProps {
 }
 
 export default function ProjectItem({ project }: ProjectItemProps) {
-  const toggleProject = useProjectStore((s) => s.toggleProject);
-  const ChevronIcon = project.isExpanded ? ChevronDown : ChevronRight;
+  const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
+  const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
+
+  const isSelected = selectedProjectId === project.id;
+  const ChevronIcon = isSelected ? ChevronDown : ChevronRight;
+
+  const handleToggleSelect = () => {
+    setSelectedProjectId(isSelected ? null : project.id);
+  };
 
   return (
     <div className="select-none">
       {/* Project header row */}
       <div
-        onClick={() => toggleProject(project.id)}
+        onClick={handleToggleSelect}
         className="group flex items-center justify-between gap-1 px-2 py-1.5 rounded-md hover:bg-sidebar-accent cursor-pointer text-sidebar-foreground"
       >
         <div className="flex items-center gap-1.5 flex-1 min-w-0 text-left">
@@ -37,8 +44,8 @@ export default function ProjectItem({ project }: ProjectItemProps) {
       <div
         className="overflow-hidden transition-all duration-200"
         style={{
-          maxHeight: project.isExpanded ? `${project.sessions.length * 40 + 8}px` : "0px",
-          opacity: project.isExpanded ? 1 : 0,
+          maxHeight: isSelected ? `${project.sessions.length * 40 + 8}px` : "0px",
+          opacity: isSelected ? 1 : 0,
         }}
       >
         <div className="ml-4 pl-3 border-l border-border/50">

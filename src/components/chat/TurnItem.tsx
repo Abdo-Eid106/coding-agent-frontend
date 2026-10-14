@@ -21,7 +21,7 @@ export default function TurnItem({ turn }: TurnItemProps) {
 
       {/* 3. AI response */}
       <div className="px-1 text-sm text-foreground">
-        <MarkdownRenderer content={turn.aiResponse} />
+        <MarkdownRenderer content={turn.aiMessage || turn.aiResponse || ""} />
       </div>
     </div>
   );

@@ -8,6 +8,8 @@ export const INITIAL_TURNS: ConversationTurn[] = [
     toolCalls: [
       {
         id: "tc-1-1",
+        type: "run_command",
+        input: { command: "pnpm add lucide-react" },
         tool: "run_command",
         summary: "pnpm add lucide-react",
         output: "Progress: resolved 109, reused 44, downloaded 1, added 1, done\ndependencies:\n+ lucide-react 1.55.0\nDone in 6.1s using pnpm v11.2.2",
@@ -16,6 +18,8 @@ export const INITIAL_TURNS: ConversationTurn[] = [
       },
       {
         id: "tc-1-2",
+        type: "write_to_file",
+        input: { path: "src/components/Sidebar.tsx" },
         tool: "write_to_file",
         summary: "src/components/Sidebar.tsx",
         filePath: "src/components/Sidebar.tsx",
@@ -66,6 +70,8 @@ export default function Sidebar({
       },
       {
         id: "tc-1-3",
+        type: "run_command",
+        input: { command: "pnpm build" },
         tool: "run_command",
         summary: "pnpm build",
         output: "$ tsc -b && vite build\nvite v8.3.4 building client environment for production...\ntransforming...\n✓ 1913 modules transformed.\nrendering chunks...\ndist/index.html   0.48 kB\n✓ built in 315ms",
@@ -73,6 +79,7 @@ export default function Sidebar({
         status: "success",
       },
     ],
+    aiMessage: `I have built the page layout matching the Antigravity design:`,
     aiResponse: `I have built the page layout matching the Antigravity design:
 
 ### Implemented Features
@@ -91,6 +98,8 @@ export default function Sidebar({
     toolCalls: [
       {
         id: "tc-2-1",
+        type: "view_file",
+        input: { path: "src/components/ChatArea.tsx" },
         tool: "view_file",
         summary: "src/components/ChatArea.tsx",
         filePath: "src/components/ChatArea.tsx",
@@ -118,6 +127,8 @@ export default function Sidebar({
       },
       {
         id: "tc-2-2",
+        type: "replace_file_content",
+        input: { file: "src/store/useProjectStore.ts" },
         tool: "replace_file_content",
         summary: "src/store/useProjectStore.ts",
         filePath: "src/store/useProjectStore.ts",
@@ -132,8 +143,8 @@ export default function Sidebar({
 +      { id: generateId(), name: "Setup auth guard", lastActive: "1d" },
 +      { id: generateId(), name: "Database migrations", lastActive: "3d" },
 +    ],
-     isExpanded: false,
-   },
++    isExpanded: false,
++  },
 +  {
 +    id: generateId(),
 +    name: "workflow-automations",
@@ -155,6 +166,8 @@ export default function Sidebar({
       },
       {
         id: "tc-2-3",
+        type: "replace_file_content",
+        input: { file: "src/components/ChatArea.tsx" },
         tool: "replace_file_content",
         summary: "src/components/ChatArea.tsx",
         filePath: "src/components/ChatArea.tsx",
@@ -178,6 +191,8 @@ export default function Sidebar({
       },
       {
         id: "tc-2-4",
+        type: "run_command",
+        input: { command: "pnpm build" },
         tool: "run_command",
         summary: "pnpm build",
         output: "$ tsc -b && vite build\nvite v8.3.4 building client environment for production...\n✓ 1914 modules transformed.\n✓ built in 205ms",
@@ -185,6 +200,7 @@ export default function Sidebar({
         status: "success",
       },
     ],
+    aiMessage: `I have updated both dropdown menus to be scrollable and expanded the dummy datasets:`,
     aiResponse: `I have updated both dropdown menus to be scrollable and expanded the dummy datasets:
 
 1. **Scrollable Dropdowns**:

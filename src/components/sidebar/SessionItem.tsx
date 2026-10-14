@@ -1,20 +1,22 @@
 import type { Session } from "../../store/types";
-import { useProjectStore } from "../../store/useProjectStore";
 import { useChatStore } from "../../store/useChatStore";
+import { INITIAL_TURNS } from "../../store/initialTurns";
 
 interface SessionItemProps {
   session: Session;
 }
 
 export default function SessionItem({ session }: SessionItemProps) {
-  const activeSessionId = useProjectStore((s) => s.activeSessionId);
-  const selectSession = useProjectStore((s) => s.selectSession);
-  const loadSession = useChatStore((s) => s.loadSession);
-  const isActive = activeSessionId === session.id;
+  const currentSessionId = useChatStore((s) => s.currentSession?.id);
+  const setSession = useChatStore((s) => s.setSession);
+  const isActive = currentSessionId === session.id;
 
   const handleClick = () => {
-    selectSession(session.id);
-    loadSession(session.id);
+    setSession({
+      ...session,
+      title: session.title || session.name || "Untitled Session",
+      turns: session.turns?.length ? session.turns : INITIAL_TURNS,
+    });
   };
 
   return (
@@ -26,7 +28,7 @@ export default function SessionItem({ session }: SessionItemProps) {
           : "text-sidebar-foreground hover:bg-sidebar-accent/50"
       }`}
     >
-      <span className="truncate">{session.name}</span>
+      <span className="truncate">{session.title || session.name}</span>
       <span className="text-xs text-muted-foreground ml-2 shrink-0">
         {session.lastActive}
       </span>
