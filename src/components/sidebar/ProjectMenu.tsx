@@ -1,72 +1,48 @@
-import { useState, useRef, useEffect } from "react";
-import { Plus, MessageSquarePlus, Trash2 } from "lucide-react";
-import Dropdown from "../Dropdown";
+import { Plus, Trash2 } from "lucide-react";
 import { useProjectStore } from "../../store/useProjectStore";
+import { useChatStore } from "../../store/useChatStore";
 
 interface ProjectMenuProps {
   projectId: string;
 }
 
 export default function ProjectMenu({ projectId }: ProjectMenuProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
   const addSession = useProjectStore((s) => s.addSession);
   const deleteProject = useProjectStore((s) => s.deleteProject);
+  const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
+  const newConversation = useChatStore((s) => s.newConversation);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [isOpen]);
+  const handleAddSession = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addSession(projectId, "New Session");
+    setSelectedProjectId(projectId);
+    newConversation();
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteProject(projectId);
+  };
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 transition-opacity shrink-0">
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOpen((v) => !v);
-        }}
-        className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-accent transition-opacity cursor-pointer"
-        title="Project actions"
+        type="button"
+        onClick={handleAddSession}
+        className="p-1 rounded hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        title="New session"
       >
-        <Plus className="size-3.5 text-muted-foreground" />
+        <Plus className="size-3.5" />
       </button>
 
-      <Dropdown
-        isOpen={isOpen}
-        direction="down"
-        className="absolute right-0 top-full mt-1 z-50"
+      <button
+        type="button"
+        onClick={handleDelete}
+        className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+        title="Delete project"
       >
-        <div className="min-w-[160px] rounded-md border border-border bg-popover text-popover-foreground shadow-md py-1">
-          <button
-            onClick={() => {
-              addSession(projectId, "New Session");
-              setIsOpen(false);
-            }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
-          >
-            <MessageSquarePlus className="size-4" />
-            New Session
-          </button>
-          <div className="h-px bg-border my-1" />
-          <button
-            onClick={() => {
-              deleteProject(projectId);
-              setIsOpen(false);
-            }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-sm text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
-          >
-            <Trash2 className="size-4" />
-            Delete Project
-          </button>
-        </div>
-      </Dropdown>
+        <Trash2 className="size-3.5" />
+      </button>
     </div>
   );
 }

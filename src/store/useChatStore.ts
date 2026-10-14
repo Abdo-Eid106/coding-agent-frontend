@@ -7,6 +7,7 @@ interface ChatState {
   turns: ConversationTurn[];
   sendMessage: (userText: string, model: string) => void;
   newConversation: () => void;
+  loadSession: (sessionId: string) => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -19,4 +20,5 @@ export const useChatStore = create<ChatState>((set) => ({
     }),
 
   newConversation: () => set({ turns: [] }),
+  loadSession: (_sessionId: string) => set({ turns: INITIAL_TURNS }),
 }));

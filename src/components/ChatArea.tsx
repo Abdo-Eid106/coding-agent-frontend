@@ -18,6 +18,8 @@ export default function ChatArea() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [turns]);
 
+  const isNewChat = turns.length === 0;
+
   return (
     <div className="flex-1 flex flex-col h-screen bg-background">
       {/* Top Header */}
@@ -36,7 +38,7 @@ export default function ChatArea() {
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-3xl mx-auto space-y-8 pb-4">
-          {turns.length === 0 ? (
+          {isNewChat ? (
             <div className="h-full flex items-center justify-center py-20 text-muted-foreground text-sm">
               Start a new conversation by typing below...
             </div>
@@ -49,9 +51,11 @@ export default function ChatArea() {
 
       {/* Bottom Input Area */}
       <div className="max-w-3xl mx-auto w-full px-4 pb-4 space-y-3">
-        <div className="flex justify-start">
-          <ProjectSelector />
-        </div>
+        {isNewChat && (
+          <div className="flex justify-start">
+            <ProjectSelector />
+          </div>
+        )}
 
         <ChatInput />
       </div>

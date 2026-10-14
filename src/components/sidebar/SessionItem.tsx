@@ -1,5 +1,6 @@
 import type { Session } from "../../store/types";
 import { useProjectStore } from "../../store/useProjectStore";
+import { useChatStore } from "../../store/useChatStore";
 
 interface SessionItemProps {
   session: Session;
@@ -8,11 +9,17 @@ interface SessionItemProps {
 export default function SessionItem({ session }: SessionItemProps) {
   const activeSessionId = useProjectStore((s) => s.activeSessionId);
   const selectSession = useProjectStore((s) => s.selectSession);
+  const loadSession = useChatStore((s) => s.loadSession);
   const isActive = activeSessionId === session.id;
+
+  const handleClick = () => {
+    selectSession(session.id);
+    loadSession(session.id);
+  };
 
   return (
     <button
-      onClick={() => selectSession(session.id)}
+      onClick={handleClick}
       className={`flex items-center justify-between w-full px-2 py-1.5 rounded-md text-sm transition-colors cursor-pointer ${
         isActive
           ? "bg-sidebar-accent text-sidebar-accent-foreground"

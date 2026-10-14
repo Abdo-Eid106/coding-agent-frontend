@@ -10,6 +10,12 @@ export default function Sidebar() {
   const openSettings = useUIStore((s) => s.openSettings);
   const newConversation = useChatStore((s) => s.newConversation);
   const projects = useProjectStore((s) => s.projects);
+  const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
+
+  const handleNewConversation = () => {
+    newConversation();
+    setSelectedProjectId(null);
+  };
 
   return (
     <aside
@@ -24,7 +30,7 @@ export default function Sidebar() {
       <div className="p-3 space-y-2">
         {/* New Conversation button */}
         <button
-          onClick={newConversation}
+          onClick={handleNewConversation}
           className="flex items-center gap-2 w-full px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer text-nowrap"
         >
           <Plus className="size-4" />
