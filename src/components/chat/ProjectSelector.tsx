@@ -1,0 +1,81 @@
+import { useState, useRef, useEffect } from "react";
+import { FolderOpen, ChevronDown, Check } from "lucide-react";
+import type { Project } from "../../store/types";
+import Dropdown from "../Dropdown";
+
+interface ProjectSelectorProps {
+  projects: Project[];
+  selectedProjectId: string | null;
+  onSelectProject: (projectId: string | null) => void;
+}
+
+export default function ProjectSelector({
+  projects,
+  selectedProjectId,
+  onSelectProject,
+}: ProjectSelectorProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedProject = projects.find((p) => p.id === selectedProjectId);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setIsOpen((v) => !v)}
+        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-popover border border-border text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+      >
+        <FolderOpen className="size-3.5 text-muted-foreground" />
+        <span>{selectedProject?.name || "Select Project"}</span>
+        <ChevronDown className="size-3 text-muted-foreground" />
+      </button>
+
+      <Dropdown
+        isOpen={isOpen}
+        direction="up"
+        className="absolute bottom-full mb-2 left-0 z-50"
+      >
+        <div className="min-w-[240px] max-h-60 flex flex-col rounded-lg border border-border bg-popover text-popover-foreground shadow-lg overflow-hidden">
+          <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider shrink-0 border-b border-border/50">
+            Project
+          </div>
+          <div className="overflow-y-auto py-1">
+            {projects.map((project) => {
+              const isSelected = project.id === selectedProjectId;
+              return (
+                <button
+                  key={project.id}
+                  onClick={() => {
+                    onSelectProject(isSelected ? null : project.id);
+                    setIsOpen(false);
+                  }}
+                  className={`flex items-center justify-between w-full px-3 py-2 text-sm cursor-pointer transition-colors ${
+                    isSelected
+                      ? "bg-accent text-accent-foreground"
+                      : "hover:bg-accent/50 text-popover-foreground"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <FolderOpen className="size-4 text-muted-foreground" />
+                    <span>{project.name}</span>
+                  </div>
+                  {isSelected && <Check className="size-4 text-primary" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </Dropdown>
+    </div>
+  );
+}

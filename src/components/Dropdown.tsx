@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface DropdownProps {
   isOpen: boolean;
@@ -21,21 +21,17 @@ export default function Dropdown({
 }: DropdownProps) {
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      // Mount first, then trigger visible on next frame for transition
       setMounted(true);
-      // Use rAF to ensure DOM has painted before adding the visible class
-      timeoutRef.current = setTimeout(() => setVisible(true), 10);
+      const frame = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(frame);
     } else {
-      // Start exit animation
       setVisible(false);
-      // Unmount after animation completes
-      timeoutRef.current = setTimeout(() => setMounted(false), 150);
+      const timer = setTimeout(() => setMounted(false), 150);
+      return () => clearTimeout(timer);
     }
-    return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
   }, [isOpen]);
 
   if (!mounted) return null;

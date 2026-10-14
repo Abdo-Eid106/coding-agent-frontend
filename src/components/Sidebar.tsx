@@ -34,7 +34,11 @@ export default function Sidebar({
     // 1. Try modern File System Access API (opens native OS directory picker)
     if ("showDirectoryPicker" in window) {
       try {
-        const dirHandle = await (window as Window & { showDirectoryPicker: () => Promise<{ name: string }> }).showDirectoryPicker();
+        const dirHandle = await (
+          window as Window & {
+            showDirectoryPicker: () => Promise<{ name: string }>;
+          }
+        ).showDirectoryPicker();
         if (dirHandle?.name) {
           onAddProject(dirHandle.name, dirHandle.name);
         }
@@ -49,7 +53,9 @@ export default function Sidebar({
     fileInputRef.current?.click();
   };
 
-  const handleDirectoryInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDirectoryInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const relativePath = files[0].webkitRelativePath || files[0].name;
@@ -75,7 +81,7 @@ export default function Sidebar({
           {/* New Conversation button */}
           <button
             onClick={onNewConversation}
-            className="flex items-center gap-2 w-full px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer text-nowrap"
           >
             <Plus className="size-4" />
             New Conversation
