@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Plus, Send } from "lucide-react";
 import ModelSelector from "./ModelSelector";
 import { useChatStore } from "../../store/useChatStore";
+import { useProjectStore } from "../../store/useProjectStore";
 
 export default function ChatInput() {
   const [message, setMessage] = useState("");
@@ -12,6 +13,15 @@ export default function ChatInput() {
   const handleSend = () => {
     const trimmed = message.trim();
     if (!trimmed) return;
+
+    // Create session for the selected project upon first message send
+    const { selectedProjectId, activeSessionId, addSession } = useProjectStore.getState();
+    const turns = useChatStore.getState().turns;
+    if (selectedProjectId && !activeSessionId && turns.length === 0) {
+      const sessionTitle = trimmed.length > 25 ? `${trimmed.slice(0, 22)}…` : trimmed;
+      addSession(selectedProjectId, sessionTitle);
+    }
+
     sendMessage(trimmed, selectedModel);
     setMessage("");
     if (textareaRef.current) {

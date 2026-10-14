@@ -127,7 +127,7 @@ export interface ProjectState {
   addProject: (name: string, workingDirectory: string) => void;
   deleteProject: (projectId: string) => void;
   addSession: (projectId: string, sessionName: string) => void;
-  selectSession: (sessionId: string) => void;
+  selectSession: (sessionId: string | null) => void;
   setSelectedProjectId: (projectId: string | null) => void;
 }
 
@@ -179,7 +179,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
       };
     }),
 
-  selectSession: (sessionId: string) =>
+  selectSession: (sessionId: string | null) =>
     set({ activeSessionId: sessionId }),
 
   setSelectedProjectId: (projectId: string | null) =>

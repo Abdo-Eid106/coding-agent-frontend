@@ -15,17 +15,22 @@ export default function ProjectItem({ project }: ProjectItemProps) {
   return (
     <div className="select-none">
       {/* Project header row */}
-      <div className="group flex items-center justify-between gap-1 px-2 py-1.5 rounded-md hover:bg-sidebar-accent cursor-pointer text-sidebar-foreground">
-        <button
-          onClick={() => toggleProject(project.id)}
-          className="flex items-center gap-1.5 flex-1 min-w-0 text-left cursor-pointer"
-        >
+      <div
+        onClick={() => toggleProject(project.id)}
+        className="group flex items-center justify-between gap-1 px-2 py-1.5 rounded-md hover:bg-sidebar-accent cursor-pointer text-sidebar-foreground"
+      >
+        <div className="flex items-center gap-1.5 flex-1 min-w-0 text-left">
           <ChevronIcon className="size-3.5 shrink-0 text-muted-foreground" />
           <FolderOpen className="size-4 shrink-0 text-muted-foreground" />
           <span className="text-sm truncate">{project.name}</span>
-        </button>
+        </div>
 
-        <ProjectMenu projectId={project.id} />
+        <div
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <ProjectMenu projectId={project.id} />
+        </div>
       </div>
 
       {/* Collapsible sessions list */}
