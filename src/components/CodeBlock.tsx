@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Check, Copy, Code2 } from "lucide-react";
-import hljs from "highlight.js";
+import ShikiHighlighter from "react-shiki";
 
 interface CodeBlockProps {
   code: string;
@@ -21,39 +21,33 @@ export default function CodeBlock({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const cleanLang = language.replace(/^language-/, "").toLowerCase();
-
-  // Highlight code using highlight.js
-  let highlightedHtml = "";
-  try {
-    if (cleanLang && hljs.getLanguage(cleanLang)) {
-      highlightedHtml = hljs.highlight(code, { language: cleanLang }).value;
-    } else {
-      highlightedHtml = hljs.highlightAuto(code).value;
-    }
-  } catch {
-    highlightedHtml = code;
-  }
-
+  const cleanLang = (language || "")
+    .replace(/^language-/, "")
+    .toLowerCase()
+    .trim();
+  const validLang = cleanLang || "text";
   const displayLang = cleanLang ? cleanLang.toUpperCase() : "CODE";
 
   if (boxless) {
     return (
-      <div className="my-1.5 overflow-x-auto text-xs font-mono select-text boxless">
-        <pre className="font-mono leading-relaxed bg-transparent p-0 m-0">
-          <code
-            className="hljs bg-transparent p-0 leading-relaxed font-mono"
-            dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-          />
-        </pre>
+      <div className="my-1 overflow-x-auto text-xs font-mono select-text boxless">
+        <ShikiHighlighter
+          language={validLang}
+          theme={{ light: "github-light", dark: "github-dark" }}
+          showLanguage={false}
+          addDefaultStyles={false}
+          className="font-mono text-xs leading-relaxed bg-transparent"
+        >
+          {code}
+        </ShikiHighlighter>
       </div>
     );
   }
 
   return (
-    <div className="my-3 rounded-xl border border-border/70 overflow-hidden bg-[#1a1b26] text-xs font-mono shadow-xs">
+    <div className="my-3 rounded-xl border border-border overflow-hidden bg-card text-card-foreground text-xs font-mono shadow-xs">
       {/* Code Header Bar with Language badge and Copy button */}
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40 bg-[#16161e] text-muted-foreground select-none">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/40 text-muted-foreground select-none">
         <div className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground">
           <Code2 className="size-3.5 text-primary" />
           <span>{displayLang}</span>
@@ -61,13 +55,13 @@ export default function CodeBlock({
 
         <button
           onClick={handleCopy}
-          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] hover:bg-white/10 hover:text-foreground transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] hover:bg-accent hover:text-foreground transition-colors cursor-pointer"
           title="Copy code"
         >
           {copied ? (
             <>
-              <Check className="size-3 text-emerald-400" />
-              <span className="text-emerald-400 font-sans">Copied</span>
+              <Check className="size-3 text-foreground" />
+              <span className="text-foreground font-sans">Copied</span>
             </>
           ) : (
             <>
@@ -78,14 +72,17 @@ export default function CodeBlock({
         </button>
       </div>
 
-      {/* Code content highlighted with Tokyo Night theme */}
-      <div className="p-3.5 overflow-x-auto">
-        <pre className="font-mono leading-relaxed bg-transparent p-0 m-0">
-          <code
-            className="hljs bg-transparent p-0 leading-relaxed font-mono"
-            dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-          />
-        </pre>
+      {/* Code content highlighted with react-shiki */}
+      <div className="p-3.5 overflow-x-auto bg-background/50">
+        <ShikiHighlighter
+          language={validLang}
+          theme={{ light: "github-light", dark: "github-dark" }}
+          showLanguage={false}
+          addDefaultStyles={false}
+          className="font-mono text-xs leading-relaxed"
+        >
+          {code}
+        </ShikiHighlighter>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-@import "highlight.js/styles/tokyo-night-dark.min.css";
+@import "react-shiki/css";
 
 /* Custom scrollbar matching app theme variables */
 * {
@@ -24,12 +24,6 @@
   background: var(--muted-foreground);
 }
 
-/* In boxless mode, ensure code blocks use page background */
-.boxless code.hljs,
-.boxless pre {
-  background: transparent !important;
-}
-
 /* Prevent yellow autofill background in inputs */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
@@ -40,3 +34,12 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
 }
 
+/* In boxless mode, ensure Shiki code blocks use transparent background */
+.boxless .rs-root pre,
+.boxless .rs-root code,
+.boxless pre,
+.boxless code {
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}

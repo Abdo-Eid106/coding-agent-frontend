@@ -1,4 +1,5 @@
 import Markdown from "react-markdown";
+import { isInlineCode } from "react-shiki";
 import CodeBlock from "./CodeBlock";
 
 interface MarkdownRendererProps {
@@ -53,9 +54,12 @@ export default function MarkdownRenderer({
               {children}
             </blockquote>
           ),
-          code: ({ className, children, ...props }) => {
-            const isBlock = Boolean(className) || String(children).includes("\n");
-            if (isBlock) {
+          code: ({ className, children, node, ...props }) => {
+            const isInline = node
+              ? isInlineCode(node as never)
+              : !className && !String(children).includes("\n");
+
+            if (!isInline) {
               const codeString = String(children).replace(/\n$/, "");
               return (
                 <CodeBlock
@@ -65,6 +69,7 @@ export default function MarkdownRenderer({
                 />
               );
             }
+
             return (
               <code
                 className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono text-foreground border border-border/50"
