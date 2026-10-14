@@ -23,7 +23,9 @@ export default function ToolCallsAccordion({
         type="button"
         onClick={() => setIsSectionOpen((prev) => !prev)}
         className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground uppercase tracking-wider px-1 py-1 cursor-pointer select-none transition-colors group"
-        title={isSectionOpen ? "Collapse tool executions" : "Expand tool executions"}
+        title={
+          isSectionOpen ? "Collapse tool executions" : "Expand tool executions"
+        }
       >
         <ChevronRight
           className={`size-3.5 transition-transform duration-200 text-muted-foreground group-hover:text-foreground ${
@@ -36,7 +38,9 @@ export default function ToolCallsAccordion({
       {/* Smoothly animated collapsible list */}
       <div
         className={`grid transition-all duration-200 ease-in-out ${
-          isSectionOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+          isSectionOpen
+            ? "grid-rows-[1fr] opacity-100"
+            : "grid-rows-[0fr] opacity-0"
         }`}
       >
         <div className="overflow-hidden space-y-1 pt-0.5">
