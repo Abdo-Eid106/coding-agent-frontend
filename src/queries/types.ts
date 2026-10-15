@@ -2,6 +2,7 @@ export interface ProjectDto {
   id: string;
   name: string;
   path: string;
+  sessions?: SessionDto[];
 }
 
 export interface AddProjectDto {
@@ -59,4 +60,22 @@ export type AgentEvent =
 
 export interface AddApiKeyDto {
   apiKey: string;
+}
+
+export interface ModelDto {
+  id: string;
+  name: string;
+  apiModel: string;
+  contextWindow: number;
+  defaultMaxTokens: number;
+  supportsAttachments: boolean;
+  provider: string;
+}
+
+export interface ConfiguredProviderDto {
+  id: string;
+  name: string;
+  apiKey: string | null;
+  baseUrl: string | null;
+  models: ModelDto[];
 }

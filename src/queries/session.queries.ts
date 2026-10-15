@@ -32,6 +32,7 @@ export const useCreateSession = () => {
     mutationFn: createSession,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.SESSIONS] });
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.PROJECTS] });
     },
   });
 };
@@ -42,6 +43,7 @@ export const useDeleteSession = () => {
     mutationFn: (id: string) => deleteSession(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.SESSIONS] });
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.PROJECTS] });
     },
   });
 };

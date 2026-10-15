@@ -1,23 +1,35 @@
 import { Sparkles, Bot, BrainCircuit, Cpu, Check, ArrowRight } from "lucide-react";
-import type { ModelInfo } from "../../store/models";
+
+export interface DisplayModel {
+  id: string;
+  name: string;
+  apiModel: string;
+  provider: string;
+  providerName: string;
+  contextWindow?: string;
+  description?: string;
+  tag?: string;
+  available?: boolean;
+}
 
 interface ModelCardProps {
-  model: ModelInfo;
+  model: DisplayModel;
   isKeyConfigured: boolean;
   onNavigateToProviders: () => void;
 }
 
-function ProviderIcon({ provider }: { provider: ModelInfo["provider"] }) {
-  switch (provider) {
-    case "Google":
-      return <Sparkles className="size-4" />;
-    case "Anthropic":
-      return <BrainCircuit className="size-4" />;
-    case "OpenAI":
-      return <Bot className="size-4" />;
-    default:
-      return <Cpu className="size-4" />;
+function ProviderIcon({ provider }: { provider: string }) {
+  const p = provider.toLowerCase();
+  if (p.includes("google") || p.includes("gemini")) {
+    return <Sparkles className="size-4" />;
   }
+  if (p.includes("anthropic")) {
+    return <BrainCircuit className="size-4" />;
+  }
+  if (p.includes("openai")) {
+    return <Bot className="size-4" />;
+  }
+  return <Cpu className="size-4" />;
 }
 
 export default function ModelCard({
@@ -25,6 +37,8 @@ export default function ModelCard({
   isKeyConfigured,
   onNavigateToProviders,
 }: ModelCardProps) {
+  const isAvailable = model.available !== false;
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border border-border bg-card hover:bg-accent/20 transition-colors">
       <div className="flex items-start gap-3 min-w-0">
@@ -51,29 +65,30 @@ export default function ModelCard({
             )}
           </div>
 
-          <p className="text-xs text-muted-foreground line-clamp-1">
-            {model.description}
+          <p className="text-xs text-muted-foreground line-clamp-1 font-mono">
+            {model.description || model.apiModel}
           </p>
         </div>
       </div>
 
       {/* Action / Status Badge */}
       <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-        {!model.available && (
+        {!isAvailable && (
           <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-muted/40 text-muted-foreground border border-border/50">
             Unavailable
           </span>
         )}
 
-        {model.available && isKeyConfigured && (
+        {isAvailable && isKeyConfigured && (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-muted text-foreground border border-border">
-            <Check className="size-3 text-muted-foreground" />
+            <Check className="size-3 text-primary" />
             Ready
           </span>
         )}
 
-        {model.available && !isKeyConfigured && (
+        {isAvailable && !isKeyConfigured && (
           <button
+            type="button"
             onClick={onNavigateToProviders}
             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium bg-muted text-foreground hover:bg-accent border border-border transition-colors cursor-pointer"
             title="Go to Providers to set API key"

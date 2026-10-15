@@ -1,17 +1,18 @@
 import { KeyRound, Cpu, Sliders, Palette } from "lucide-react";
 import type { SettingsTab } from "./types";
-import { AVAILABLE_MODELS } from "../../store/models";
 
 interface SettingsSidebarProps {
   activeTab: SettingsTab;
   onSelectTab: (tab: SettingsTab) => void;
   configuredCount: number;
+  modelsCount?: number;
 }
 
 export default function SettingsSidebar({
   activeTab,
   onSelectTab,
   configuredCount,
+  modelsCount,
 }: SettingsSidebarProps) {
   return (
     <aside className="w-56 sm:w-64 min-w-56 shrink-0 border-r border-border bg-sidebar flex flex-col justify-between p-3 select-none">
@@ -53,7 +54,7 @@ export default function SettingsSidebar({
             <Cpu className="size-4 shrink-0" />
             <span>Models</span>
             <span className="ml-auto text-[11px] font-mono px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground border border-border">
-              {AVAILABLE_MODELS.length}
+              {modelsCount ?? 0}
             </span>
           </button>
 

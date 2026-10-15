@@ -47,6 +47,7 @@ export const useAddMessage = (sessionId?: string) => {
         });
       }
       queryClient.invalidateQueries({ queryKey: [QueryKeys.SESSIONS] });
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.PROJECTS] });
     },
   });
 };

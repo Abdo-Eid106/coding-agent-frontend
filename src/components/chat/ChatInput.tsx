@@ -16,7 +16,7 @@ export default function ChatInput() {
 
   const { mutate: createSession, isPending: isCreating } = useCreateSession();
   const { mutate: addMessage, isPending: isAdding } = useAddMessage(
-    currentSessionId ?? undefined
+    currentSessionId ?? undefined,
   );
 
   const isSending = isCreating || isAdding;

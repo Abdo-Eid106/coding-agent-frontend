@@ -6,8 +6,7 @@ import ProvidersTab from "./settings/ProvidersTab";
 import ModelsTab from "./settings/ModelsTab";
 import AppearanceTab from "./settings/AppearanceTab";
 import { useUIStore } from "../store/useUIStore";
-
-const STORAGE_KEY = "coding_agent_provider_keys";
+import { useFetchConfiguredProviders } from "../queries/provider.queries";
 
 interface SettingsModalProps {
   isOpen?: boolean;
@@ -25,17 +24,18 @@ export default function SettingsModal({
   const onClose = propOnClose ?? storeClose;
 
   const [activeTab, setActiveTab] = useState<SettingsTab>("providers");
-  const [savedKeys, setSavedKeys] = useState<Record<string, string>>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored
-        ? { gemini: "", openai: "", anthropic: "", ...JSON.parse(stored) }
-        : { gemini: "", openai: "", anthropic: "" };
-    } catch {
-      return { gemini: "", openai: "", anthropic: "" };
-    }
-  });
   const modalRef = useRef<HTMLDivElement>(null);
+
+  const { data: configuredProviders = [] } = useFetchConfiguredProviders();
+
+  const configuredCount = configuredProviders.filter((p) =>
+    Boolean(p.apiKey?.trim()),
+  ).length;
+
+  const configuredModelsCount = configuredProviders.reduce(
+    (acc, p) => acc + (p.models?.length || 0),
+    0,
+  );
 
   // Close on Escape key
   useEffect(() => {
@@ -54,29 +54,6 @@ export default function SettingsModal({
       onClose();
     }
   };
-
-  const handleSaveKey = (providerId: string, key: string) => {
-    const trimmed = key.trim();
-    const updated = { ...savedKeys, [providerId]: trimmed };
-    setSavedKeys(updated);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    } catch {
-      // storage unavailable
-    }
-  };
-
-  const handleClearKey = (providerId: string) => {
-    const updated = { ...savedKeys, [providerId]: "" };
-    setSavedKeys(updated);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    } catch {
-      // storage unavailable
-    }
-  };
-
-  const configuredCount = Object.values(savedKeys).filter(Boolean).length;
 
   const tabTitles: Record<SettingsTab, { title: string; subtitle: string }> = {
     providers: {
@@ -110,6 +87,7 @@ export default function SettingsModal({
           activeTab={activeTab}
           onSelectTab={setActiveTab}
           configuredCount={configuredCount}
+          modelsCount={configuredModelsCount}
         />
 
         <main className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-background">
@@ -135,19 +113,10 @@ export default function SettingsModal({
 
           {/* Tab Content */}
           <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
-            {activeTab === "providers" && (
-              <ProvidersTab
-                savedKeys={savedKeys}
-                onSaveKey={handleSaveKey}
-                onClearKey={handleClearKey}
-              />
-            )}
+            {activeTab === "providers" && <ProvidersTab />}
 
             {activeTab === "models" && (
-              <ModelsTab
-                savedKeys={savedKeys}
-                onNavigateToProviders={() => setActiveTab("providers")}
-              />
+              <ModelsTab onNavigateToProviders={() => setActiveTab("providers")} />
             )}
 
             {activeTab === "appearance" && <AppearanceTab />}

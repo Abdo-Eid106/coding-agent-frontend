@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { FolderOpen, ChevronDown, ChevronRight } from "lucide-react";
 import type { ProjectDto } from "../queries";
 import { useProjectStore } from "../store/useProjectStore";
-import { useFetchSessions } from "../queries/session.queries";
+import { useChatStore } from "../store/useChatStore";
 import SessionItem from "./sidebar/SessionItem";
 import ProjectMenu from "./sidebar/ProjectMenu";
 
@@ -12,14 +13,31 @@ interface ProjectItemProps {
 export default function ProjectItem({ project }: ProjectItemProps) {
   const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
-  const { data: allSessions = [] } = useFetchSessions();
+  const currentSessionId = useChatStore((s) => s.currentSessionId);
+
+  // Directly access the sessions populated inside the project
+  const projectSessions = project.sessions ?? [];
 
   const isSelected = selectedProjectId === project.id;
   const ChevronIcon = isSelected ? ChevronDown : ChevronRight;
 
-  const projectSessions = allSessions.filter(
-    (s) => s.project?.id === project.id
-  );
+  // Auto-expand if the active session belongs to this project
+  useEffect(() => {
+    if (
+      currentSessionId &&
+      projectSessions.some((s) => s.id === currentSessionId)
+    ) {
+      if (!isSelected) {
+        setSelectedProjectId(project.id);
+      }
+    }
+  }, [
+    currentSessionId,
+    projectSessions,
+    isSelected,
+    project.id,
+    setSelectedProjectId,
+  ]);
 
   const handleToggleSelect = () => {
     setSelectedProjectId(isSelected ? null : project.id);
@@ -36,6 +54,11 @@ export default function ProjectItem({ project }: ProjectItemProps) {
           <ChevronIcon className="size-3.5 shrink-0 text-muted-foreground" />
           <FolderOpen className="size-4 shrink-0 text-muted-foreground" />
           <span className="text-sm truncate">{project.name}</span>
+          {projectSessions.length > 0 && (
+            <span className="text-[10px] text-muted-foreground/80 px-1.5 py-0.2 rounded-full bg-muted/60 font-mono shrink-0">
+              {projectSessions.length}
+            </span>
+          )}
         </div>
 
         <div
@@ -51,19 +74,23 @@ export default function ProjectItem({ project }: ProjectItemProps) {
         className="overflow-hidden transition-all duration-200"
         style={{
           maxHeight: isSelected
-            ? `${Math.max(projectSessions.length, 1) * 40 + 8}px`
+            ? `${Math.max(projectSessions.length, 1) * 44 + 16}px`
             : "0px",
           opacity: isSelected ? 1 : 0,
         }}
       >
-        <div className="ml-4 pl-3 border-l border-border/50">
+        <div className="ml-4 pl-2.5 border-l border-border/50 py-1 space-y-0.5">
           {projectSessions.length === 0 ? (
             <div className="py-1 px-2 text-xs text-muted-foreground italic">
               No sessions yet
             </div>
           ) : (
             projectSessions.map((session) => (
-              <SessionItem key={session.id} session={session} />
+              <SessionItem
+                key={session.id}
+                session={session}
+                projectId={project.id}
+              />
             ))
           )}
         </div>
