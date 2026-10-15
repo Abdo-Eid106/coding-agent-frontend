@@ -9,11 +9,11 @@ const fetchProjects = async (): Promise<ProjectDto[]> => {
 };
 
 const createProject = async (
-  addProjectDto: AddProjectDto
+  addProjectDto: AddProjectDto,
 ): Promise<AddProjectResponseDto> => {
   const { data } = await Api.post<AddProjectResponseDto>(
     "/projects",
-    addProjectDto
+    addProjectDto,
   );
   return data;
 };
