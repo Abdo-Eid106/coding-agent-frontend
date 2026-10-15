@@ -5,11 +5,17 @@ export interface ProjectToDelete {
   name: string;
 }
 
+export interface SessionToDelete {
+  id: string;
+  title: string;
+}
+
 interface UIState {
   isSidebarOpen: boolean;
   isSettingsOpen: boolean;
   isAddProjectOpen: boolean;
   projectToDelete: ProjectToDelete | null;
+  sessionToDelete: SessionToDelete | null;
   toggleSidebar: () => void;
   setSidebarOpen: (open: boolean) => void;
   openSettings: () => void;
@@ -18,6 +24,8 @@ interface UIState {
   closeAddProject: () => void;
   openDeleteProject: (project: ProjectToDelete) => void;
   closeDeleteProject: () => void;
+  openDeleteSession: (session: SessionToDelete) => void;
+  closeDeleteSession: () => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -25,6 +33,7 @@ export const useUIStore = create<UIState>((set) => ({
   isSettingsOpen: false,
   isAddProjectOpen: false,
   projectToDelete: null,
+  sessionToDelete: null,
 
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
   setSidebarOpen: (open: boolean) => set({ isSidebarOpen: open }),
@@ -34,4 +43,6 @@ export const useUIStore = create<UIState>((set) => ({
   closeAddProject: () => set({ isAddProjectOpen: false }),
   openDeleteProject: (project) => set({ projectToDelete: project }),
   closeDeleteProject: () => set({ projectToDelete: null }),
+  openDeleteSession: (session) => set({ sessionToDelete: session }),
+  closeDeleteSession: () => set({ sessionToDelete: null }),
 }));

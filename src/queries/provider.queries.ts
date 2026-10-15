@@ -18,7 +18,6 @@ const addProviderApiKey = async ({
   apiKey: string;
 }): Promise<unknown> => {
   const body: AddApiKeyDto = { apiKey };
-  alert(providerId);
   const { data } = await Api.post(`/providers/${providerId}/api-key`, body);
   return data;
 };

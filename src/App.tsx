@@ -4,6 +4,7 @@ import ChatArea from "./components/ChatArea";
 import SettingsModal from "./components/SettingsModal";
 import AddProjectModal from "./components/AddProjectModal";
 import DeleteProjectModal from "./components/DeleteProjectModal";
+import DeleteSessionModal from "./components/DeleteSessionModal";
 import { Toaster } from "./components/Toaster";
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
       <SettingsModal />
       <AddProjectModal />
       <DeleteProjectModal />
+      <DeleteSessionModal />
       <Toaster />
     </div>
   );

@@ -2,7 +2,7 @@ import { MessageSquare, Trash2 } from "lucide-react";
 import type { SessionDto } from "../../queries";
 import { useChatStore } from "../../store/useChatStore";
 import { useProjectStore } from "../../store/useProjectStore";
-import { useDeleteSession } from "../../queries/session.queries";
+import { useUIStore } from "../../store/useUIStore";
 
 interface SessionItemProps {
   session: SessionDto;
@@ -12,10 +12,8 @@ interface SessionItemProps {
 export default function SessionItem({ session, projectId }: SessionItemProps) {
   const currentSessionId = useChatStore((s) => s.currentSessionId);
   const setCurrentSessionId = useChatStore((s) => s.setCurrentSessionId);
-  const newConversation = useChatStore((s) => s.newConversation);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
-
-  const { mutate: deleteSession, isPending: isDeleting } = useDeleteSession();
+  const openDeleteSession = useUIStore((s) => s.openDeleteSession);
 
   const isActive = currentSessionId === session.id;
 
@@ -29,14 +27,9 @@ export default function SessionItem({ session, projectId }: SessionItemProps) {
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    if (isDeleting) return;
-
-    deleteSession(session.id, {
-      onSuccess: () => {
-        if (currentSessionId === session.id) {
-          newConversation();
-        }
-      },
+    openDeleteSession({
+      id: session.id,
+      title: session.title || "Untitled Session",
     });
   };
 
@@ -57,8 +50,7 @@ export default function SessionItem({ session, projectId }: SessionItemProps) {
       <button
         type="button"
         onClick={handleDelete}
-        disabled={isDeleting}
-        className="opacity-0 group-hover/session:opacity-100 p-1 text-muted-foreground hover:text-destructive rounded transition-all cursor-pointer shrink-0 disabled:opacity-50"
+        className="opacity-0 group-hover/session:opacity-100 p-1 text-muted-foreground hover:text-destructive rounded transition-all cursor-pointer shrink-0"
         title="Delete session"
       >
         <Trash2 className="size-3" />
