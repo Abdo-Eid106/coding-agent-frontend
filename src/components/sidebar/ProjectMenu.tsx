@@ -1,15 +1,15 @@
 import { Plus, Trash2 } from "lucide-react";
 import { useProjectStore } from "../../store/useProjectStore";
 import { useChatStore } from "../../store/useChatStore";
-import { useDeleteProject } from "../../queries/project.queries";
+import { useUIStore } from "../../store/useUIStore";
 
 interface ProjectMenuProps {
   projectId: string;
+  projectName?: string;
 }
 
-export default function ProjectMenu({ projectId }: ProjectMenuProps) {
-  const { mutate: deleteProject, isPending } = useDeleteProject();
-  const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
+export default function ProjectMenu({ projectId, projectName }: ProjectMenuProps) {
+  const openDeleteProject = useUIStore((s) => s.openDeleteProject);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
   const newConversation = useChatStore((s) => s.newConversation);
 
@@ -23,10 +23,7 @@ export default function ProjectMenu({ projectId }: ProjectMenuProps) {
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    if (selectedProjectId === projectId) {
-      setSelectedProjectId(null);
-    }
-    deleteProject(projectId);
+    openDeleteProject({ id: projectId, name: projectName || "this project" });
   };
 
   return (
@@ -48,9 +45,8 @@ export default function ProjectMenu({ projectId }: ProjectMenuProps) {
       <button
         type="button"
         onClick={handleDelete}
-        disabled={isPending}
         onMouseDown={(e) => e.stopPropagation()}
-        className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors cursor-pointer disabled:opacity-50"
+        className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
         title="Delete project"
       >
         <Trash2 className="size-3.5" />

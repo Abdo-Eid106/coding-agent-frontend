@@ -3,6 +3,7 @@ import Sidebar from "./components/Sidebar";
 import ChatArea from "./components/ChatArea";
 import SettingsModal from "./components/SettingsModal";
 import AddProjectModal from "./components/AddProjectModal";
+import DeleteProjectModal from "./components/DeleteProjectModal";
 import { Toaster } from "./components/Toaster";
 
 export default function App() {
@@ -12,6 +13,7 @@ export default function App() {
       <ChatArea />
       <SettingsModal />
       <AddProjectModal />
+      <DeleteProjectModal />
       <Toaster />
     </div>
   );

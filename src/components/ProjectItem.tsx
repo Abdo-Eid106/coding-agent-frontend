@@ -42,7 +42,7 @@ export default function ProjectItem({ project }: ProjectItemProps) {
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
         >
-          <ProjectMenu projectId={project.id} />
+          <ProjectMenu projectId={project.id} projectName={project.name} />
         </div>
       </div>
 
