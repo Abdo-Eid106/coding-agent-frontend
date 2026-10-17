@@ -10,16 +10,13 @@ export default function ChatArea() {
   return (
     <main className="flex h-screen flex-1 flex-col bg-background">
       <ChatHeader />
-
       <MessagesList sessionId={sessionId} />
-
       <div className="mx-auto w-full max-w-3xl space-y-3 px-4 pb-4">
         {!sessionId && (
           <div className="flex justify-start">
             <ProjectSelector />
           </div>
         )}
-
         <ChatInput />
       </div>
     </main>
