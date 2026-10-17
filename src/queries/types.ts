@@ -35,7 +35,9 @@ export interface MessageDto {
   content: string;
   role: MessageRole | "user" | "ai";
   createdAt: string;
-  session?: { id: string };
+  session?: { id: string } | string;
+  parentMessage?: string | null;
+  replies?: MessageDto[];
 }
 
 export interface GetMessagesQueryDto {
@@ -45,12 +47,13 @@ export interface GetMessagesQueryDto {
 
 export interface GetMessagesResponseDto {
   items: MessageDto[];
+  nextCursor?: string;
 }
 
 export interface AddMessageDto {
+  messageId?: string;
   messageContent: string;
   modelId: string;
-  sessionId?: string;
 }
 
 export type AgentEvent =
@@ -79,3 +82,5 @@ export interface ConfiguredProviderDto {
   baseUrl: string | null;
   models: ModelDto[];
 }
+
+export interface CreateSessionResponse extends SessionDto {}

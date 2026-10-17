@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, ChevronDown, Info, Loader2 } from "lucide-react";
 import { useChatStore } from "../../store/useChatStore";
-import { useFetchConfiguredProviders } from "../../queries/provider.queries";
+import { useFetchConfiguredProviders } from "../../queries";
 import Dropdown from "../Dropdown";
 
 const formatTokens = (n: number) =>
@@ -158,7 +158,7 @@ export default function ModelSelector() {
         direction="up"
         className="absolute bottom-full left-0 z-50 mb-2"
       >
-        <div className="flex max-h-72 min-w-[320px] max-w-[380px] flex-col overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-lg">
+        <div className="flex max-h-72 min-w-[320px] max-w-95 flex-col overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-lg">
           <div className="shrink-0 border-b border-border/50 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Model
           </div>

@@ -1,38 +1,37 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type {
-  AddMessageDto,
-  GetMessagesQueryDto,
-  GetMessagesResponseDto,
-} from "./types";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import type { AddMessageDto, GetMessagesResponseDto } from "./types";
 import { QueryKeys } from "../shared";
 import { Api } from "../shared/api/axios-instance";
 
 const fetchMessages = async (
   sessionId: string,
-  params?: GetMessagesQueryDto
+  cursor?: string,
 ): Promise<GetMessagesResponseDto> => {
   const { data } = await Api.get<GetMessagesResponseDto>(
-    `/messages/${sessionId}`,
-    { params }
+    `sessions/${sessionId}/messages`,
+    { params: { cursor } },
   );
   return data;
 };
 
 const addMessage = async (dto: AddMessageDto): Promise<unknown> => {
   const { sessionId, ...body } = dto;
-  const url = sessionId ? `/messages/${sessionId}` : "/messages";
+  const url = sessionId ? `sessions/${sessionId}/messages` : "/sessions";
   const { data } = await Api.post(url, body);
   return data;
 };
 
-export const useFetchMessages = (
-  sessionId?: string,
-  params?: GetMessagesQueryDto
-) =>
-  useQuery({
-    queryKey: [QueryKeys.MESSAGES, sessionId, params],
-    queryFn: () => fetchMessages(sessionId!, params),
+export const useFetchMessages = (sessionId?: string) =>
+  useInfiniteQuery({
+    queryKey: [QueryKeys.MESSAGES, sessionId],
+    queryFn: ({ pageParam }) => fetchMessages(sessionId!, pageParam),
     enabled: !!sessionId,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    initialPageParam: undefined as string | undefined,
   });
 
 export const useAddMessage = (sessionId?: string) => {

@@ -11,7 +11,7 @@ import {
   Wrench,
 } from "lucide-react";
 import type { ToolCall } from "../../store/types";
-import MarkdownRenderer from "../MarkdownRenderer";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface ToolCallItemProps {
   toolCall: ToolCall;
@@ -67,7 +67,8 @@ function detectLanguageFromPath(filePath?: string): string {
 function isDiffOutput(tc: ToolCall): boolean {
   if (tc.diff) return true;
   const toolName = tc.type || tc.tool;
-  if (toolName === "replace_file_content" || toolName === "edit_file") return true;
+  if (toolName === "replace_file_content" || toolName === "edit_file")
+    return true;
   return tc.output.includes("@@ -") || tc.output.startsWith("--- ");
 }
 
@@ -77,7 +78,9 @@ function formatMarkdown(tc: ToolCall): string {
   const filePath =
     tc.filePath ||
     tc.summary ||
-    (typeof tc.input === "string" ? tc.input : inputObj?.path || inputObj?.file);
+    (typeof tc.input === "string"
+      ? tc.input
+      : inputObj?.path || inputObj?.file);
   const lang = detectLanguageFromPath(filePath);
 
   if (toolName === "run_command") {
@@ -92,7 +95,11 @@ function formatMarkdown(tc: ToolCall): string {
     return `${header}\`\`\`diff\n${diffContent}\n\`\`\``;
   }
 
-  if (toolName === "view_file" || toolName === "read_resource" || toolName === "write_to_file") {
+  if (
+    toolName === "view_file" ||
+    toolName === "read_resource" ||
+    toolName === "write_to_file"
+  ) {
     const header = filePath ? `\`${filePath}\`\n\n` : "";
     return `${header}\`\`\`${lang}\n${tc.output.trim()}\n\`\`\``;
   }

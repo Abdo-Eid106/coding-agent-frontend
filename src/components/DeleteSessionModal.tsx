@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { AlertTriangle, Loader2, X } from "lucide-react";
 import { useDeleteSession } from "../queries/session.queries";
 import { useUIStore, type SessionToDelete } from "../store/useUIStore";
-import { useChatStore } from "../store/useChatStore";
 import { getErrorMessage } from "../shared/lib/get-error-message";
 import { toast } from "./Toaster";
 
@@ -28,8 +28,8 @@ interface DeleteSessionDialogProps {
 function DeleteSessionDialog({ session, onClose }: DeleteSessionDialogProps) {
   const cancelBtnRef = useRef<HTMLButtonElement>(null);
   const { mutate: deleteSession, isPending } = useDeleteSession();
-  const currentSessionId = useChatStore((s) => s.currentSessionId);
-  const newConversation = useChatStore((s) => s.newConversation);
+  const { sessionId } = useParams<{ sessionId?: string }>();
+  const navigate = useNavigate();
 
   // Focus cancel button on mount for safety
   useEffect(() => {
@@ -52,8 +52,8 @@ function DeleteSessionDialog({ session, onClose }: DeleteSessionDialogProps) {
 
     deleteSession(session.id, {
       onSuccess: () => {
-        if (currentSessionId === session.id) {
-          newConversation();
+        if (sessionId === session.id) {
+          navigate("/");
         }
         toast.success(`Session "${session.title}" deleted`);
         onClose();

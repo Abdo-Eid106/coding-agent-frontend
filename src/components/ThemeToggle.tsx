@@ -17,7 +17,10 @@ export default function ThemeToggle() {
   useEffect(() => {
     if (!isOpen) return;
     function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -29,8 +32,8 @@ export default function ThemeToggle() {
     theme === Theme.System
       ? Monitor
       : effectiveTheme === Theme.Dark
-      ? Moon
-      : Sun;
+        ? Moon
+        : Sun;
 
   return (
     <div className="relative" ref={containerRef}>
@@ -48,7 +51,7 @@ export default function ThemeToggle() {
         direction="down"
         className="absolute right-0 top-full mt-1.5 z-50"
       >
-        <div className="min-w-[140px] rounded-lg border border-border bg-popover text-popover-foreground shadow-lg py-1 select-none">
+        <div className="min-w-35 rounded-lg border border-border bg-popover text-popover-foreground shadow-lg py-1 select-none">
           <div className="px-3 py-1.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50">
             Appearance
           </div>

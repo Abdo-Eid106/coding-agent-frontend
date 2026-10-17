@@ -58,11 +58,13 @@ export default function SettingsModal({
   const tabTitles: Record<SettingsTab, { title: string; subtitle: string }> = {
     providers: {
       title: "Providers",
-      subtitle: "Configure your API keys for Gemini, OpenAI, and Anthropic providers.",
+      subtitle:
+        "Configure your API keys for Gemini, OpenAI, and Anthropic providers.",
     },
     models: {
       title: "Models",
-      subtitle: "Browse and inspect all available models, context windows, and readiness.",
+      subtitle:
+        "Browse and inspect all available models, context windows, and readiness.",
     },
     general: {
       title: "General",
@@ -81,7 +83,7 @@ export default function SettingsModal({
     >
       <div
         ref={modalRef}
-        className="w-[92vw] max-w-5xl h-[84vh] max-h-[720px] min-h-[500px] rounded-2xl border border-border bg-card text-card-foreground shadow-2xl flex overflow-hidden"
+        className="w-[92vw] max-w-5xl h-[84vh] max-h-180 min-h-125 rounded-2xl border border-border bg-card text-card-foreground shadow-2xl flex overflow-hidden"
       >
         <SettingsSidebar
           activeTab={activeTab}
@@ -116,7 +118,9 @@ export default function SettingsModal({
             {activeTab === "providers" && <ProvidersTab />}
 
             {activeTab === "models" && (
-              <ModelsTab onNavigateToProviders={() => setActiveTab("providers")} />
+              <ModelsTab
+                onNavigateToProviders={() => setActiveTab("providers")}
+              />
             )}
 
             {activeTab === "appearance" && <AppearanceTab />}

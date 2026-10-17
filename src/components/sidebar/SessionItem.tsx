@@ -1,6 +1,6 @@
+import { useNavigate, useParams } from "react-router-dom";
 import { MessageSquare, Trash2 } from "lucide-react";
 import type { SessionDto } from "../../queries";
-import { useChatStore } from "../../store/useChatStore";
 import { useProjectStore } from "../../store/useProjectStore";
 import { useUIStore } from "../../store/useUIStore";
 
@@ -10,15 +10,15 @@ interface SessionItemProps {
 }
 
 export default function SessionItem({ session, projectId }: SessionItemProps) {
-  const currentSessionId = useChatStore((s) => s.currentSessionId);
-  const setCurrentSessionId = useChatStore((s) => s.setCurrentSessionId);
+  const { sessionId } = useParams<{ sessionId?: string }>();
+  const navigate = useNavigate();
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
   const openDeleteSession = useUIStore((s) => s.openDeleteSession);
 
-  const isActive = currentSessionId === session.id;
+  const isActive = sessionId === session.id;
 
   const handleClick = () => {
-    setCurrentSessionId(session.id, session.title || "Untitled Session");
+    navigate(`/sessions/${session.id}`);
     if (projectId) {
       setSelectedProjectId(projectId);
     }

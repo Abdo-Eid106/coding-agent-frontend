@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
-import type { ToolCall } from "../store/types";
-import ToolCallItem from "./toolCalls/ToolCallItem";
+import { type ToolCall } from "../../store/types";
+import ToolCallItem from "./ToolCallItem";
 
 interface ToolCallsAccordionProps {
   toolCalls: ToolCall[];

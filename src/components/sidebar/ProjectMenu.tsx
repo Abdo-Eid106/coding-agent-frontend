@@ -1,6 +1,6 @@
+import { useNavigate } from "react-router-dom";
 import { Plus, Trash2 } from "lucide-react";
 import { useProjectStore } from "../../store/useProjectStore";
-import { useChatStore } from "../../store/useChatStore";
 import { useUIStore } from "../../store/useUIStore";
 
 interface ProjectMenuProps {
@@ -9,15 +9,15 @@ interface ProjectMenuProps {
 }
 
 export default function ProjectMenu({ projectId, projectName }: ProjectMenuProps) {
+  const navigate = useNavigate();
   const openDeleteProject = useUIStore((s) => s.openDeleteProject);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
-  const newConversation = useChatStore((s) => s.newConversation);
 
   const handleStartNewChatForProject = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     setSelectedProjectId(projectId);
-    newConversation();
+    navigate("/");
   };
 
   const handleDelete = (e: React.MouseEvent) => {

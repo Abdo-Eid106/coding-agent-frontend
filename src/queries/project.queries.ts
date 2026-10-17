@@ -3,7 +3,7 @@ import type { AddProjectDto, AddProjectResponseDto, ProjectDto } from "./types";
 import { QueryKeys } from "../shared";
 import { Api } from "../shared/api/axios-instance";
 
-const fetchProjects = async (): Promise<ProjectDto[]> => {
+export const fetchProjects = async (): Promise<ProjectDto[]> => {
   const { data } = await Api.get<ProjectDto[]>("/projects");
   return data;
 };

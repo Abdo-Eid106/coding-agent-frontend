@@ -1,21 +1,21 @@
+import { useNavigate } from "react-router-dom";
 import { Plus, Settings } from "lucide-react";
 import ProjectItem from "./ProjectItem";
 import AddProjectButton from "./sidebar/AddProjectButton";
 import { useUIStore } from "../store/useUIStore";
-import { useChatStore } from "../store/useChatStore";
 import { useProjectStore } from "../store/useProjectStore";
 import { useFetchProjects } from "../queries/project.queries";
 
 export default function Sidebar() {
+  const navigate = useNavigate();
   const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
   const openSettings = useUIStore((s) => s.openSettings);
-  const newConversation = useChatStore((s) => s.newConversation);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
   const { data: projects = [], isLoading } = useFetchProjects();
 
   const handleNewConversation = () => {
-    newConversation();
     setSelectedProjectId(null);
+    navigate("/");
   };
 
   return (

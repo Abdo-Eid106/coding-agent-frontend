@@ -1,5 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CreateSessionDto, SessionDto } from "./types";
+import type {
+  CreateSessionDto,
+  SessionDto,
+  CreateSessionResponse,
+} from "./types";
 import { QueryKeys } from "../shared";
 import { Api } from "../shared/api/axios-instance";
 
@@ -9,8 +13,8 @@ const fetchSessions = async (): Promise<SessionDto[]> => {
 };
 
 const createSession = async (
-  createSessionDto: CreateSessionDto
-): Promise<unknown> => {
+  createSessionDto: CreateSessionDto,
+): Promise<CreateSessionResponse> => {
   const { data } = await Api.post("/sessions", createSessionDto);
   return data;
 };

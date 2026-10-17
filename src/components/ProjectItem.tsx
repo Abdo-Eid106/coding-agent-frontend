@@ -1,8 +1,8 @@
 import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { FolderOpen, ChevronDown, ChevronRight } from "lucide-react";
 import type { ProjectDto } from "../queries";
 import { useProjectStore } from "../store/useProjectStore";
-import { useChatStore } from "../store/useChatStore";
 import SessionItem from "./sidebar/SessionItem";
 import ProjectMenu from "./sidebar/ProjectMenu";
 
@@ -13,7 +13,7 @@ interface ProjectItemProps {
 export default function ProjectItem({ project }: ProjectItemProps) {
   const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
-  const currentSessionId = useChatStore((s) => s.currentSessionId);
+  const { sessionId } = useParams<{ sessionId?: string }>();
 
   // Directly access the sessions populated inside the project
   const projectSessions = project.sessions ?? [];
@@ -24,16 +24,16 @@ export default function ProjectItem({ project }: ProjectItemProps) {
   // Auto-expand if the active session belongs to this project
   useEffect(() => {
     if (
-      currentSessionId &&
-      projectSessions.some((s) => s.id === currentSessionId)
+      sessionId &&
+      project.sessions?.some((s) => s.id === sessionId)
     ) {
       if (!isSelected) {
         setSelectedProjectId(project.id);
       }
     }
   }, [
-    currentSessionId,
-    projectSessions,
+    sessionId,
+    project.sessions,
     isSelected,
     project.id,
     setSelectedProjectId,

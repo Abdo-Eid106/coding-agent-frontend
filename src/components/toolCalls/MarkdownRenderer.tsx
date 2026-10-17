@@ -47,7 +47,9 @@ export default function MarkdownRenderer({
           ),
           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
           strong: ({ children }) => (
-            <strong className="font-semibold text-foreground">{children}</strong>
+            <strong className="font-semibold text-foreground">
+              {children}
+            </strong>
           ),
           blockquote: ({ children }) => (
             <blockquote className="border-l-2 border-primary/50 pl-3 my-2 text-muted-foreground italic">
