@@ -7,6 +7,8 @@ import TurnItem from "./TurnItem";
 import ProjectSelector from "./ProjectSelector";
 import { useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
+import { useInfiniteScroll } from "./hooks/useInfiniteScroll";
+import { toast } from "sonner";
 
 function ChatHeader() {
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
@@ -36,15 +38,38 @@ function ChatHeader() {
 
 function MessageList() {
   const { sessionId } = useParams<{ sessionId?: string }>();
-  const { data } = useFetchMessages(sessionId);
+
+  const {
+    data,
+    isError,
+    error,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useFetchMessages(sessionId);
 
   const messages = data?.pages.toReversed().flatMap((page) => page.items) ?? [];
-  const lastMessageId = messages[messages.length - 1]?.id;
+
+  const sentinelRef = useInfiniteScroll({
+    onLoadMore: () => {
+      if (hasNextPage && !isFetchingNextPage) {
+        void fetchNextPage();
+      }
+    },
+    hasMore: !!hasNextPage,
+    isLoading: isFetchingNextPage,
+    rootMargin: "200px",
+  });
+
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "auto" });
-  }, [messages.length, lastMessageId]);
+  }, [messages.length, messages.at(-1)?.id]);
+
+  useEffect(() => {
+    if (isError) toast.error(error?.message);
+  }, [isError, error]);
 
   if (!sessionId) {
     return (
@@ -56,10 +81,21 @@ function MessageList() {
 
   return (
     <div className="flex-1 overflow-y-auto px-4 py-6">
+      {hasNextPage && (
+        <div ref={sentinelRef} className="h-4" aria-hidden="true" />
+      )}
+
       <div className="mx-auto max-w-3xl space-y-8 pb-4">
         {messages.map((message) => (
           <TurnItem key={message.id} message={message} />
         ))}
+
+        {isFetchingNextPage && (
+          <p className="text-center text-sm text-muted-foreground">
+            Loading older messages...
+          </p>
+        )}
+
         <div ref={bottomRef} />
       </div>
     </div>
