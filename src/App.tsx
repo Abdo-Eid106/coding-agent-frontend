@@ -7,6 +7,7 @@ import AddProjectModal from "./components/AddProjectModal";
 import DeleteProjectModal from "./components/DeleteProjectModal";
 import DeleteSessionModal from "./components/DeleteSessionModal";
 import { Toaster } from "./components/Toaster";
+import { useSSE } from "./shared/hooks/useSee";
 
 function SessionRedirect() {
   const { sessionId } = useParams<{ sessionId?: string }>();
@@ -14,6 +15,8 @@ function SessionRedirect() {
 }
 
 export default function App() {
+  useSSE();
+
   return (
     <div className="flex h-screen overflow-hidden bg-background text-foreground">
       <Sidebar />
