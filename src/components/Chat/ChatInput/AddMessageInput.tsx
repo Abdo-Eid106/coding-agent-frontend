@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { v7 as uuidv7 } from "uuid";
-import { useAddMessage } from "../../../queries/test-messages.queries";
+import { useAddMessage } from "../../../queries/messages.queries";
 import { useChatStore } from "../../../store/useChatStore";
 import ChatInputBase from "./Base";
 

@@ -7,7 +7,7 @@ import AddProjectModal from "./components/AddProjectModal";
 import DeleteProjectModal from "./components/DeleteProjectModal";
 import DeleteSessionModal from "./components/DeleteSessionModal";
 import { Toaster } from "./components/Toaster";
-import { useSSE } from "./shared/hooks/useSee";
+import { useSSE } from "./queries/useSee";
 
 function SessionRedirect() {
   const { sessionId } = useParams<{ sessionId?: string }>();

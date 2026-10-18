@@ -56,10 +56,25 @@ export interface AddMessageDto {
   modelId: string;
 }
 
-export type AgentEvent =
-  | { type: "token"; content: string }
-  | { type: "interrupt"; payload: unknown }
-  | { type: "done" };
+export enum AgentEventEnum {
+  DONE = "done",
+  TOKEN = "token",
+  INTERRUPT = "interrupt",
+}
+
+export interface AgentStreamEvent {
+  type: AgentEventEnum;
+  sessionId: string;
+  messageId: string;
+  replyId?: string;
+  payload: unknown;
+}
+
+export interface AgentErrorEvent {
+  sessionId?: string;
+  messageId: string;
+  error: string;
+}
 
 export interface AddApiKeyDto {
   apiKey: string;

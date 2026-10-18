@@ -2,15 +2,20 @@ import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
+  QueryClient,
   type InfiniteData,
 } from "@tanstack/react-query";
 import {
+  AgentEventEnum,
   MessageRole,
   type AddMessageDto,
+  type AgentErrorEvent,
+  type AgentStreamEvent,
   type GetMessagesResponseDto,
 } from "./types";
 import { QueryKeys } from "../shared";
 import { Api } from "../shared/api/axios-instance";
+import { toast } from "sonner";
 
 const fetchMessages = async (
   sessionId: string,
@@ -91,4 +96,71 @@ export const useAddMessage = (sessionId: string) => {
       queryClient.setQueryData(queryKey, context?.previousData);
     },
   });
+};
+
+type Handler<T> = (queryClient: QueryClient, event: T) => void;
+
+const addToken: Handler<AgentStreamEvent> = (queryClient, event) => {
+  const { sessionId, messageId, replyId, payload } = event;
+  if (!replyId || typeof payload !== "string") return;
+
+  queryClient.setQueryData<
+    InfiniteData<GetMessagesResponseDto, string | undefined>
+  >(messagesKey(sessionId), (old) => {
+    if (!old) return old;
+
+    let found = false;
+
+    const pages = old.pages.map((page) => ({
+      ...page,
+      items: page.items.map((message) => {
+        if (message.id !== messageId) return message;
+        found = true;
+
+        const replies = message.replies ?? [];
+        const index = replies.findIndex((r) => r.id === replyId);
+
+        const nextReplies =
+          index === -1
+            ? [
+                ...replies,
+                {
+                  id: replyId,
+                  content: payload,
+                  role: "ai" as const,
+                  createdAt: new Date().toISOString(),
+                  parentMessage: messageId,
+                },
+              ]
+            : replies.map((r, i) =>
+                i === index ? { ...r, content: r.content + payload } : r,
+              );
+
+        return { ...message, replies: nextReplies };
+      }),
+    }));
+
+    return found ? { ...old, pages } : old;
+  });
+};
+
+const finishMessage: Handler<AgentStreamEvent> = (queryClient, event) => {
+  queryClient.invalidateQueries({ queryKey: messagesKey(event.sessionId) });
+};
+
+const handleInterrupt: Handler<AgentStreamEvent> = (_queryClient, event) => {
+  console.log("interrupt", event.payload);
+};
+
+export const agentHandlers: Record<
+  AgentEventEnum,
+  Handler<AgentStreamEvent>
+> = {
+  [AgentEventEnum.TOKEN]: addToken,
+  [AgentEventEnum.DONE]: finishMessage,
+  [AgentEventEnum.INTERRUPT]: handleInterrupt,
+};
+
+export const handleAgentError = (event: AgentErrorEvent) => {
+  toast.error(event.error);
 };

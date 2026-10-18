@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { useFetchMessages } from "../../queries/test-messages.queries";
+import { useFetchMessages } from "../../queries/messages.queries";
 import { useInfiniteScroll } from "./hooks/useInfiniteScroll";
 import { useScrollToBottom } from "./hooks/useScrollToBottom";
 import TurnItem from "./TurnItem";
