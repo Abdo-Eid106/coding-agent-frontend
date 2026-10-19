@@ -2,7 +2,6 @@ import type { MessageDto } from "../../queries";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-// import ToolCallsAccordion from "../toolCalls/ToolCallsAccordion";
 
 export default function TurnItem({ message }: { message: MessageDto }) {
   const replies = message.replies ?? [];
