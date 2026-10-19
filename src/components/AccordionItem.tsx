@@ -115,7 +115,7 @@ export default function AccordionItem({
         className={cn(
           "group flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-foreground transition-colors",
           "hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-          "disabled:cursor-not-allowed disabled:hover:bg-transparent",
+          "disabled:cursor-not-allowed disabled:hover:bg-transparent cursor-pointer",
           isOpen ? "rounded-t-lg" : "rounded-lg",
           headerClassName,
         )}
