@@ -42,6 +42,7 @@ export function TextDiff({
 
   return (
     <DiffView
+      className="cursor-text"
       diffFile={diffFile}
       diffViewMode={mode}
       diffViewTheme={isDark ? "dark" : "light"}
