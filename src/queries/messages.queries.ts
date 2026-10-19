@@ -6,13 +6,16 @@ import {
   type InfiniteData,
 } from "@tanstack/react-query";
 import {
-  AgentEventEnum,
   MessageRole,
   type AddMessageDto,
-  type AgentErrorEvent,
-  type AgentStreamEvent,
   type GetMessagesResponseDto,
 } from "./types";
+import {
+  type AgentStreamEvent,
+  type AgentErrorEvent,
+  AgentEventEnum,
+  type TokenEvent,
+} from "../types/agent-stream-event";
 import { QueryKeys } from "../shared";
 import { Api } from "../shared/api/axios-instance";
 import { toast } from "sonner";
@@ -101,8 +104,8 @@ export const useAddMessage = (sessionId: string) => {
 type Handler<T> = (queryClient: QueryClient, event: T) => void;
 
 const addToken: Handler<AgentStreamEvent> = (queryClient, event) => {
-  const { sessionId, messageId, replyId, payload } = event;
-  if (!replyId || typeof payload !== "string") return;
+  const { sessionId, messageId, payload } = event as TokenEvent;
+  const { replyId, token } = payload;
 
   queryClient.setQueryData<
     InfiniteData<GetMessagesResponseDto, string | undefined>
@@ -126,14 +129,14 @@ const addToken: Handler<AgentStreamEvent> = (queryClient, event) => {
                 ...replies,
                 {
                   id: replyId,
-                  content: payload,
+                  content: token,
                   role: "ai" as const,
                   createdAt: new Date().toISOString(),
                   parentMessage: messageId,
                 },
               ]
             : replies.map((r, i) =>
-                i === index ? { ...r, content: r.content + payload } : r,
+                i === index ? { ...r, content: r.content + token } : r,
               );
 
         return { ...message, replies: nextReplies };
@@ -152,10 +155,7 @@ const handleInterrupt: Handler<AgentStreamEvent> = (_queryClient, event) => {
   console.log("interrupt", event.payload);
 };
 
-export const agentHandlers: Record<
-  AgentEventEnum,
-  Handler<AgentStreamEvent>
-> = {
+export const agentHandlers = {
   [AgentEventEnum.TOKEN]: addToken,
   [AgentEventEnum.DONE]: finishMessage,
   [AgentEventEnum.INTERRUPT]: handleInterrupt,

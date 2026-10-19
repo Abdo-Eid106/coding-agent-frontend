@@ -1,7 +1,8 @@
 import type { MessageDto } from "../../queries";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import ToolCallsAccordion from "../toolCalls/ToolCallsAccordion";
+import rehypeHighlight from "rehype-highlight";
+// import ToolCallsAccordion from "../toolCalls/ToolCallsAccordion";
 
 export default function TurnItem({ message }: { message: MessageDto }) {
   const replies = message.replies ?? [];
@@ -21,8 +22,11 @@ export default function TurnItem({ message }: { message: MessageDto }) {
       {/* 2. Replies (AI responses) */}
       {replies.map((reply) => (
         <div key={reply.id} className="px-1 text-sm text-foreground">
-          <div className="ai-message">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          <div className="ai-message prose prose-sm dark:prose-invert max-w-none">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[[rehypeHighlight, { detect: true }]]}
+            >
               {reply.content}
             </ReactMarkdown>
           </div>
