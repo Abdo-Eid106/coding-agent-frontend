@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.tsx";
-import "highlight.js/styles/github-dark.css";
+import "highlight.js/styles/atom-one-dark.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
