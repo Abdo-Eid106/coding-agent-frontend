@@ -33,7 +33,7 @@ export function GrepTool({
 
   return (
     <AccordionItem header={header}>
-      <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-all font-mono">
+      <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-all font-mono rounded-md border border-border/50 bg-muted/30 p-2.5">
         {text || (
           <span className="italic text-muted-foreground">No matches found</span>
         )}

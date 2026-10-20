@@ -27,8 +27,8 @@ export function BashToolCall({ command, output, cwd }: BashToolCallProps) {
   );
 
   return (
-    <AccordionItem header={header} contentClassName="p-0">
-      <div className="overflow-hidden rounded-md border">
+    <AccordionItem header={header}>
+      <div className="overflow-hidden rounded-md border border-border/50 bg-muted/30">
         {/* Output */}
         <div className="flex items-start gap-3 px-3 py-2">
           <pre className="max-h-96 min-w-0 flex-1 overflow-auto whitespace-pre-wrap wrap-break-word font-mono">

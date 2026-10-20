@@ -54,10 +54,9 @@ export interface AccordionItemProps {
 }
 
 const styles = {
-  wrapper:
-    "rounded-lg border border-border bg-card text-card-foreground transition-colors text-xs",
+  wrapper: "transition-colors text-xs",
   button: cn(
-    "group flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2.5 text-left font-medium text-foreground transition-colors",
+    "group flex w-full cursor-pointer items-center gap-2.5 py-1.5 px-2 rounded-md text-left font-medium text-muted-foreground hover:text-foreground transition-colors",
     "hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
     "disabled:cursor-not-allowed disabled:hover:bg-transparent",
   ),
@@ -66,7 +65,7 @@ const styles = {
   // CSS Grid trick for smooth height expand/collapse
   panel:
     "grid transition-[grid-template-rows,opacity] duration-200 ease-in-out",
-  content: "border-t border-border/60 px-3.5 py-2.5 text-foreground/90",
+  content: "py-1.5 px-2 text-foreground/90",
 };
 
 /**
@@ -124,7 +123,7 @@ export default function AccordionItem({
         aria-expanded={isOpen}
         className={cn(
           styles.button,
-          isOpen ? "rounded-t-lg" : "rounded-lg",
+          isOpen && "text-foreground bg-accent/20",
           headerClassName,
         )}
       >
@@ -235,7 +234,7 @@ export function Accordion({
         )}
       >
         <div className="overflow-hidden">
-          <div className="pt-2 space-y-2">{children}</div>
+          <div className="pt-1 space-y-1">{children}</div>
         </div>
       </div>
     </div>
