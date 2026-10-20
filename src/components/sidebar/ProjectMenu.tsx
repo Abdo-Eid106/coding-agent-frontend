@@ -36,7 +36,7 @@ export default function ProjectMenu({ projectId, projectName }: ProjectMenuProps
         type="button"
         onClick={handleStartNewChatForProject}
         onMouseDown={(e) => e.stopPropagation()}
-        className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        className="size-6 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         title="New conversation for this project"
       >
         <Plus className="size-3.5" />
@@ -46,7 +46,7 @@ export default function ProjectMenu({ projectId, projectName }: ProjectMenuProps
         type="button"
         onClick={handleDelete}
         onMouseDown={(e) => e.stopPropagation()}
-        className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+        className="size-6 flex items-center justify-center rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
         title="Delete project"
       >
         <Trash2 className="size-3.5" />

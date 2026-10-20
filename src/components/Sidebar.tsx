@@ -32,7 +32,7 @@ export default function Sidebar() {
         {/* New Conversation button */}
         <button
           onClick={handleNewConversation}
-          className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer text-nowrap"
+          className="flex items-center gap-2.5 w-full h-8 px-3 rounded-lg font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer text-nowrap"
         >
           <Plus className="size-4 shrink-0" />
           <span>New Conversation</span>
@@ -70,7 +70,7 @@ export default function Sidebar() {
       <div className="p-3 border-t border-border">
         <button
           onClick={openSettings}
-          className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
+          className="flex items-center gap-2.5 w-full h-8 px-3 rounded-lg font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
         >
           <Settings className="size-4 shrink-0" />
           Settings

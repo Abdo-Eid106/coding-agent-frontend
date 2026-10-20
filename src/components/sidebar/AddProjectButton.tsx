@@ -10,7 +10,7 @@ export default function AddProjectButton() {
       onClick={openAddProject}
       title="Add project directory"
       aria-label="Add project directory"
-      className="p-1 rounded hover:bg-accent transition-colors cursor-pointer text-muted-foreground hover:text-foreground"
+      className="size-6 flex items-center justify-center rounded hover:bg-accent transition-colors cursor-pointer text-muted-foreground hover:text-foreground"
     >
       <FolderPlus className="size-3.5" />
     </button>

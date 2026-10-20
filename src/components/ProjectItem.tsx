@@ -48,7 +48,7 @@ export default function ProjectItem({ project }: ProjectItemProps) {
       {/* Project header row */}
       <div
         onClick={handleToggleSelect}
-        className="group flex items-center justify-between gap-2.5 w-full px-3 py-2 rounded-lg font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
+        className="group flex items-center justify-between gap-2.5 w-full h-8 px-3 rounded-lg font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
           <ChevronIcon className="size-3.5 shrink-0" />
@@ -58,16 +58,11 @@ export default function ProjectItem({ project }: ProjectItemProps) {
 
         <div className="flex items-center gap-1.5 shrink-0 ml-auto">
           {projectSessions.length > 0 && (
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground border border-border shrink-0">
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border shrink-0">
               {projectSessions.length}
             </span>
           )}
-          <div
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <ProjectMenu projectId={project.id} projectName={project.name} />
-          </div>
+          <ProjectMenu projectId={project.id} projectName={project.name} />
         </div>
       </div>
 
