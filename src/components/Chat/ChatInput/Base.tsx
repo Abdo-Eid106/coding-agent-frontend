@@ -1,5 +1,8 @@
-import type { KeyboardEvent } from "react";
-import { LoaderCircle, Plus, Send } from "lucide-react";
+import { useState, useRef, useEffect, type KeyboardEvent } from "react";
+import { Send, Square, Eye, PenLine } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 import ModelSelector from "../ModelSelector";
 
 interface ChatInputBaseProps {
@@ -7,6 +10,7 @@ interface ChatInputBaseProps {
   setMessage: (message: string) => void;
   onSend: () => void;
   isPending: boolean;
+  onStop?: () => void;
 }
 
 export default function ChatInputBase({
@@ -14,51 +18,106 @@ export default function ChatInputBase({
   setMessage,
   onSend,
   isPending,
+  onStop,
 }: ChatInputBaseProps) {
+  const [isPreview, setIsPreview] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea to fit content up to a max height
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea || isPreview) return;
+
+    textarea.style.height = "auto";
+    const newHeight = Math.min(Math.max(textarea.scrollHeight, 40), 240);
+    textarea.style.height = `${newHeight}px`;
+  }, [message, isPreview]);
+
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key !== "Enter" || e.shiftKey || e.nativeEvent.isComposing) {
       return;
     }
 
     e.preventDefault();
-    onSend();
+    if (!isPending) {
+      onSend();
+    }
+  };
+
+  const handleActionClick = () => {
+    if (isPending) {
+      onStop?.();
+    } else {
+      onSend();
+    }
   };
 
   return (
     <div className="rounded-xl border border-border bg-popover text-popover-foreground shadow-xs">
       <div className="px-4 pt-3 pb-2">
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Type your message…"
-          rows={1}
-          className="w-full resize-none bg-transparent text-foreground text-sm placeholder:text-muted-foreground focus:outline-none"
-        />
+        {isPreview ? (
+          <div className="w-full min-h-[40px] max-h-60 overflow-y-auto text-sm text-foreground prose prose-sm dark:prose-invert max-w-none break-words break-all [overflow-wrap:anywhere]">
+            {message.trim() ? (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[[rehypeHighlight, { detect: true }]]}
+              >
+                {message}
+              </ReactMarkdown>
+            ) : (
+              <p className="text-muted-foreground italic text-xs">Nothing to preview</p>
+            )}
+          </div>
+        ) : (
+          <textarea
+            ref={textareaRef}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type your message… (Markdown supported)"
+            rows={1}
+            className="w-full resize-none bg-transparent text-foreground text-sm placeholder:text-muted-foreground focus:outline-none min-h-[40px] max-h-60 overflow-y-auto leading-relaxed"
+          />
+        )}
       </div>
 
       <div className="flex items-center justify-between px-3 pb-2">
         <div className="flex items-center gap-2">
+          <ModelSelector />
+
           <button
             type="button"
-            className="cursor-pointer rounded p-1 transition-colors hover:bg-accent"
-            title="Attach file"
+            onClick={() => setIsPreview((prev) => !prev)}
+            className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+              isPreview
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+            }`}
+            title={isPreview ? "Switch to edit" : "Preview markdown"}
           >
-            <Plus className="size-4 text-muted-foreground" />
+            {isPreview ? (
+              <>
+                <PenLine className="size-3.5 shrink-0" />
+                <span>Edit</span>
+              </>
+            ) : (
+              <>
+                <Eye className="size-3.5 shrink-0" />
+                <span>Preview</span>
+              </>
+            )}
           </button>
-
-          <ModelSelector />
         </div>
 
         <button
           type="button"
-          onClick={onSend}
-          disabled={!message.trim() || isPending}
+          onClick={handleActionClick}
+          disabled={!isPending && !message.trim()}
           className="flex cursor-pointer items-center justify-center rounded-lg bg-primary p-1.5 text-primary-foreground shadow-xs transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
-          title="Send message"
+          title={isPending ? "Stop generating" : "Send message"}
         >
           {isPending ? (
-            <LoaderCircle className="size-3.5 animate-spin" />
+            <Square className="size-3.5 fill-current" />
           ) : (
             <Send className="size-3.5" />
           )}

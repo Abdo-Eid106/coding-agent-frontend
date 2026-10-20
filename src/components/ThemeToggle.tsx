@@ -40,10 +40,14 @@ export default function ThemeToggle() {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer flex items-center gap-1"
+        className={`p-2 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
+          isOpen
+            ? "bg-accent text-foreground"
+            : "text-muted-foreground hover:text-foreground hover:bg-accent"
+        }`}
         title={`Theme: ${theme.charAt(0).toUpperCase() + theme.slice(1)}`}
       >
-        <CurrentIcon className="size-4" />
+        <CurrentIcon className="size-4 shrink-0" />
       </button>
 
       <Dropdown
@@ -56,7 +60,7 @@ export default function ThemeToggle() {
             Appearance
           </div>
 
-          <div className="py-1">
+          <div className="p-1 space-y-0.5">
             {THEME_OPTIONS.map((opt) => {
               const Icon = opt.icon;
               const isSelected = theme === opt.id;
@@ -69,14 +73,14 @@ export default function ThemeToggle() {
                     setTheme(opt.id);
                     setIsOpen(false);
                   }}
-                  className={`flex items-center justify-between w-full px-3 py-1.5 text-xs font-medium cursor-pointer transition-colors ${
+                  className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-colors ${
                     isSelected
                       ? "bg-accent text-accent-foreground"
-                      : "text-popover-foreground hover:bg-accent/60"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <Icon className="size-3.5 text-muted-foreground" />
+                    <Icon className="size-3.5 shrink-0" />
                     <span>{opt.label}</span>
                   </div>
 

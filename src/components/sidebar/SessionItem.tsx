@@ -36,14 +36,14 @@ export default function SessionItem({ session, projectId }: SessionItemProps) {
   return (
     <div
       onClick={handleClick}
-      className={`group/session flex items-center justify-between w-full px-2 py-1.5 rounded-md text-xs transition-colors cursor-pointer select-none ${
+      className={`group/session flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer select-none ${
         isActive
-          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-          : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+          ? "bg-accent text-accent-foreground"
+          : "text-muted-foreground hover:text-foreground hover:bg-accent"
       }`}
     >
-      <div className="flex items-center gap-1.5 min-w-0 flex-1">
-        <MessageSquare className="size-3.5 shrink-0 text-muted-foreground" />
+      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+        <MessageSquare className="size-4 shrink-0" />
         <span className="truncate">{session.title || "Untitled Session"}</span>
       </div>
 
@@ -53,7 +53,7 @@ export default function SessionItem({ session, projectId }: SessionItemProps) {
         className="opacity-0 group-hover/session:opacity-100 p-1 text-muted-foreground hover:text-destructive rounded transition-all cursor-pointer shrink-0"
         title="Delete session"
       >
-        <Trash2 className="size-3" />
+        <Trash2 className="size-3.5" />
       </button>
     </div>
   );

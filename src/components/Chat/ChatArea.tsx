@@ -11,13 +11,15 @@ export default function ChatArea() {
     <main className="flex h-screen flex-1 flex-col bg-background">
       <ChatHeader />
       <MessagesList sessionId={sessionId} />
-      <div className="mx-auto w-full max-w-3xl space-y-3 px-4 pb-4">
-        {!sessionId && (
-          <div className="flex justify-start">
-            <ProjectSelector />
-          </div>
-        )}
-        <ChatInput />
+      <div className="w-full px-4 pb-4">
+        <div className="mx-auto max-w-3xl space-y-3">
+          {!sessionId && (
+            <div className="flex justify-start">
+              <ProjectSelector />
+            </div>
+          )}
+          <ChatInput />
+        </div>
       </div>
     </main>
   );

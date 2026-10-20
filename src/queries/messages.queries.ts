@@ -19,6 +19,7 @@ import {
 import { QueryKeys } from "../shared";
 import { Api } from "../shared/api/axios-instance";
 import { toast } from "sonner";
+import { useChatStore } from "../store/useChatStore";
 
 const fetchMessages = async (
   sessionId: string,
@@ -96,6 +97,7 @@ export const useAddMessage = (sessionId: string) => {
       return { previousData };
     },
     onError: (_error, _dto, context) => {
+      useChatStore.getState().setIsAgentRunning(false);
       queryClient.setQueryData(queryKey, context?.previousData);
     },
   });
@@ -104,6 +106,7 @@ export const useAddMessage = (sessionId: string) => {
 type Handler<T> = (queryClient: QueryClient, event: T) => void;
 
 const addToken: Handler<AgentStreamEvent> = (queryClient, event) => {
+  useChatStore.getState().setIsAgentRunning(true);
   const { sessionId, messageId, payload } = event as TokenEvent;
   const { replyId, token } = payload;
 
@@ -148,10 +151,12 @@ const addToken: Handler<AgentStreamEvent> = (queryClient, event) => {
 };
 
 const finishMessage: Handler<AgentStreamEvent> = (queryClient, event) => {
+  useChatStore.getState().setIsAgentRunning(false);
   queryClient.invalidateQueries({ queryKey: messagesKey(event.sessionId) });
 };
 
 const handleInterrupt: Handler<AgentStreamEvent> = (_queryClient, event) => {
+  useChatStore.getState().setIsAgentRunning(false);
   console.log("interrupt", event.payload);
 };
 
@@ -162,5 +167,6 @@ export const agentHandlers = {
 };
 
 export const handleAgentError = (event: AgentErrorEvent) => {
+  useChatStore.getState().setIsAgentRunning(false);
   toast.error(event.error);
 };

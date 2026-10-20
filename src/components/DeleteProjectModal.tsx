@@ -121,7 +121,7 @@ function DeleteProjectDialog({ project, onClose }: DeleteProjectDialogProps) {
             type="button"
             onClick={onClose}
             disabled={isPending}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer disabled:opacity-50"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-border hover:bg-accent text-foreground transition-colors cursor-pointer disabled:opacity-50"
           >
             Cancel
           </button>
@@ -129,7 +129,7 @@ function DeleteProjectDialog({ project, onClose }: DeleteProjectDialogProps) {
             type="button"
             onClick={handleConfirmDelete}
             disabled={isPending}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50 cursor-pointer"
           >
             {isPending ? (
               <>

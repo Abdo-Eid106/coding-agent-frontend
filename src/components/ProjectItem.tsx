@@ -48,24 +48,26 @@ export default function ProjectItem({ project }: ProjectItemProps) {
       {/* Project header row */}
       <div
         onClick={handleToggleSelect}
-        className="group flex items-center justify-between gap-1 px-2 py-1.5 rounded-md hover:bg-sidebar-accent cursor-pointer text-sidebar-foreground"
+        className="group flex items-center justify-between gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
       >
-        <div className="flex items-center gap-1.5 flex-1 min-w-0 text-left">
-          <ChevronIcon className="size-3.5 shrink-0 text-muted-foreground" />
-          <FolderOpen className="size-4 shrink-0 text-muted-foreground" />
-          <span className="text-sm truncate">{project.name}</span>
+        <div className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
+          <ChevronIcon className="size-3.5 shrink-0" />
+          <FolderOpen className="size-4 shrink-0" />
+          <span className="truncate">{project.name}</span>
+        </div>
+
+        <div className="flex items-center gap-1.5 shrink-0 ml-auto">
           {projectSessions.length > 0 && (
-            <span className="text-[10px] text-muted-foreground/80 px-1.5 py-0.2 rounded-full bg-muted/60 font-mono shrink-0">
+            <span className="text-[11px] font-mono px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground border border-border shrink-0">
               {projectSessions.length}
             </span>
           )}
-        </div>
-
-        <div
-          onClick={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          <ProjectMenu projectId={project.id} projectName={project.name} />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <ProjectMenu projectId={project.id} projectName={project.name} />
+          </div>
         </div>
       </div>
 
@@ -74,14 +76,14 @@ export default function ProjectItem({ project }: ProjectItemProps) {
         className="overflow-hidden transition-all duration-200"
         style={{
           maxHeight: isSelected
-            ? `${Math.max(projectSessions.length, 1) * 44 + 16}px`
+            ? `${Math.max(projectSessions.length, 1) * 48 + 16}px`
             : "0px",
           opacity: isSelected ? 1 : 0,
         }}
       >
-        <div className="ml-4 pl-2.5 border-l border-border/50 py-1 space-y-0.5">
+        <div className="ml-3 pl-2.5 border-l border-border/50 py-1 space-y-1">
           {projectSessions.length === 0 ? (
-            <div className="py-1 px-2 text-xs text-muted-foreground italic">
+            <div className="py-1 px-3 text-xs text-muted-foreground italic">
               No sessions yet
             </div>
           ) : (

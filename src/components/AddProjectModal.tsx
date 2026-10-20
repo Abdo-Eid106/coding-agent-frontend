@@ -49,6 +49,8 @@ export default function AddProjectModal() {
     >
       <form
         onSubmit={handleSubmit}
+        autoComplete="off"
+        data-form-type="other"
         role="dialog"
         aria-modal="true"
         aria-labelledby="add-project-title"
@@ -82,9 +84,16 @@ export default function AddProjectModal() {
           </label>
           <input
             id="project-directory-path"
+            name="project_directory_path"
             type="text"
             autoFocus
             autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-form-type="other"
             spellCheck={false}
             value={directory}
             onChange={(e) => setDirectory(e.target.value)}

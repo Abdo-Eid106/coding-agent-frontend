@@ -30,13 +30,13 @@ export default function ProjectMenu({ projectId, projectName }: ProjectMenuProps
     <div
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
-      className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 transition-opacity shrink-0"
+      className="hidden group-hover:flex items-center gap-0.5 shrink-0"
     >
       <button
         type="button"
         onClick={handleStartNewChatForProject}
         onMouseDown={(e) => e.stopPropagation()}
-        className="p-1 rounded hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         title="New conversation for this project"
       >
         <Plus className="size-3.5" />

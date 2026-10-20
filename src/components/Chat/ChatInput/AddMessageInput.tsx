@@ -10,12 +10,20 @@ export default function AddMessageInput() {
 
   const [message, setMessage] = useState("");
   const selectedModelId = useChatStore((state) => state.selectedModelId);
+  const isAgentRunning = useChatStore((state) => state.isAgentRunning);
+  const setIsAgentRunning = useChatStore((state) => state.setIsAgentRunning);
 
   const { mutate, isPending } = useAddMessage(sessionId!);
 
+  const isRunning = isPending || isAgentRunning;
+
+  const handleStop = () => {
+    setIsAgentRunning(false);
+  };
+
   const handleSend = () => {
     const messageContent = message.trim();
-    if (!messageContent || isPending) return;
+    if (!messageContent || isRunning) return;
     setMessage("");
 
     mutate(
@@ -37,7 +45,8 @@ export default function AddMessageInput() {
       message={message}
       setMessage={setMessage}
       onSend={handleSend}
-      isPending={isPending}
+      isPending={isRunning}
+      onStop={handleStop}
     />
   );
 }
