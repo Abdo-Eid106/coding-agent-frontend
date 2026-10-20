@@ -51,7 +51,7 @@ export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
       )}
 
       {showText && (
-        <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-all font-mono">
+        <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-all font-mono rounded-md border border-border/50 bg-muted/30 p-2.5">
           {content}
         </pre>
       )}
