@@ -20,12 +20,12 @@ export function GrepTool({
   const header = (
     <div className="flex min-w-0 items-center gap-2">
       <Search
-        className="size-4 shrink-0 text-muted-foreground"
+        className="size-3.5 shrink-0 text-muted-foreground"
         aria-hidden="true"
       />
       <span className="shrink-0 text-muted-foreground">Grep</span>
       <span className="truncate font-mono">{pattern}</span>
-      <span className="ml-auto shrink-0 font-mono text-xs text-muted-foreground">
+      <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
         {matchCount} {matchCount === 1 ? "match" : "matches"}
       </span>
     </div>
@@ -33,7 +33,7 @@ export function GrepTool({
 
   return (
     <AccordionItem header={header}>
-      <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-all font-mono text-xs">
+      <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-all font-mono">
         {text || (
           <span className="italic text-muted-foreground">No matches found</span>
         )}

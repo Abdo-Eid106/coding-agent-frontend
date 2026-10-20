@@ -34,12 +34,12 @@ export function EditFileToolCall({
   const header = (
     <div className="flex items-center gap-2">
       <Pencil
-        className="size-4 shrink-0 text-muted-foreground"
+        className="size-3.5 shrink-0 text-muted-foreground"
         aria-hidden="true"
       />
       <span className="shrink-0 text-muted-foreground">Edited</span>
       <span className="truncate font-mono">{fileName}</span>
-      <span className="ml-auto shrink-0 font-mono text-xs">
+      <span className="ml-auto shrink-0 font-mono text-[11px]">
         <span className="text-green-500">+{diffFile.additionLength}</span>{" "}
         <span className="text-red-500">-{diffFile.deletionLength}</span>
       </span>
@@ -55,7 +55,7 @@ export function EditFileToolCall({
         diffViewTheme={"dark"}
         diffViewHighlight
         diffViewWrap
-        diffViewFontSize={12}
+        diffViewFontSize={11}
       />
     </AccordionItem>
   );

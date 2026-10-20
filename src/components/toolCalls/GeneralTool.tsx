@@ -17,8 +17,8 @@ export interface GenericToolProps {
 const styles = {
   section: "overflow-hidden rounded-md border border-border bg-muted/30",
   label:
-    "border-b border-border bg-muted/50 px-3 py-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground",
-  code: "overflow-auto whitespace-pre-wrap wrap-break-word p-3 font-mono text-xs leading-relaxed",
+    "border-b border-border bg-muted/50 px-3 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground",
+  code: "overflow-auto whitespace-pre-wrap wrap-break-word p-3 font-mono leading-relaxed",
 };
 
 const escapeHtml = (text: string) =>
@@ -49,11 +49,11 @@ export function GenericTool({ name, input, output }: GenericToolProps) {
   const header = (
     <div className="flex min-w-0 items-center gap-2">
       <Wrench
-        className="size-4 shrink-0 text-muted-foreground"
+        className="size-3.5 shrink-0 text-muted-foreground"
         aria-hidden="true"
       />
       <span className="shrink-0 font-mono">{name}</span>
-      <span className="truncate font-mono text-xs text-muted-foreground">
+      <span className="truncate font-mono text-[11px] text-muted-foreground">
         {inputPreview}
       </span>
     </div>

@@ -48,7 +48,7 @@ export default function ProjectItem({ project }: ProjectItemProps) {
       {/* Project header row */}
       <div
         onClick={handleToggleSelect}
-        className="group flex items-center justify-between gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
+        className="group flex items-center justify-between gap-2.5 w-full px-3 py-2 rounded-lg font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
           <ChevronIcon className="size-3.5 shrink-0" />
@@ -58,7 +58,7 @@ export default function ProjectItem({ project }: ProjectItemProps) {
 
         <div className="flex items-center gap-1.5 shrink-0 ml-auto">
           {projectSessions.length > 0 && (
-            <span className="text-[11px] font-mono px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground border border-border shrink-0">
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground border border-border shrink-0">
               {projectSessions.length}
             </span>
           )}
@@ -83,7 +83,7 @@ export default function ProjectItem({ project }: ProjectItemProps) {
       >
         <div className="ml-3 pl-2.5 border-l border-border/50 py-1 space-y-1">
           {projectSessions.length === 0 ? (
-            <div className="py-1 px-3 text-xs text-muted-foreground italic">
+            <div className="py-1 px-3 text-muted-foreground italic">
               No sessions yet
             </div>
           ) : (

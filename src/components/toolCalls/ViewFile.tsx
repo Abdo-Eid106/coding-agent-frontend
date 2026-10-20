@@ -24,12 +24,12 @@ export function ViewFileToolCall({ fileName, content }: ViewileToolCallProps) {
   const header = (
     <div className="flex items-center gap-2">
       <FileText
-        className="size-4 shrink-0 text-muted-foreground"
+        className="size-3.5 shrink-0 text-muted-foreground"
         aria-hidden="true"
       />
       <span className="shrink-0 text-muted-foreground">View</span>
       <span className="truncate font-mono">{fileName}</span>
-      <span className="ml-auto shrink-0 font-mono text-xs text-muted-foreground">
+      <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
         {lineCount} {lineCount === 1 ? "line" : "lines"}
       </span>
     </div>
@@ -37,7 +37,7 @@ export function ViewFileToolCall({ fileName, content }: ViewileToolCallProps) {
 
   return (
     <AccordionItem header={header}>
-      <pre className="max-h-96 overflow-auto whitespace-pre-wrap wrap-break-word font-mono text-xs">
+      <pre className="max-h-96 overflow-auto whitespace-pre-wrap wrap-break-word font-mono">
         <code className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     </AccordionItem>

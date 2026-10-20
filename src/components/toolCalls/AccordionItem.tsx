@@ -1,5 +1,5 @@
 import { Children, useState, type ReactNode } from "react";
-import { ChevronDown, Wrench } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { cn } from "../../shared/lib/cn";
 
 /* -------------------------------------------------------------------------- */
@@ -55,18 +55,18 @@ export interface AccordionItemProps {
 
 const styles = {
   wrapper:
-    "rounded-lg border border-border bg-card text-card-foreground transition-colors",
+    "rounded-lg border border-border bg-card text-card-foreground transition-colors text-xs",
   button: cn(
-    "group flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left text-sm font-medium text-foreground transition-colors",
+    "group flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2.5 text-left font-medium text-foreground transition-colors",
     "hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
     "disabled:cursor-not-allowed disabled:hover:bg-transparent",
   ),
   chevron:
-    "size-4 shrink-0 text-muted-foreground transition-transform duration-200 ease-in-out group-hover:text-foreground",
+    "size-3.5 shrink-0 text-muted-foreground transition-transform duration-200 ease-in-out group-hover:text-foreground",
   // CSS Grid trick for smooth height expand/collapse
   panel:
     "grid transition-[grid-template-rows,opacity] duration-200 ease-in-out",
-  content: "border-t border-border/60 px-4 py-3 text-sm text-foreground/90",
+  content: "border-t border-border/60 px-3.5 py-2.5 text-foreground/90",
 };
 
 /**
@@ -160,37 +160,85 @@ export interface AccordionProps {
    * @default false
    */
   defaultOpen?: boolean;
+
+  /** Controlled open state. */
+  isOpen?: boolean;
+
+  /** Callback fired whenever the open state toggles. */
+  onToggle?: (isOpen: boolean) => void;
+
+  /** Custom title for the accordion trigger. Defaults to `${count} tool calls`. */
+  title?: ReactNode;
+
+  /** Optional icon rendered before the title. */
+  icon?: ReactNode;
+
+  /** Additional classes for the outer wrapper. */
+  className?: string;
 }
 
 /**
- * Collapsible wrapper that groups multiple tool calls under one header
- * showing how many there are.
+ * Antigravity-style unboxed collapsible trigger that groups multiple tool calls.
+ * Displays a clean text summary and chevron without a card or box border.
  */
-export function Accordion({ children, defaultOpen = false }: AccordionProps) {
-  // toArray drops null/false children, so `{cond && <Call />}` isn't counted
+export function Accordion({
+  children,
+  defaultOpen = false,
+  isOpen: controlledOpen,
+  onToggle,
+  title,
+  icon,
+  className,
+}: AccordionProps) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
   const count = Children.toArray(children).length;
+
+  const isControlled = controlledOpen !== undefined;
+  const isOpen = isControlled ? controlledOpen : uncontrolledOpen;
+
   if (count === 0) return null;
 
-  const header = (
-    <div className="flex items-center gap-2">
-      <Wrench
-        className="size-4 shrink-0 text-muted-foreground"
-        aria-hidden="true"
-      />
-      <span>
-        {count} tool {count === 1 ? "call" : "calls"}
-      </span>
-    </div>
-  );
+  const handleToggle = () => {
+    const next = !isOpen;
+    if (!isControlled) setUncontrolledOpen(next);
+    onToggle?.(next);
+  };
+
+  const displayTitle =
+    title ?? `${count} tool ${count === 1 ? "call" : "calls"}`;
 
   return (
-    <AccordionItem
-      header={header}
-      defaultOpen={defaultOpen}
-      contentClassName="space-y-2"
-    >
-      {children}
-    </AccordionItem>
+    <div className={cn("text-xs", className)}>
+      <button
+        type="button"
+        onClick={handleToggle}
+        aria-expanded={isOpen}
+        className="group inline-flex items-center gap-1.5 py-1 px-1.5 -ml-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition-colors cursor-pointer select-none font-medium text-inherit"
+      >
+        {icon && <span className="shrink-0">{icon}</span>}
+        <span>{displayTitle}</span>
+        <ChevronDown
+          aria-hidden="true"
+          className={cn(
+            "size-3.5 shrink-0 text-muted-foreground transition-transform duration-200 group-hover:text-foreground",
+            !isOpen && "-rotate-90",
+          )}
+        />
+      </button>
+
+      <div
+        className={cn(
+          "grid transition-[grid-template-rows,opacity] duration-200 ease-in-out",
+          isOpen
+            ? "grid-rows-[1fr] opacity-100"
+            : "grid-rows-[0fr] opacity-0 pointer-events-none",
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="pt-2 space-y-2">{children}</div>
+        </div>
+      </div>
+    </div>
   );
 }
 

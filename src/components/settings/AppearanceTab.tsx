@@ -1,11 +1,12 @@
 import { Sun, Moon, Monitor, Check } from "lucide-react";
 import { useThemeStore, Theme } from "../../store/useThemeStore";
 
-const THEMES: { id: Theme; label: string; description: string; icon: typeof Sun }[] = [
+const THEMES = [
   {
     id: Theme.Dark,
     label: "Dark",
-    description: "Deep tones matching code editors, easy on the eyes in low light",
+    description:
+      "Deep tones matching code editors, easy on the eyes in low light",
     icon: Moon,
   },
   {
@@ -17,7 +18,8 @@ const THEMES: { id: Theme; label: string; description: string; icon: typeof Sun 
   {
     id: Theme.System,
     label: "System",
-    description: "Automatically synchronizes with your operating system preferences",
+    description:
+      "Automatically synchronizes with your operating system preferences",
     icon: Monitor,
   },
 ];
@@ -57,7 +59,9 @@ export default function AppearanceTab() {
                 {isSelected && <Check className="size-4 text-primary" />}
               </div>
 
-              <span className="text-sm font-semibold text-foreground">{item.label}</span>
+              <span className="text-sm font-semibold text-foreground">
+                {item.label}
+              </span>
               <span className="text-xs text-muted-foreground mt-1 line-clamp-2">
                 {item.description}
               </span>

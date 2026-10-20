@@ -25,12 +25,12 @@ export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
   const header = (
     <div className="flex min-w-0 items-center gap-2">
       <Globe
-        className="size-4 shrink-0 text-muted-foreground"
+        className="size-3.5 shrink-0 text-muted-foreground"
         aria-hidden="true"
       />
       <span className="shrink-0 text-muted-foreground">Fetched</span>
-      <span className="truncate font-mono text-xs">{url}</span>
-      <span className="ml-auto shrink-0 font-mono text-xs text-muted-foreground">
+      <span className="truncate font-mono">{url}</span>
+      <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
         {content.length.toLocaleString()} chars
       </span>
     </div>
@@ -39,11 +39,11 @@ export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
   return (
     <AccordionItem header={header}>
       {isEmpty && (
-        <p className="text-xs italic text-muted-foreground">Empty response</p>
+        <p className="italic text-muted-foreground">Empty response</p>
       )}
 
       {showMarkdown && (
-        <div className="prose prose-sm dark:prose-invert max-h-96 max-w-none overflow-auto break-words">
+        <div className="prose prose-sm dark:prose-invert max-h-96 max-w-none overflow-auto break-words text-xs">
           <ReactMarkdown components={markdownComponents}>
             {content}
           </ReactMarkdown>
@@ -51,7 +51,7 @@ export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
       )}
 
       {showText && (
-        <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-all font-mono text-xs">
+        <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-all font-mono">
           {content}
         </pre>
       )}
