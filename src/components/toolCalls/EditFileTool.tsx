@@ -2,7 +2,6 @@ import { Pencil } from "lucide-react";
 import { DiffView, DiffModeEnum } from "@git-diff-view/react";
 import { generateDiffFile } from "@git-diff-view/file";
 import AccordionItem from "./AccordionItem";
-import { Theme, useThemeStore } from "../../store/useThemeStore";
 import "@git-diff-view/react/styles/diff-view.css";
 
 export interface EditFileToolCallProps {
@@ -18,9 +17,6 @@ export function EditFileToolCall({
   newText,
   mode = DiffModeEnum.Unified,
 }: EditFileToolCallProps) {
-  const isDark = useThemeStore((s) => s.effectiveTheme) === Theme.Dark;
-  const theme = isDark ? "dark" : "light";
-
   const lang = fileName.split(".").pop() ?? "";
   const diffFile = generateDiffFile(
     fileName,
@@ -31,7 +27,6 @@ export function EditFileToolCall({
     lang,
   );
 
-  diffFile.initTheme(theme);
   diffFile.init();
   diffFile.buildSplitDiffLines();
   diffFile.buildUnifiedDiffLines();
@@ -57,7 +52,7 @@ export function EditFileToolCall({
         className="cursor-text"
         diffFile={diffFile}
         diffViewMode={mode}
-        diffViewTheme={theme}
+        diffViewTheme={"dark"}
         diffViewHighlight
         diffViewWrap
         diffViewFontSize={12}

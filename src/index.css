@@ -1,9 +1,8 @@
-@import "react-shiki/css";
-
 /* Custom scrollbar matching app theme variables */
 * {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--primary) 45%, transparent) transparent;
+  scrollbar-color: color-mix(in srgb, var(--primary) 45%, transparent)
+    transparent;
 }
 
 *::-webkit-scrollbar {
