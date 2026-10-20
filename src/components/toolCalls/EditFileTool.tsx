@@ -1,7 +1,7 @@
 import { Pencil } from "lucide-react";
 import { DiffView, DiffModeEnum } from "@git-diff-view/react";
 import { generateDiffFile } from "@git-diff-view/file";
-import AccordionItem from "../AccordionItem";
+import AccordionItem from "./AccordionItem";
 import { Theme, useThemeStore } from "../../store/useThemeStore";
 import "@git-diff-view/react/styles/diff-view.css";
 

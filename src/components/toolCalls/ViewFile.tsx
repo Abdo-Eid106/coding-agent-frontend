@@ -1,6 +1,6 @@
 import hljs from "highlight.js";
 import { FileText } from "lucide-react";
-import AccordionItem from "../AccordionItem";
+import AccordionItem from "./AccordionItem";
 
 export interface ViewileToolCallProps {
   fileName: string;

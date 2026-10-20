@@ -1,6 +1,6 @@
 import { Children, useState, type ReactNode } from "react";
 import { ChevronDown, Wrench } from "lucide-react";
-import { cn } from "../shared/lib/cn";
+import { cn } from "../../shared/lib/cn";
 
 /* -------------------------------------------------------------------------- */
 /*                                AccordionItem                               */
