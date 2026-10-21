@@ -9,7 +9,7 @@ export interface BashToolCallProps {
 }
 
 export function BashToolCall({ command, output, cwd }: BashToolCallProps) {
-  const isLoading = output === undefined;
+  const isLoading = !output;
 
   const header = (
     <div className="flex min-w-0 items-center gap-2">

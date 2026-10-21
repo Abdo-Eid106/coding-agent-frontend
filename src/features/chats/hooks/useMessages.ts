@@ -31,8 +31,6 @@ const fetchMessages = async (
     `sessions/${sessionId}/messages`,
     { params: { cursor } },
   );
-
-  alert(typeof data.items?.[0].toolCalls?.[1]?.input);
   return data;
 };
 

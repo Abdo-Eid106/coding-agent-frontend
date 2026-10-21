@@ -14,7 +14,7 @@ export interface LsToolProps {
 }
 
 export function LsTool({ directory, entries }: LsToolProps) {
-  const isLoading = entries === undefined;
+  const isLoading = !entries;
   const count = !isLoading ? entries.length : 0;
 
   const header = (

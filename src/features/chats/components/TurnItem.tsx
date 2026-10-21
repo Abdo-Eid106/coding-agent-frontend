@@ -27,7 +27,6 @@ export default function TurnItem({ message }: { message: MessageDto }) {
         {(message.toolCalls ?? []).map((toolCall) => (
           <ToolCall key={toolCall.id} toolCall={toolCall} />
         ))}
-        <div></div>
       </Accordion>
 
       {/* 2. Replies (AI responses) */}

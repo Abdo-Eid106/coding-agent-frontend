@@ -18,7 +18,7 @@ const markdownComponents: Components = {
 };
 
 export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
-  const isLoading = content === undefined;
+  const isLoading = !content;
   const isEmpty = !isLoading && content.trim() === "";
   const showMarkdown = !isLoading && !isEmpty && format === "markdown";
   const showText = !isLoading && !isEmpty && format !== "markdown";

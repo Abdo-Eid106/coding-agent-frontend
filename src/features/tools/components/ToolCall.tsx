@@ -12,6 +12,7 @@ type Props = {
 };
 
 export default function ToolCall({ toolCall }: Props) {
+  alert(JSON.stringify(toolCall));
   if (toolCall.name == ToolCallEnum.BASH)
     return (
       <BashToolCall

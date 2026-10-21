@@ -9,7 +9,7 @@ export interface GrepToolCallProps {
 }
 
 export function GrepTool({ pattern, directory, content }: GrepToolCallProps) {
-  const isLoading = content === undefined;
+  const isLoading = !content;
 
   // Paths come back absolute; strip the searched directory to keep lines short.
   const text = !isLoading ? content.replaceAll(`${directory}/`, "").trim() : "";

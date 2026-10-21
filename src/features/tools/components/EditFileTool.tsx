@@ -17,7 +17,7 @@ export function EditFileToolCall({
   modified,
   mode = DiffModeEnum.Unified,
 }: EditFileToolCallProps) {
-  const isLoading = original === undefined || modified === undefined;
+  const isLoading = !original || !modified;
 
   let diffFile = null;
   if (!isLoading) {
