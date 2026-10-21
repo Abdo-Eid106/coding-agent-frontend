@@ -6,6 +6,10 @@ import rehypeHighlight from "rehype-highlight";
 import ReactMarkdown from "react-markdown";
 import type { MessageDto } from "../types";
 
+import { useRef, useState, type ComponentPropsWithoutRef } from "react";
+import { Check, Copy } from "lucide-react";
+import { cn } from "../../../shared/lib/cn";
+
 export default function TurnItem({ message }: { message: MessageDto }) {
   const replies = message.replies ?? [];
 
@@ -36,12 +40,60 @@ export default function TurnItem({ message }: { message: MessageDto }) {
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[[rehypeHighlight, { detect: true }]]}
+              components={{
+                pre: CodeBlock,
+              }}
             >
               {reply.content}
             </ReactMarkdown>
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<"pre">) {
+  const preRef = useRef<HTMLPreElement>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    const text = preRef.current?.innerText ?? "";
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  return (
+    <div className="relative group not-prose my-2">
+      <button
+        type="button"
+        onClick={handleCopy}
+        aria-label="Copy code"
+        className={cn(
+          "absolute right-2 top-2 z-10 flex items-center gap-1",
+          "rounded border bg-background/80 px-1.5 py-0.5 text-[10px] text-muted-foreground opacity-0 backdrop-blur transition-opacity",
+          "hover:text-foreground group-hover:opacity-100 focus:opacity-100",
+        )}
+      >
+        {copied ? (
+          <Check size={12} />
+        ) : (
+          <Copy size={12} className="cursor-pointer" />
+        )}
+        {copied ? "Copied" : "Copy"}
+      </button>
+      <pre
+        ref={preRef}
+        {...props}
+        className="max-h-125 overflow-auto rounded-md p-3 text-xs leading-snug"
+      >
+        {children}
+      </pre>
     </div>
   );
 }
