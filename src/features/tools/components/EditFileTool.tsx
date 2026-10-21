@@ -5,14 +5,14 @@ import AccordionItem from "./AccordionItem";
 import "@git-diff-view/react/styles/diff-view.css";
 
 export interface EditFileToolCallProps {
-  fileName: string;
+  filePath: string;
   original?: string;
   modified?: string;
   mode?: DiffModeEnum;
 }
 
 export function EditFileToolCall({
-  fileName,
+  filePath,
   original,
   modified,
   mode = DiffModeEnum.Unified,
@@ -21,11 +21,11 @@ export function EditFileToolCall({
 
   let diffFile = null;
   if (!isLoading) {
-    const lang = fileName.split(".").pop() ?? "";
+    const lang = filePath.split(".").pop() ?? "";
     diffFile = generateDiffFile(
-      fileName,
+      filePath,
       original,
-      fileName,
+      filePath,
       modified,
       lang,
       lang,
@@ -43,7 +43,7 @@ export function EditFileToolCall({
         aria-hidden="true"
       />
       <span className="shrink-0 text-muted-foreground">Edited</span>
-      <span className="truncate font-mono">{fileName}</span>
+      <span className="truncate font-mono">{filePath}</span>
       {isLoading ? (
         <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />

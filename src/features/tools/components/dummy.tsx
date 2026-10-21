@@ -177,7 +177,7 @@ export function FileChanges() {
   return (
     <Accordion>
       <EditFileToolCall
-        fileName="src/user.ts"
+        filePath="src/user.ts"
         original={`export function getUser(id: string) {
   return db.user.findOne({ id });
 }`}
@@ -187,7 +187,7 @@ export function FileChanges() {
       />
 
       <EditFileToolCall
-        fileName="src/config.ts"
+        filePath="src/config.ts"
         original={`export const PORT = 3000;
 export const DEBUG = false;`}
         modified={`export const PORT = 4000;
@@ -196,7 +196,7 @@ export const NODE_ENV = "development";`}
       />
 
       <ViewFileToolCall
-        fileName="src/utils/math.ts"
+        filePath="src/utils/math.ts"
         content={"export const add = (a: number, b: number) => a + b;\n"}
       />
 

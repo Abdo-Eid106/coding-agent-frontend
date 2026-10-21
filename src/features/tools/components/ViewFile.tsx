@@ -4,13 +4,13 @@ import AccordionItem from "./AccordionItem";
 import CopyButton from "./CopyButton";
 
 export interface ViewFileToolCallProps {
-  fileName: string;
+  filePath: string;
   content?: string;
 }
 
 export type ViewileToolCallProps = ViewFileToolCallProps;
 
-export function ViewFileToolCall({ fileName, content }: ViewFileToolCallProps) {
+export function ViewFileToolCall({ filePath, content }: ViewFileToolCallProps) {
   const isLoading = content === undefined;
 
   const lineCount =
@@ -19,7 +19,7 @@ export function ViewFileToolCall({ fileName, content }: ViewFileToolCallProps) {
       : content.split("\n").filter((text) => text.length > 0).length;
 
   // Unknown extensions fall back to "plaintext", which hljs still HTML-escapes.
-  const extension = fileName.split(".").pop() ?? "";
+  const extension = filePath.split(".").pop() ?? "";
   const language = hljs.getLanguage(extension) ? extension : "plaintext";
   const html = !isLoading
     ? hljs.highlight(content, {
@@ -35,7 +35,7 @@ export function ViewFileToolCall({ fileName, content }: ViewFileToolCallProps) {
         aria-hidden="true"
       />
       <span className="shrink-0 text-muted-foreground">View</span>
-      <span className="truncate font-mono">{fileName}</span>
+      <span className="truncate font-mono">{filePath}</span>
       {isLoading ? (
         <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />

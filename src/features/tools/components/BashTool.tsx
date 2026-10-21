@@ -3,19 +3,19 @@ import AccordionItem from "./AccordionItem";
 import CopyButton from "./CopyButton";
 
 export interface BashToolCallProps {
-  command: string;
+  command?: string;
   output?: string;
   cwd?: string;
 }
 
 export function BashToolCall({ command, output, cwd }: BashToolCallProps) {
-  const isLoading = !output;
+  const isLoading = output === undefined;
 
   const header = (
     <div className="flex min-w-0 items-center gap-2">
       <Terminal className="size-3.5 shrink-0 text-muted-foreground" />
       <span className="truncate font-mono">
-        {command.split("\n")[0] || "Command"}
+        {(command ?? "").split("\n")[0] || "Command"}
       </span>
 
       <div className="ml-auto flex min-w-0 shrink-0 items-center gap-2 text-[11px] text-muted-foreground">

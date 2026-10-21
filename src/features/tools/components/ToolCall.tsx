@@ -12,7 +12,6 @@ type Props = {
 };
 
 export default function ToolCall({ toolCall }: Props) {
-  alert(JSON.stringify(toolCall));
   if (toolCall.name == ToolCallEnum.BASH)
     return (
       <BashToolCall
@@ -25,7 +24,7 @@ export default function ToolCall({ toolCall }: Props) {
   if (toolCall.name == ToolCallEnum.EDIT_FILE) {
     return (
       <EditFileToolCall
-        fileName={toolCall.input.filePath}
+        filePath={toolCall.input.filePath}
         original={toolCall.output?.original}
         modified={toolCall.output?.modified}
       />
@@ -57,11 +56,21 @@ export default function ToolCall({ toolCall }: Props) {
       <LsTool directory={toolCall.input.directory} entries={toolCall.output} />
     );
   }
+
   if (toolCall.name == ToolCallEnum.VIEW) {
     return (
       <ViewFileToolCall
-        fileName={toolCall.input.filePath}
+        filePath={toolCall.input.filePath}
         content={toolCall.output?.content}
+      />
+    );
+  }
+
+  if (toolCall.name == ToolCallEnum.WRITE) {
+    return (
+      <ViewFileToolCall
+        filePath={toolCall.input.filePath}
+        content={toolCall.input.content}
       />
     );
   }
