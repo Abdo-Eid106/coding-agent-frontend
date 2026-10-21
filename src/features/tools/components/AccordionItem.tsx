@@ -212,7 +212,7 @@ export function Accordion({
         type="button"
         onClick={handleToggle}
         aria-expanded={isOpen}
-        className="group inline-flex items-center gap-1.5 py-1 px-1.5 -ml-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition-colors cursor-pointer select-none font-medium text-inherit"
+        className="group inline-flex items-center gap-1.5 py-1 px-1.5 -ml-1.5 rounded-md text-inherit hover:text-foreground hover:bg-accent/40 transition-colors cursor-pointer select-none font-medium"
       >
         {icon && <span className="shrink-0">{icon}</span>}
         <span>{displayTitle}</span>
