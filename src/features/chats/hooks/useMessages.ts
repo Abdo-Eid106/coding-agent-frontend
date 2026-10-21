@@ -17,7 +17,7 @@ import {
   type TokenEvent,
   type ToolCallEvent,
 } from "../../../types/agent-stream-event";
-import type { ToolCallDto } from "../../tools/types";
+import { addToolCall } from "../../tools/hooks/useAddToolCall";
 import { QueryKeys } from "../../../shared";
 import { Api } from "../../../shared/api/axios-instance";
 import { toast } from "sonner";
@@ -34,7 +34,7 @@ const fetchMessages = async (
   return data;
 };
 
-const messagesKey = (sessionId: string) => [
+export const messagesKey = (sessionId: string) => [
   QueryKeys.SESSIONS,
   sessionId,
   QueryKeys.MESSAGES,
@@ -164,81 +164,11 @@ const handleInterrupt: Handler<AgentStreamEvent> = (_queryClient, event) => {
 
 const handleToolStart: Handler<AgentStreamEvent> = (queryClient, event) => {
   useChatStore.getState().setIsAgentRunning(true);
-  const { sessionId, messageId, payload } = event as ToolCallEvent;
-  const { id, name, input } = payload;
-
-  queryClient.setQueryData<
-    InfiniteData<GetMessagesResponseDto, string | undefined>
-  >(messagesKey(sessionId), (old) => {
-    if (!old) return old;
-
-    let found = false;
-
-    const pages = old.pages.map((page) => ({
-      ...page,
-      items: page.items.map((message) => {
-        if (message.id !== messageId) return message;
-        found = true;
-
-        const toolCalls = message.toolCalls ?? [];
-        const index = toolCalls.findIndex((t) => t.id === id);
-
-        const newToolCall = {
-          id,
-          name: name as ToolCallDto["name"],
-          input: (input ?? {}) as any,
-          output: undefined,
-        } as ToolCallDto;
-
-        const nextToolCalls =
-          index === -1
-            ? [...toolCalls, newToolCall]
-            : toolCalls.map((t, i) =>
-                i === index
-                  ? ({
-                      ...t,
-                      name: name as ToolCallDto["name"],
-                      input: (input ?? t.input) as any,
-                    } as ToolCallDto)
-                  : t,
-              );
-
-        return { ...message, toolCalls: nextToolCalls };
-      }),
-    }));
-
-    return found ? { ...old, pages } : old;
-  });
+  addToolCall(queryClient, event as ToolCallEvent);
 };
 
 const handleToolEnd: Handler<AgentStreamEvent> = (queryClient, event) => {
-  const { sessionId, messageId, payload } = event as ToolCallEvent;
-  const { id, output } = payload;
-
-  queryClient.setQueryData<
-    InfiniteData<GetMessagesResponseDto, string | undefined>
-  >(messagesKey(sessionId), (old) => {
-    if (!old) return old;
-
-    let found = false;
-
-    const pages = old.pages.map((page) => ({
-      ...page,
-      items: page.items.map((message) => {
-        if (message.id !== messageId) return message;
-        found = true;
-
-        const toolCalls = message.toolCalls ?? [];
-        const nextToolCalls = toolCalls.map((t) =>
-          t.id === id ? ({ ...t, output: output as any } as ToolCallDto) : t,
-        );
-
-        return { ...message, toolCalls: nextToolCalls };
-      }),
-    }));
-
-    return found ? { ...old, pages } : old;
-  });
+  addToolCall(queryClient, event as ToolCallEvent);
 };
 
 export const agentHandlers = {

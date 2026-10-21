@@ -2,220 +2,185 @@ import { Children, useState, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../../../shared/lib/cn";
 
-/* -------------------------------------------------------------------------- */
-/*                                AccordionItem                               */
-/* -------------------------------------------------------------------------- */
+/* ------------------------------ Shared helpers ----------------------------- */
 
-export interface AccordionItemProps {
-  /** The header content. Can be plain text or a custom React component. */
-  header: ReactNode;
-
-  /** The content revealed when the accordion item expands. */
-  children: ReactNode;
-
-  /**
-   * Initial open state when used as an uncontrolled component.
-   * @default false
-   */
+interface DisclosureProps {
+  /** Initial open state (uncontrolled). @default false */
   defaultOpen?: boolean;
-
   /** Controlled open state. */
   isOpen?: boolean;
-
-  /** Callback fired whenever the open state toggles. */
+  /** Fired whenever the open state toggles. */
   onToggle?: (isOpen: boolean) => void;
+}
 
-  /**
-   * Whether the item is disabled and cannot be toggled.
-   * @default false
-   */
+/** Supports both controlled (`isOpen`) and uncontrolled (`defaultOpen`) usage. */
+function useDisclosure({
+  defaultOpen = false,
+  isOpen: controlled,
+  onToggle,
+}: DisclosureProps) {
+  const [internal, setInternal] = useState(defaultOpen);
+  const isOpen = controlled ?? internal;
+
+  const toggle = () => {
+    const next = !isOpen;
+    if (controlled === undefined) setInternal(next);
+    onToggle?.(next);
+  };
+
+  return [isOpen, toggle] as const;
+}
+
+/** Smooth height expand/collapse using the CSS grid-rows trick. */
+function Collapsible({
+  open,
+  children,
+}: {
+  open: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "grid transition-[grid-template-rows,opacity] duration-200 ease-in-out",
+        open
+          ? "grid-rows-[1fr] opacity-100"
+          : "grid-rows-[0fr] opacity-0 pointer-events-none",
+      )}
+    >
+      <div className="overflow-hidden">{children}</div>
+    </div>
+  );
+}
+
+/* ------------------------------ AccordionItem ------------------------------ */
+
+export interface AccordionItemProps extends DisclosureProps {
+  /** Header content: plain text or a custom component. */
+  header: ReactNode;
+  /** Content revealed when expanded. */
+  children: ReactNode;
+  /** Prevents toggling. @default false */
   disabled?: boolean;
-
-  /**
-   * Placement of the expand/collapse indicator icon.
-   * @default "right"
-   */
+  /** Placement of the indicator icon. @default "right" */
   iconPosition?: "left" | "right";
-
-  /**
-   * Custom icon replacing the default Lucide ChevronDown.
-   * Can be a ReactNode or a render function receiving the current `isOpen` state.
-   */
+  /** Custom icon (node, or render function receiving `isOpen`). */
   icon?: ReactNode | ((isOpen: boolean) => ReactNode);
-
-  /** Additional classes for the outermost wrapper element. */
+  /** Classes for the outer wrapper. */
   className?: string;
-
-  /** Additional classes for the header toggle button. */
+  /** Classes for the header button. */
   headerClassName?: string;
-
-  /** Additional classes for the inner content container. */
+  /** Classes for the content container. */
   contentClassName?: string;
 }
 
-const styles = {
-  wrapper: "transition-colors text-xs",
-  button: cn(
-    "group flex w-full cursor-pointer items-center gap-2.5 py-1.5 px-2 rounded-md text-left font-medium text-muted-foreground hover:text-foreground transition-colors",
-    "hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-    "disabled:cursor-not-allowed disabled:hover:bg-transparent",
-  ),
-  chevron:
-    "size-3.5 shrink-0 text-muted-foreground transition-transform duration-200 ease-in-out group-hover:text-foreground",
-  // CSS Grid trick for smooth height expand/collapse
-  panel:
-    "grid transition-[grid-template-rows,opacity] duration-200 ease-in-out",
-  content: "py-1.5 px-2 text-foreground/90",
-};
-
-/**
- * A customizable, accessible accordion item styled with shadcn design tokens
- * and Lucide icons. Works controlled (`isOpen`) or uncontrolled (`defaultOpen`).
- */
 export default function AccordionItem({
   header,
   children,
-  defaultOpen = false,
-  isOpen: controlledOpen,
-  onToggle,
   disabled = false,
   iconPosition = "right",
   icon,
   className,
   headerClassName,
   contentClassName,
+  ...disclosure
 }: AccordionItemProps) {
-  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
+  const [isOpen, toggle] = useDisclosure(disclosure);
 
-  const isControlled = controlledOpen !== undefined;
-  const isOpen = isControlled ? controlledOpen : uncontrolledOpen;
-
-  const handleToggle = () => {
-    if (disabled) return;
-
-    const next = !isOpen;
-    if (!isControlled) setUncontrolledOpen(next);
-    onToggle?.(next);
-  };
-
-  const defaultIcon = (
-    <ChevronDown
-      aria-hidden="true"
-      className={cn(styles.chevron, isOpen && "rotate-180 text-foreground")}
-    />
-  );
-  const customIcon = typeof icon === "function" ? icon(isOpen) : icon;
-  const iconNode = icon === undefined ? defaultIcon : customIcon;
-
-  const headerContent =
-    typeof header === "string" ? (
-      <span className="truncate">{header}</span>
+  const iconNode =
+    icon === undefined ? (
+      <ChevronDown
+        aria-hidden="true"
+        className={cn(
+          "size-3.5 shrink-0 text-muted-foreground transition-transform duration-200 ease-in-out group-hover:text-foreground",
+          isOpen && "rotate-180 text-foreground",
+        )}
+      />
+    ) : typeof icon === "function" ? (
+      icon(isOpen)
     ) : (
-      header
+      icon
     );
 
   return (
-    <div className={cn(styles.wrapper, disabled && "opacity-60", className)}>
+    <div
+      className={cn(
+        "text-xs transition-colors",
+        disabled && "opacity-60",
+        className,
+      )}
+    >
       <button
         type="button"
-        onClick={handleToggle}
+        onClick={toggle}
         disabled={disabled}
         aria-expanded={isOpen}
         className={cn(
-          styles.button,
-          isOpen && "text-foreground bg-accent/20",
+          "group flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-left font-medium text-muted-foreground transition-colors",
+          "hover:bg-accent/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+          "disabled:cursor-not-allowed disabled:hover:bg-transparent",
+          isOpen && "bg-accent/20 text-foreground",
           headerClassName,
         )}
       >
         {iconPosition === "left" && iconNode}
-        <div className="min-w-0 flex-1">{headerContent}</div>
+        <div className="min-w-0 flex-1">
+          {typeof header === "string" ? (
+            <span className="truncate">{header}</span>
+          ) : (
+            header
+          )}
+        </div>
         {iconPosition === "right" && iconNode}
       </button>
 
-      <div
-        className={cn(
-          styles.panel,
-          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
-        )}
-      >
-        <div className="overflow-hidden">
-          <div className={cn(styles.content, contentClassName)}>{children}</div>
+      <Collapsible open={isOpen}>
+        <div className={cn("px-2 py-1.5 text-foreground/90", contentClassName)}>
+          {children}
         </div>
-      </div>
+      </Collapsible>
     </div>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                 Accordion                                  */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------- Accordion -------------------------------- */
 
-export interface AccordionProps {
-  /** The tool call components to group, e.g. a list of `EditFileToolCall`. */
+export interface AccordionProps extends DisclosureProps {
+  /** The tool calls to group. */
   children: ReactNode;
-
-  /**
-   * Whether the group starts expanded.
-   * @default false
-   */
-  defaultOpen?: boolean;
-
-  /** Controlled open state. */
-  isOpen?: boolean;
-
-  /** Callback fired whenever the open state toggles. */
-  onToggle?: (isOpen: boolean) => void;
-
-  /** Custom title for the accordion trigger. Defaults to `${count} tool calls`. */
+  /** Trigger title. Defaults to `${count} tool call(s)`. */
   title?: ReactNode;
-
-  /** Optional icon rendered before the title. */
+  /** Optional icon before the title. */
   icon?: ReactNode;
-
-  /** Additional classes for the outer wrapper. */
+  /** Classes for the outer wrapper. */
   className?: string;
 }
 
-/**
- * Antigravity-style unboxed collapsible trigger that groups multiple tool calls.
- * Displays a clean text summary and chevron without a card or box border.
- */
+/** Unboxed collapsible trigger that groups multiple tool calls. */
 export function Accordion({
   children,
-  defaultOpen = false,
-  isOpen: controlledOpen,
-  onToggle,
   title,
   icon,
   className,
+  ...disclosure
 }: AccordionProps) {
-  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
-  const count = Children.toArray(children).length;
-
-  const isControlled = controlledOpen !== undefined;
-  const isOpen = isControlled ? controlledOpen : uncontrolledOpen;
+  const [isOpen, toggle] = useDisclosure(disclosure);
+  const count = Children.count(children);
 
   if (count === 0) return null;
-
-  const handleToggle = () => {
-    const next = !isOpen;
-    if (!isControlled) setUncontrolledOpen(next);
-    onToggle?.(next);
-  };
-
-  const displayTitle =
-    title ?? `${count} tool ${count === 1 ? "call" : "calls"}`;
 
   return (
     <div className={cn("text-xs", className)}>
       <button
         type="button"
-        onClick={handleToggle}
+        onClick={toggle}
         aria-expanded={isOpen}
-        className="group inline-flex items-center gap-1.5 py-1 px-1.5 -ml-1.5 rounded-md text-inherit hover:text-foreground hover:bg-accent/40 transition-colors cursor-pointer select-none font-medium"
+        className="group -ml-1.5 inline-flex cursor-pointer select-none items-center gap-1.5 rounded-md px-1.5 py-1 font-medium text-inherit transition-colors hover:bg-accent/40 hover:text-foreground"
       >
         {icon && <span className="shrink-0">{icon}</span>}
-        <span>{displayTitle}</span>
+        <span>
+          {title ?? `${count} tool ${count === 1 ? "call" : "calls"}`}
+        </span>
         <ChevronDown
           aria-hidden="true"
           className={cn(
@@ -225,18 +190,9 @@ export function Accordion({
         />
       </button>
 
-      <div
-        className={cn(
-          "grid transition-[grid-template-rows,opacity] duration-200 ease-in-out",
-          isOpen
-            ? "grid-rows-[1fr] opacity-100"
-            : "grid-rows-[0fr] opacity-0 pointer-events-none",
-        )}
-      >
-        <div className="overflow-hidden">
-          <div className="pt-1 space-y-1">{children}</div>
-        </div>
-      </div>
+      <Collapsible open={isOpen}>
+        <div className="space-y-1 pt-1">{children}</div>
+      </Collapsible>
     </div>
   );
 }
