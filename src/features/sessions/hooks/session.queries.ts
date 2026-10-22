@@ -18,6 +18,11 @@ const fetchSession = async (id: string): Promise<SessionDto> => {
   return data;
 };
 
+const fetchActiveSessions = async () => {
+  const { data } = await Api.get<string[]>("/sessions");
+  return data;
+};
+
 const createSession = async (
   createSessionDto: CreateSessionDto,
 ): Promise<CreateSessionResponse> => {
@@ -34,6 +39,14 @@ export const useFetchSessions = () =>
   useQuery({
     queryKey: [QueryKeys.SESSIONS],
     queryFn: fetchSessions,
+  });
+
+const activeSessionsKey = [QueryKeys.SESSIONS, "active"] as const;
+
+export const useFetchActiveSessions = () =>
+  useQuery({
+    queryKey: activeSessionsKey,
+    queryFn: fetchActiveSessions,
   });
 
 export const useFetchSession = (id?: string) =>
@@ -63,4 +76,20 @@ export const useDeleteSession = () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.PROJECTS] });
     },
   });
+};
+
+export const useActiveSessions = () => {
+  const queryClient = useQueryClient();
+
+  const addActiveSession = (id: string) =>
+    queryClient.setQueryData<string[]>(activeSessionsKey, (old = []) =>
+      old.includes(id) ? old : [...old, id],
+    );
+
+  const removeActiveSession = (id: string) =>
+    queryClient.setQueryData<string[]>(activeSessionsKey, (old = []) =>
+      old.filter((sessionId) => sessionId !== id),
+    );
+
+  return { addActiveSession, removeActiveSession };
 };
