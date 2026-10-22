@@ -36,15 +36,20 @@ export default function TurnItem({ message }: { message: MessageDto }) {
       {/* 2. Replies (AI responses) */}
       {replies.map((reply) => (
         <div key={reply.id} className="px-1 text-sm text-foreground">
-          <div className="ai-message prose prose-sm dark:prose-invert max-w-none">
+          <div
+            className="ai-message prose prose-sm dark:prose-invert max-w-none
+                 prose-code:before:content-none prose-code:after:content-none
+                 prose-code:rounded prose-code:bg-muted prose-code:px-1 prose-code:py-0.5
+                 prose-code:font-mono prose-code:font-normal"
+          >
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
-              rehypePlugins={[[rehypeHighlight, { detect: true }]]}
+              rehypePlugins={[rehypeHighlight]}
               components={{
                 pre: CodeBlock,
               }}
             >
-              {reply.content}
+              {reply.content.replace(/\\`/g, "`")}
             </ReactMarkdown>
           </div>
         </div>
