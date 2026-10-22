@@ -14,21 +14,21 @@ export default function MessagesList({ sessionId }: MessageListProps) {
     data,
     isError,
     error,
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
+    hasPreviousPage,
+    isFetchingPreviousPage,
+    fetchPreviousPage,
   } = useFetchMessages(sessionId);
 
-  const messages = data?.pages.toReversed().flatMap((page) => page.items) ?? [];
+  const messages = data?.pages.flatMap((page) => page.items) ?? [];
 
   const topRef = useInfiniteScroll({
     onLoadMore: () => {
-      if (hasNextPage && !isFetchingNextPage) {
-        void fetchNextPage();
+      if (hasPreviousPage && !isFetchingPreviousPage) {
+        void fetchPreviousPage();
       }
     },
-    hasMore: !!hasNextPage,
-    isLoading: isFetchingNextPage,
+    hasMore: !!hasPreviousPage,
+    isLoading: isFetchingPreviousPage,
   });
 
   const lastMessageId = messages.at(-1)?.id;
@@ -50,14 +50,16 @@ export default function MessagesList({ sessionId }: MessageListProps) {
 
   return (
     <div className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 px-3 sm:px-4 py-4 sm:py-6">
-      {hasNextPage && <div ref={topRef} className="h-4" aria-hidden="true" />}
+      {hasPreviousPage && (
+        <div ref={topRef} className="h-4" aria-hidden="true" />
+      )}
 
       <div className="mx-auto max-w-3xl w-full min-w-0 space-y-6 sm:space-y-8 pb-4">
         {messages.map((message) => (
           <TurnItem key={message.id} message={message} />
         ))}
 
-        {isFetchingNextPage && (
+        {isFetchingPreviousPage && (
           <p className="text-center text-sm text-muted-foreground">
             Loading older messages...
           </p>

@@ -52,7 +52,8 @@ export const useFetchMessages = (sessionId?: string) => {
     queryKey: messagesKey(sessionId!),
     queryFn: ({ pageParam }) => fetchMessages(sessionId!, pageParam),
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    getPreviousPageParam: (firstPage) => firstPage.nextCursor ?? undefined,
+    getNextPageParam: (_) => undefined,
     enabled: !!sessionId,
   });
 };
