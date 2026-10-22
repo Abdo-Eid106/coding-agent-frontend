@@ -16,17 +16,17 @@ export function GrepTool({ pattern, directory, content }: GrepToolCallProps) {
   const matchCount = !isLoading && text !== "" ? text.split("\n").length : 0;
 
   const header = (
-    <div className="flex min-w-0 items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2 w-full">
       <Search
         className="size-3.5 shrink-0 text-muted-foreground"
         aria-hidden="true"
       />
       <span className="shrink-0 text-muted-foreground">Grep</span>
-      <span className="truncate font-mono">{pattern}</span>
+      <span className="truncate font-mono min-w-0 flex-1">{pattern}</span>
       {isLoading ? (
         <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />
-          <span>Searching...</span>
+          <span className="hidden sm:inline">Searching...</span>
         </span>
       ) : (
         <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
@@ -44,7 +44,7 @@ export function GrepTool({ pattern, directory, content }: GrepToolCallProps) {
           <span>Searching matches...</span>
         </div>
       ) : (
-        <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-all font-mono rounded-md border border-border/50 bg-muted/30 p-2.5">
+        <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] font-mono rounded-md border border-border/50 bg-muted/30 p-2.5 min-w-0">
           {text || (
             <span className="italic text-muted-foreground">
               No matches found

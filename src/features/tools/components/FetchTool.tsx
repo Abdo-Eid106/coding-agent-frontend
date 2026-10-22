@@ -24,17 +24,17 @@ export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
   const showText = !isLoading && !isEmpty && format !== "markdown";
 
   const header = (
-    <div className="flex min-w-0 items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2 w-full">
       <Globe
         className="size-3.5 shrink-0 text-muted-foreground"
         aria-hidden="true"
       />
       <span className="shrink-0 text-muted-foreground">Fetched</span>
-      <span className="truncate font-mono">{url}</span>
+      <span className="truncate font-mono min-w-0 flex-1">{url}</span>
       {isLoading ? (
         <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />
-          <span>Fetching...</span>
+          <span className="hidden sm:inline">Fetching...</span>
         </span>
       ) : (
         <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
@@ -58,7 +58,7 @@ export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
           )}
 
           {showMarkdown && (
-            <div className="prose prose-sm dark:prose-invert max-h-96 max-w-none overflow-auto wrap-break-word text-xs">
+            <div className="prose prose-sm dark:prose-invert max-h-96 max-w-none overflow-auto break-words [overflow-wrap:anywhere] min-w-0 text-xs">
               <ReactMarkdown components={markdownComponents}>
                 {content}
               </ReactMarkdown>
@@ -66,7 +66,7 @@ export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
           )}
 
           {showText && (
-            <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-all font-mono rounded-md border border-border/50 bg-muted/30 p-2.5">
+            <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] font-mono rounded-md border border-border/50 bg-muted/30 p-2.5 min-w-0">
               {content}
             </pre>
           )}

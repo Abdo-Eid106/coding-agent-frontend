@@ -28,8 +28,11 @@ interface UIState {
   closeDeleteSession: () => void;
 }
 
+const isDesktop =
+  typeof window !== "undefined" ? window.innerWidth >= 768 : true;
+
 export const useUIStore = create<UIState>((set) => ({
-  isSidebarOpen: true,
+  isSidebarOpen: isDesktop,
   isSettingsOpen: false,
   isAddProjectOpen: false,
   projectToDelete: null,

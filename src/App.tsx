@@ -18,7 +18,7 @@ export default function App() {
   useSSE();
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background text-foreground">
+    <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
       <Sidebar />
       <Routes>
         <Route path="/" element={<ChatArea />} />

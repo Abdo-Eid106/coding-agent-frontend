@@ -105,7 +105,7 @@ export default function AccordionItem({
   return (
     <div
       className={cn(
-        "text-xs transition-colors",
+        "text-xs transition-colors w-full min-w-0",
         disabled && "opacity-60",
         className,
       )}
@@ -116,7 +116,7 @@ export default function AccordionItem({
         disabled={disabled}
         aria-expanded={isOpen}
         className={cn(
-          "group flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-left font-medium text-muted-foreground transition-colors",
+          "group flex w-full min-w-0 cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-left font-medium text-muted-foreground transition-colors",
           "hover:bg-accent/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
           "disabled:cursor-not-allowed disabled:hover:bg-transparent",
           isOpen && "bg-accent/20 text-foreground",
@@ -124,9 +124,9 @@ export default function AccordionItem({
         )}
       >
         {iconPosition === "left" && iconNode}
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 overflow-hidden">
           {typeof header === "string" ? (
-            <span className="truncate">{header}</span>
+            <span className="truncate block">{header}</span>
           ) : (
             header
           )}
@@ -135,7 +135,7 @@ export default function AccordionItem({
       </button>
 
       <Collapsible open={isOpen}>
-        <div className={cn("px-2 py-1.5 text-foreground/90", contentClassName)}>
+        <div className={cn("px-2 py-1.5 text-foreground/90 min-w-0 overflow-hidden", contentClassName)}>
           {children}
         </div>
       </Collapsible>
@@ -170,7 +170,7 @@ export function Accordion({
   if (count === 0) return null;
 
   return (
-    <div className={cn("text-xs", className)}>
+    <div className={cn("text-xs w-full min-w-0", className)}>
       <button
         type="button"
         onClick={toggle}
@@ -191,7 +191,7 @@ export function Accordion({
       </button>
 
       <Collapsible open={isOpen}>
-        <div className="space-y-1 pt-1">{children}</div>
+        <div className="space-y-1 pt-1 min-w-0 w-full overflow-hidden">{children}</div>
       </Collapsible>
     </div>
   );

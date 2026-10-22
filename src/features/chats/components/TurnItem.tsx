@@ -14,11 +14,11 @@ export default function TurnItem({ message }: { message: MessageDto }) {
   const replies = message.replies ?? [];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full min-w-0">
       {/* 1. Main user message */}
-      <div className="flex flex-col items-end group">
-        <div className="max-w-[85%] sm:max-w-[75%] rounded-2xl border border-border bg-popover text-popover-foreground p-3 sm:p-4 text-sm shadow-xs min-w-0">
-          <p className="whitespace-pre-wrap leading-relaxed wrap-break-word break-all">
+      <div className="flex flex-col items-end group w-full min-w-0">
+        <div className="max-w-[92%] sm:max-w-[85%] md:max-w-[75%] rounded-2xl border border-border bg-popover text-popover-foreground p-3 sm:p-4 text-sm shadow-xs min-w-0">
+          <p className="whitespace-pre-wrap leading-relaxed break-words [overflow-wrap:anywhere]">
             {message.content}
           </p>
         </div>
@@ -35,9 +35,9 @@ export default function TurnItem({ message }: { message: MessageDto }) {
 
       {/* 2. Replies (AI responses) */}
       {replies.map((reply) => (
-        <div key={reply.id} className="px-1 text-sm text-foreground">
+        <div key={reply.id} className="px-1 text-sm text-foreground w-full min-w-0 overflow-hidden">
           <div
-            className="ai-message prose prose-sm dark:prose-invert max-w-none
+            className="ai-message prose prose-sm dark:prose-invert max-w-none min-w-0 break-words [overflow-wrap:anywhere]
                  prose-code:before:content-none prose-code:after:content-none
                  prose-code:rounded prose-code:bg-muted prose-code:px-1 prose-code:py-0.5
                  prose-code:font-mono prose-code:font-normal"
@@ -74,7 +74,7 @@ function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<"pre">) {
   };
 
   return (
-    <div className="relative group not-prose my-2">
+    <div className="relative group not-prose my-2 max-w-full min-w-0 overflow-hidden rounded-md border border-border/50">
       <button
         type="button"
         onClick={handleCopy}
@@ -95,7 +95,7 @@ function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<"pre">) {
       <pre
         ref={preRef}
         {...props}
-        className="max-h-125 overflow-auto rounded-md p-3 text-xs leading-snug"
+        className="max-h-125 w-full overflow-x-auto p-3 text-xs leading-snug"
       >
         {children}
       </pre>

@@ -37,17 +37,17 @@ export function EditFileToolCall({
   }
 
   const header = (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2 w-full">
       <Pencil
         className="size-3.5 shrink-0 text-muted-foreground"
         aria-hidden="true"
       />
       <span className="shrink-0 text-muted-foreground">Edited</span>
-      <span className="truncate font-mono">{filePath}</span>
+      <span className="truncate font-mono min-w-0 flex-1">{filePath}</span>
       {isLoading ? (
         <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />
-          <span>Applying changes...</span>
+          <span className="hidden sm:inline">Applying changes...</span>
         </span>
       ) : (
         <span className="ml-auto shrink-0 font-mono text-[11px]">
@@ -69,15 +69,17 @@ export function EditFileToolCall({
         </div>
       ) : (
         diffFile && (
-          <DiffView
-            className="cursor-text"
-            diffFile={diffFile}
-            diffViewMode={mode}
-            diffViewTheme={"dark"}
-            diffViewHighlight
-            diffViewWrap
-            diffViewFontSize={11}
-          />
+          <div className="w-full min-w-0 overflow-x-auto rounded-md border border-border/50">
+            <DiffView
+              className="cursor-text"
+              diffFile={diffFile}
+              diffViewMode={mode}
+              diffViewTheme={"dark"}
+              diffViewHighlight
+              diffViewWrap
+              diffViewFontSize={11}
+            />
+          </div>
         )
       )}
     </AccordionItem>

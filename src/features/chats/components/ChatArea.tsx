@@ -8,11 +8,11 @@ export default function ChatArea() {
   const { sessionId } = useParams<{ sessionId?: string }>();
 
   return (
-    <main className="flex h-screen flex-1 flex-col bg-background">
+    <main className="flex h-screen flex-1 flex-col bg-background min-w-0 overflow-hidden relative">
       <ChatHeader />
       <MessagesList sessionId={sessionId} />
-      <div className="w-full px-4 pb-4">
-        <div className="mx-auto max-w-3xl space-y-3">
+      <div className="w-full px-3 sm:px-4 pb-3 sm:pb-4 min-w-0">
+        <div className="mx-auto max-w-3xl space-y-3 w-full min-w-0">
           {!sessionId && (
             <div className="flex justify-start">
               <ProjectSelector />

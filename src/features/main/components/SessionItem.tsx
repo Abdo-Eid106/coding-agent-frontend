@@ -14,6 +14,7 @@ export default function SessionItem({ session, projectId }: SessionItemProps) {
   const navigate = useNavigate();
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
   const openDeleteSession = useUIStore((s) => s.openDeleteSession);
+  const setSidebarOpen = useUIStore((s) => s.setSidebarOpen);
 
   const isActive = sessionId === session.id;
 
@@ -21,6 +22,9 @@ export default function SessionItem({ session, projectId }: SessionItemProps) {
     navigate(`/sessions/${session.id}`);
     if (projectId) {
       setSelectedProjectId(projectId);
+    }
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setSidebarOpen(false);
     }
   };
 

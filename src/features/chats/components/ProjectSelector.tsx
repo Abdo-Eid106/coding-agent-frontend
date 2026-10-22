@@ -25,22 +25,22 @@ export default function ProjectSelector() {
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative min-w-0" ref={ref}>
       <button
         onClick={() => setIsOpen((v) => !v)}
-        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-popover border border-border text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-popover border border-border text-xs sm:text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer min-w-0 max-w-[240px] sm:max-w-xs"
       >
-        <FolderOpen className="size-3.5 text-muted-foreground" />
-        <span>{selectedProject?.name || "Select Project"}</span>
-        <ChevronDown className="size-3 text-muted-foreground" />
+        <FolderOpen className="size-3.5 text-muted-foreground shrink-0" />
+        <span className="truncate">{selectedProject?.name || "Select Project"}</span>
+        <ChevronDown className="size-3 text-muted-foreground shrink-0" />
       </button>
 
       <Dropdown
         isOpen={isOpen}
         direction="up"
-        className="absolute bottom-full mb-2 left-0 z-50"
+        className="absolute bottom-full mb-2 left-0 z-50 max-w-[calc(100vw-2rem)]"
       >
-        <div className="min-w-60 max-h-60 flex flex-col rounded-lg border border-border bg-popover text-popover-foreground shadow-lg overflow-hidden">
+        <div className="w-[calc(100vw-3rem)] sm:w-72 max-w-80 max-h-60 flex flex-col rounded-lg border border-border bg-popover text-popover-foreground shadow-lg overflow-hidden">
           <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider shrink-0 border-b border-border/50">
             Project
           </div>

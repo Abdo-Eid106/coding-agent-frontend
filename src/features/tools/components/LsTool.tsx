@@ -18,17 +18,17 @@ export function LsTool({ directory, entries }: LsToolProps) {
   const count = entries?.length ?? 0;
 
   const header = (
-    <div className="flex min-w-0 items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2 w-full">
       <FolderOpen
         className="size-3.5 shrink-0 text-muted-foreground"
         aria-hidden="true"
       />
       <span className="shrink-0 text-muted-foreground">Listed</span>
-      <span className="truncate font-mono">{directory}</span>
+      <span className="truncate font-mono min-w-0 flex-1">{directory}</span>
       {isLoading ? (
         <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />
-          <span>Listing...</span>
+          <span className="hidden sm:inline">Listing...</span>
         </span>
       ) : (
         <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
@@ -48,7 +48,7 @@ export function LsTool({ directory, entries }: LsToolProps) {
       ) : count === 0 ? (
         <p className="italic text-muted-foreground">Empty directory</p>
       ) : (
-        <ul className="max-h-96 space-y-0.5 overflow-auto font-mono">
+        <ul className="max-h-96 space-y-0.5 overflow-x-auto overflow-y-auto font-mono text-xs min-w-0">
           {entries.map(({ name, type }) => {
             // `name` is a path relative to `directory`, e.g. "src/utils/math.ts"
             const parts = name.split(/[\\/]/);
@@ -60,14 +60,14 @@ export function LsTool({ directory, entries }: LsToolProps) {
             return (
               <li
                 key={name}
-                className="flex items-center gap-2 py-0.5"
+                className="flex items-center gap-2 py-0.5 min-w-0"
                 style={{ paddingLeft: depth * 16 }}
               >
                 <Icon
                   className={`size-3.5 shrink-0 ${iconColor}`}
                   aria-hidden="true"
                 />
-                <span className="truncate">{parts[depth]}</span>
+                <span className="truncate min-w-0">{parts[depth]}</span>
               </li>
             );
           })}

@@ -137,28 +137,28 @@ export default function ModelSelector() {
   };
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative min-w-0" ref={ref}>
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
         disabled={isLoading}
-        className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent cursor-pointer disabled:opacity-50"
+        className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent cursor-pointer disabled:opacity-50 min-w-0 max-w-[140px] sm:max-w-[220px]"
       >
-        {isLoading && <Loader2 className="size-3 animate-spin text-primary" />}
-        <span>
+        {isLoading && <Loader2 className="size-3 animate-spin text-primary shrink-0" />}
+        <span className="truncate">
           {isLoading ? "Loading..." : (current?.name ?? "Select Model")}
         </span>
         <ChevronDown
-          className={`size-3 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`size-3 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
       <Dropdown
         isOpen={isOpen}
         direction="up"
-        className="absolute bottom-full left-0 z-50 mb-2"
+        className="absolute bottom-full left-0 z-50 mb-2 max-w-[calc(100vw-2rem)]"
       >
-        <div className="flex max-h-72 min-w-[320px] max-w-95 flex-col overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-lg">
+        <div className="flex max-h-72 w-[calc(100vw-3rem)] sm:w-80 max-w-95 flex-col overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-lg">
           <div className="shrink-0 border-b border-border/50 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Model
           </div>

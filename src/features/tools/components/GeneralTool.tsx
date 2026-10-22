@@ -21,7 +21,7 @@ const styles = {
     "flex items-center justify-between border-b border-border bg-muted/50 px-3 py-1 min-h-[30px]",
   labelText:
     "text-[10px] font-medium uppercase tracking-wide text-muted-foreground",
-  code: "overflow-auto whitespace-pre-wrap wrap-break-word p-3 font-mono leading-relaxed",
+  code: "overflow-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] p-3 font-mono leading-relaxed min-w-0",
 };
 
 const escapeHtml = (text: string) =>
@@ -71,19 +71,19 @@ export function GenericTool({ name, input, output }: GenericToolProps) {
     (typeof input === "string" ? input : JSON.stringify(input)) ?? "";
 
   const header = (
-    <div className="flex min-w-0 items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2 w-full">
       <Wrench
         className="size-3.5 shrink-0 text-muted-foreground"
         aria-hidden="true"
       />
       <span className="shrink-0 font-mono">{name}</span>
-      <span className="truncate font-mono text-[11px] text-muted-foreground">
+      <span className="truncate font-mono text-[11px] text-muted-foreground min-w-0 flex-1">
         {inputPreview}
       </span>
       {isLoading && (
         <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />
-          <span>Running...</span>
+          <span className="hidden sm:inline">Running...</span>
         </span>
       )}
     </div>

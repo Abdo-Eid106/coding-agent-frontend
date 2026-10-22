@@ -56,7 +56,7 @@ export default function ChatInputBase({
     <div className="rounded-xl border border-border bg-popover text-popover-foreground shadow-xs">
       <div className="px-4 pt-3 pb-2">
         {isPreview ? (
-          <div className="w-full min-h-10 max-h-60 overflow-y-auto text-sm text-foreground prose prose-sm dark:prose-invert max-w-none wrap-break-word break-all">
+          <div className="w-full min-h-10 max-h-60 overflow-y-auto text-sm text-foreground prose prose-sm dark:prose-invert max-w-none break-words [overflow-wrap:anywhere] min-w-0">
             {message.trim() ? (
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
@@ -83,14 +83,14 @@ export default function ChatInputBase({
         )}
       </div>
 
-      <div className="flex items-center justify-between px-3 pb-2">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between px-3 pb-2 gap-2 min-w-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
           <ModelSelector />
 
           <button
             type="button"
             onClick={() => setIsPreview((prev) => !prev)}
-            className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer shrink-0 ${
               isPreview
                 ? "bg-accent text-accent-foreground"
                 : "text-muted-foreground hover:text-foreground hover:bg-accent"
