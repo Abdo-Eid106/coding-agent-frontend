@@ -1,8 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FolderOpen, ChevronDown, ChevronRight } from "lucide-react";
 import { type ProjectDto } from "../../projects/types";
-import { useProjectStore } from "../../projects/hooks/useProjectStore";
 import SessionItem from "./SessionItem";
 import ProjectMenu from "../../projects/components/ProjectMenu";
 
@@ -11,33 +10,26 @@ interface ProjectItemProps {
 }
 
 export default function ProjectItem({ project }: ProjectItemProps) {
-  const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
-  const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
   const { sessionId } = useParams<{ sessionId?: string }>();
 
   // Directly access the sessions populated inside the project
   const projectSessions = project.sessions ?? [];
 
-  const isSelected = selectedProjectId === project.id;
-  const ChevronIcon = isSelected ? ChevronDown : ChevronRight;
+  const [isOpen, setIsOpen] = useState(() =>
+    Boolean(sessionId && project.sessions?.some((s) => s.id === sessionId))
+  );
+
+  const ChevronIcon = isOpen ? ChevronDown : ChevronRight;
 
   // Auto-expand if the active session belongs to this project
   useEffect(() => {
     if (sessionId && project.sessions?.some((s) => s.id === sessionId)) {
-      if (!isSelected) {
-        setSelectedProjectId(project.id);
-      }
+      setIsOpen(true);
     }
-  }, [
-    sessionId,
-    project.sessions,
-    isSelected,
-    project.id,
-    setSelectedProjectId,
-  ]);
+  }, [sessionId, project.sessions]);
 
   const handleToggleSelect = () => {
-    setSelectedProjectId(isSelected ? null : project.id);
+    setIsOpen((prev) => !prev);
   };
 
   return (
@@ -67,10 +59,10 @@ export default function ProjectItem({ project }: ProjectItemProps) {
       <div
         className="overflow-hidden transition-all duration-200"
         style={{
-          maxHeight: isSelected
+          maxHeight: isOpen
             ? `${Math.max(projectSessions.length, 1) * 48 + 16}px`
             : "0px",
-          opacity: isSelected ? 1 : 0,
+          opacity: isOpen ? 1 : 0,
         }}
       >
         <div className="ml-3 pl-2.5 border-l border-border/50 py-1 space-y-1">

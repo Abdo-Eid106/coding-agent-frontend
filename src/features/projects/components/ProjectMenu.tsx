@@ -14,6 +14,7 @@ export default function ProjectMenu({
 }: ProjectMenuProps) {
   const navigate = useNavigate();
   const openDeleteProject = useUIStore((s) => s.openDeleteProject);
+  const setSidebarOpen = useUIStore((s) => s.setSidebarOpen);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
 
   const handleStartNewChatForProject = (e: React.MouseEvent) => {
@@ -21,6 +22,9 @@ export default function ProjectMenu({
     e.preventDefault();
     setSelectedProjectId(projectId);
     navigate("/");
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
   };
 
   const handleDelete = (e: React.MouseEvent) => {

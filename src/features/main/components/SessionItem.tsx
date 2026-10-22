@@ -1,6 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { MessageSquare, Trash2 } from "lucide-react";
-import { useProjectStore } from "../../projects/hooks/useProjectStore";
 import { useUIStore } from "../hooks/useUIStore";
 import { type SessionDto } from "../../sessions/types";
 
@@ -9,10 +8,9 @@ interface SessionItemProps {
   projectId?: string;
 }
 
-export default function SessionItem({ session, projectId }: SessionItemProps) {
+export default function SessionItem({ session }: SessionItemProps) {
   const { sessionId } = useParams<{ sessionId?: string }>();
   const navigate = useNavigate();
-  const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
   const openDeleteSession = useUIStore((s) => s.openDeleteSession);
   const setSidebarOpen = useUIStore((s) => s.setSidebarOpen);
 
@@ -20,9 +18,6 @@ export default function SessionItem({ session, projectId }: SessionItemProps) {
 
   const handleClick = () => {
     navigate(`/sessions/${session.id}`);
-    if (projectId) {
-      setSelectedProjectId(projectId);
-    }
     if (typeof window !== "undefined" && window.innerWidth < 768) {
       setSidebarOpen(false);
     }
