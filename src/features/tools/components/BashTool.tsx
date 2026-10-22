@@ -1,15 +1,25 @@
 import { Terminal, Folder, Loader2 } from "lucide-react";
 import AccordionItem from "./AccordionItem";
 import CopyButton from "./CopyButton";
+import { formatToolDuration } from "../lib/duration";
 
 export interface BashToolCallProps {
   command?: string;
   output?: string;
   cwd?: string;
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
-export function BashToolCall({ command, output, cwd }: BashToolCallProps) {
+export function BashToolCall({
+  command,
+  output,
+  cwd,
+  startedAt,
+  finishedAt,
+}: BashToolCallProps) {
   const isLoading = output === undefined;
+  const duration = formatToolDuration(startedAt, finishedAt);
 
   const header = (
     <div className="flex min-w-0 items-center gap-2 w-full">
@@ -19,6 +29,7 @@ export function BashToolCall({ command, output, cwd }: BashToolCallProps) {
       </span>
 
       <div className="ml-auto flex min-w-0 shrink-0 items-center gap-2 text-[11px] text-muted-foreground">
+        {duration && <span className="font-mono">{duration}</span>}
         {isLoading && (
           <span className="flex items-center gap-1.5 font-mono">
             <Loader2 className="size-3 animate-spin" />

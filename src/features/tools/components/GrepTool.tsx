@@ -1,15 +1,25 @@
 import { Search, Loader2 } from "lucide-react";
 import AccordionItem from "./AccordionItem";
+import { formatToolDuration } from "../lib/duration";
 
 export interface GrepToolCallProps {
   pattern: string;
   directory: string;
   /** Plain ripgrep output: one `path:line:text` per line. */
   content?: string;
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
-export function GrepTool({ pattern, directory, content }: GrepToolCallProps) {
+export function GrepTool({
+  pattern,
+  directory,
+  content,
+  startedAt,
+  finishedAt,
+}: GrepToolCallProps) {
   const isLoading = !content;
+  const duration = formatToolDuration(startedAt, finishedAt);
 
   // Paths come back absolute; strip the searched directory to keep lines short.
   const text = !isLoading ? content.replaceAll(`${directory}/`, "").trim() : "";
@@ -23,16 +33,19 @@ export function GrepTool({ pattern, directory, content }: GrepToolCallProps) {
       />
       <span className="shrink-0 text-muted-foreground">Grep</span>
       <span className="truncate font-mono min-w-0 flex-1">{pattern}</span>
-      {isLoading ? (
-        <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" />
-          <span className="hidden sm:inline">Searching...</span>
-        </span>
-      ) : (
-        <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
-          {matchCount} {matchCount === 1 ? "match" : "matches"}
-        </span>
-      )}
+      <div className="ml-auto flex shrink-0 items-center gap-2 font-mono text-[11px] text-muted-foreground">
+        {duration && <span>{duration}</span>}
+        {isLoading ? (
+          <span className="flex items-center gap-1.5">
+            <Loader2 className="size-3 animate-spin" />
+            <span className="hidden sm:inline">Searching...</span>
+          </span>
+        ) : (
+          <span>
+            {matchCount} {matchCount === 1 ? "match" : "matches"}
+          </span>
+        )}
+      </div>
     </div>
   );
 

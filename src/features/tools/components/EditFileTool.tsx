@@ -2,6 +2,7 @@ import { Pencil, Loader2 } from "lucide-react";
 import { DiffView, DiffModeEnum } from "@git-diff-view/react";
 import { generateDiffFile } from "@git-diff-view/file";
 import AccordionItem from "./AccordionItem";
+import { formatToolDuration } from "../lib/duration";
 import "@git-diff-view/react/styles/diff-view.css";
 
 export interface EditFileToolCallProps {
@@ -9,6 +10,8 @@ export interface EditFileToolCallProps {
   original?: string;
   modified?: string;
   mode?: DiffModeEnum;
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 export function EditFileToolCall({
@@ -16,8 +19,11 @@ export function EditFileToolCall({
   original,
   modified,
   mode = DiffModeEnum.Unified,
+  startedAt,
+  finishedAt,
 }: EditFileToolCallProps) {
   const isLoading = !original || !modified;
+  const duration = formatToolDuration(startedAt, finishedAt);
 
   let diffFile = null;
   if (!isLoading) {
@@ -44,19 +50,22 @@ export function EditFileToolCall({
       />
       <span className="shrink-0 text-muted-foreground">Edited</span>
       <span className="truncate font-mono min-w-0 flex-1">{filePath}</span>
-      {isLoading ? (
-        <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" />
-          <span className="hidden sm:inline">Applying changes...</span>
-        </span>
-      ) : (
-        <span className="ml-auto shrink-0 font-mono text-[11px]">
-          <span className="text-green-500">
-            +{diffFile?.additionLength ?? 0}
-          </span>{" "}
-          <span className="text-red-500">-{diffFile?.deletionLength ?? 0}</span>
-        </span>
-      )}
+      <div className="ml-auto flex shrink-0 items-center gap-2 font-mono text-[11px]">
+        {duration && <span className="text-muted-foreground">{duration}</span>}
+        {isLoading ? (
+          <span className="flex items-center gap-1.5 text-muted-foreground">
+            <Loader2 className="size-3 animate-spin" />
+            <span className="hidden sm:inline">Applying changes...</span>
+          </span>
+        ) : (
+          <span>
+            <span className="text-green-500">
+              +{diffFile?.additionLength ?? 0}
+            </span>{" "}
+            <span className="text-red-500">-{diffFile?.deletionLength ?? 0}</span>
+          </span>
+        )}
+      </div>
     </div>
   );
 

@@ -4,6 +4,7 @@ import { Wrench, Loader2 } from "lucide-react";
 import AccordionItem from "./AccordionItem";
 import CopyButton from "./CopyButton";
 import { useThemeStore, Theme } from "../../main/hooks/useThemeStore";
+import { formatToolDuration } from "../lib/duration";
 
 hljs.registerLanguage("json", json);
 
@@ -13,6 +14,8 @@ export interface GenericToolProps {
   input: unknown;
   /** Tool result: an object, a JSON string, or plain text. Leave undefined while the tool is running. */
   output?: unknown;
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 const styles = {
@@ -58,11 +61,18 @@ function toRawText(value: unknown): string {
   }
 }
 
-export function GenericTool({ name, input, output }: GenericToolProps) {
+export function GenericTool({
+  name,
+  input,
+  output,
+  startedAt,
+  finishedAt,
+}: GenericToolProps) {
   const isDark = useThemeStore((s) => s.effectiveTheme) === Theme.Dark;
   const themeClass = isDark ? "hljs-dark" : "hljs-light";
 
   const isLoading = !output;
+  const duration = formatToolDuration(startedAt, finishedAt);
   const inputHtml = toHtml(input);
   const outputHtml = toHtml(output);
   const inputRaw = toRawText(input);
@@ -80,12 +90,15 @@ export function GenericTool({ name, input, output }: GenericToolProps) {
       <span className="truncate font-mono text-[11px] text-muted-foreground min-w-0 flex-1">
         {inputPreview}
       </span>
-      {isLoading && (
-        <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" />
-          <span className="hidden sm:inline">Running...</span>
-        </span>
-      )}
+      <div className="ml-auto flex shrink-0 items-center gap-2 font-mono text-[11px] text-muted-foreground">
+        {duration && <span>{duration}</span>}
+        {isLoading && (
+          <span className="flex items-center gap-1.5">
+            <Loader2 className="size-3 animate-spin" />
+            <span className="hidden sm:inline">Running...</span>
+          </span>
+        )}
+      </div>
     </div>
   );
 

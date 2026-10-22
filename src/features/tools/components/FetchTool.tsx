@@ -1,6 +1,7 @@
 import ReactMarkdown, { type Components } from "react-markdown";
 import { Globe, Loader2 } from "lucide-react";
 import AccordionItem from "./AccordionItem";
+import { formatToolDuration } from "../lib/duration";
 
 export interface FetchToolProps {
   url: string;
@@ -8,6 +9,8 @@ export interface FetchToolProps {
   content?: string;
   /** Same value passed to the tool; the tool defaults to "text". */
   format?: "text" | "markdown";
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 // Open links from fetched pages in a new tab. `node` is stripped so it doesn't reach the DOM.
@@ -17,11 +20,18 @@ const markdownComponents: Components = {
   ),
 };
 
-export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
+export function FetchTool({
+  url,
+  content,
+  format = "text",
+  startedAt,
+  finishedAt,
+}: FetchToolProps) {
   const isLoading = !content;
   const isEmpty = !isLoading && content.trim() === "";
   const showMarkdown = !isLoading && !isEmpty && format === "markdown";
   const showText = !isLoading && !isEmpty && format !== "markdown";
+  const duration = formatToolDuration(startedAt, finishedAt);
 
   const header = (
     <div className="flex min-w-0 items-center gap-2 w-full">
@@ -31,16 +41,19 @@ export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
       />
       <span className="shrink-0 text-muted-foreground">Fetched</span>
       <span className="truncate font-mono min-w-0 flex-1">{url}</span>
-      {isLoading ? (
-        <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" />
-          <span className="hidden sm:inline">Fetching...</span>
-        </span>
-      ) : (
-        <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
-          {content.length.toLocaleString()} chars
-        </span>
-      )}
+      <div className="ml-auto flex shrink-0 items-center gap-2 font-mono text-[11px] text-muted-foreground">
+        {duration && <span>{duration}</span>}
+        {isLoading ? (
+          <span className="flex items-center gap-1.5">
+            <Loader2 className="size-3 animate-spin" />
+            <span className="hidden sm:inline">Fetching...</span>
+          </span>
+        ) : (
+          <span>
+            {content.length.toLocaleString()} chars
+          </span>
+        )}
+      </div>
     </div>
   );
 

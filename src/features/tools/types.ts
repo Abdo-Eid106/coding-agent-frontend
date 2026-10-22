@@ -25,6 +25,8 @@ export interface BashToolCall {
     stderr?: string;
     exitCode?: number;
   };
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 export interface EditFileToolCall {
@@ -39,6 +41,8 @@ export interface EditFileToolCall {
     original: string;
     modified: string;
   };
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 export interface FetchToolCall {
@@ -52,6 +56,8 @@ export interface FetchToolCall {
   output?: {
     content: string;
   };
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 export interface GlobToolCall {
@@ -69,6 +75,8 @@ export interface GlobToolCall {
     total: number;
     truncated: boolean;
   };
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 export interface GrepToolCall {
@@ -84,6 +92,8 @@ export interface GrepToolCall {
   output?: {
     content: string;
   };
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 export interface LsToolCall {
@@ -104,6 +114,8 @@ export interface LsToolCall {
     size?: number;
     modifiedAt?: string;
   }[];
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 export interface ViewToolCall {
@@ -117,6 +129,8 @@ export interface ViewToolCall {
   output?: {
     content: string;
   };
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 export interface WriteToolCall {
@@ -130,6 +144,8 @@ export interface WriteToolCall {
   output?: {
     content: string;
   };
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 /**

@@ -2,16 +2,25 @@ import hljs from "highlight.js";
 import { FileText, Loader2 } from "lucide-react";
 import AccordionItem from "./AccordionItem";
 import CopyButton from "./CopyButton";
+import { formatToolDuration } from "../lib/duration";
 
 export interface ViewFileToolCallProps {
   filePath: string;
   content?: string;
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
 export type ViewileToolCallProps = ViewFileToolCallProps;
 
-export function ViewFileToolCall({ filePath, content }: ViewFileToolCallProps) {
+export function ViewFileToolCall({
+  filePath,
+  content,
+  startedAt,
+  finishedAt,
+}: ViewFileToolCallProps) {
   const isLoading = content === undefined;
+  const duration = formatToolDuration(startedAt, finishedAt);
 
   const lineCount =
     content === undefined || content === ""
@@ -36,16 +45,19 @@ export function ViewFileToolCall({ filePath, content }: ViewFileToolCallProps) {
       />
       <span className="shrink-0 text-muted-foreground">View</span>
       <span className="truncate font-mono min-w-0 flex-1">{filePath}</span>
-      {isLoading ? (
-        <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" />
-          <span className="hidden sm:inline">Reading...</span>
-        </span>
-      ) : (
-        <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
-          {lineCount} {lineCount === 1 ? "line" : "lines"}
-        </span>
-      )}
+      <div className="ml-auto flex shrink-0 items-center gap-2 font-mono text-[11px] text-muted-foreground">
+        {duration && <span>{duration}</span>}
+        {isLoading ? (
+          <span className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
+            <Loader2 className="size-3 animate-spin" />
+            <span className="hidden sm:inline">Reading...</span>
+          </span>
+        ) : (
+          <span>
+            {lineCount} {lineCount === 1 ? "line" : "lines"}
+          </span>
+        )}
+      </div>
     </div>
   );
 

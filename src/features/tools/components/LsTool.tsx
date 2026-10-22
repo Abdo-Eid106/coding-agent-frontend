@@ -1,5 +1,6 @@
 import { File, Folder, FolderOpen, Loader2 } from "lucide-react";
 import AccordionItem from "./AccordionItem";
+import { formatToolDuration } from "../lib/duration";
 
 export interface LsEntry {
   name: string;
@@ -11,11 +12,19 @@ export interface LsEntry {
 export interface LsToolProps {
   directory: string;
   entries?: LsEntry[];
+  startedAt?: Date | string | null;
+  finishedAt?: Date | string | null;
 }
 
-export function LsTool({ directory, entries }: LsToolProps) {
+export function LsTool({
+  directory,
+  entries,
+  startedAt,
+  finishedAt,
+}: LsToolProps) {
   const isLoading = !entries;
   const count = entries?.length ?? 0;
+  const duration = formatToolDuration(startedAt, finishedAt);
 
   const header = (
     <div className="flex min-w-0 items-center gap-2 w-full">
@@ -25,16 +34,19 @@ export function LsTool({ directory, entries }: LsToolProps) {
       />
       <span className="shrink-0 text-muted-foreground">Listed</span>
       <span className="truncate font-mono min-w-0 flex-1">{directory}</span>
-      {isLoading ? (
-        <span className="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" />
-          <span className="hidden sm:inline">Listing...</span>
-        </span>
-      ) : (
-        <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
-          {count} {count === 1 ? "item" : "items"}
-        </span>
-      )}
+      <div className="ml-auto flex shrink-0 items-center gap-2 font-mono text-[11px] text-muted-foreground">
+        {duration && <span>{duration}</span>}
+        {isLoading ? (
+          <span className="flex items-center gap-1.5">
+            <Loader2 className="size-3 animate-spin" />
+            <span className="hidden sm:inline">Listing...</span>
+          </span>
+        ) : (
+          <span>
+            {count} {count === 1 ? "item" : "items"}
+          </span>
+        )}
+      </div>
     </div>
   );
 

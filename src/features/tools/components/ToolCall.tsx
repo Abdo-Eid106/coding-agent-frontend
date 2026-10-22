@@ -18,6 +18,8 @@ export default function ToolCall({ toolCall }: Props) {
         command={toolCall.input.command}
         cwd={toolCall.input.cwd}
         output={toolCall.output?.stdout}
+        startedAt={toolCall.startedAt}
+        finishedAt={toolCall.finishedAt}
       />
     );
 
@@ -27,6 +29,8 @@ export default function ToolCall({ toolCall }: Props) {
         filePath={toolCall.input.filePath}
         original={toolCall.output?.original}
         modified={toolCall.output?.modified}
+        startedAt={toolCall.startedAt}
+        finishedAt={toolCall.finishedAt}
       />
     );
   }
@@ -37,6 +41,8 @@ export default function ToolCall({ toolCall }: Props) {
         url={toolCall.input.url}
         format={toolCall.input.format}
         content={toolCall.output?.content}
+        startedAt={toolCall.startedAt}
+        finishedAt={toolCall.finishedAt}
       />
     );
   }
@@ -47,13 +53,20 @@ export default function ToolCall({ toolCall }: Props) {
         pattern={toolCall.input.pattern}
         directory={toolCall.input.directory}
         content={toolCall.output?.content}
+        startedAt={toolCall.startedAt}
+        finishedAt={toolCall.finishedAt}
       />
     );
   }
 
   if (toolCall.name == ToolCallEnum.LS) {
     return (
-      <LsTool directory={toolCall.input.directory} entries={toolCall.output} />
+      <LsTool
+        directory={toolCall.input.directory}
+        entries={toolCall.output}
+        startedAt={toolCall.startedAt}
+        finishedAt={toolCall.finishedAt}
+      />
     );
   }
 
@@ -62,6 +75,8 @@ export default function ToolCall({ toolCall }: Props) {
       <ViewFileToolCall
         filePath={toolCall.input.filePath}
         content={toolCall.output?.content}
+        startedAt={toolCall.startedAt}
+        finishedAt={toolCall.finishedAt}
       />
     );
   }
@@ -71,6 +86,8 @@ export default function ToolCall({ toolCall }: Props) {
       <ViewFileToolCall
         filePath={toolCall.input.filePath}
         content={toolCall.input.content}
+        startedAt={toolCall.startedAt}
+        finishedAt={toolCall.finishedAt}
       />
     );
   }
@@ -80,6 +97,8 @@ export default function ToolCall({ toolCall }: Props) {
       name={toolCall.name}
       input={toolCall.input}
       output={toolCall.output}
+      startedAt={toolCall.startedAt}
+      finishedAt={toolCall.finishedAt}
     />
   );
 }

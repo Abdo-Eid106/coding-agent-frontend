@@ -20,6 +20,7 @@ function upsertToolCall(
       name: incoming.name as ToolCallDto["name"],
       input: (incoming.input ?? {}) as ToolCallDto["input"],
       output: incoming.output as ToolCallDto["output"],
+      startedAt: incoming.startedAt,
     } as ToolCallDto;
 
     return [...toolCalls, newToolCall];
@@ -31,6 +32,7 @@ function upsertToolCall(
           ...t,
           ...(incoming.output && {
             output: incoming.output as ToolCallDto["output"],
+            finishedAt: incoming.finishedAt,
           }),
         } as ToolCallDto)
       : t,
