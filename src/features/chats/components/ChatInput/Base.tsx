@@ -56,7 +56,7 @@ export default function ChatInputBase({
     <div className="rounded-xl border border-border bg-popover text-popover-foreground shadow-xs">
       <div className="px-4 pt-3 pb-2">
         {isPreview ? (
-          <div className="w-full min-h-10 max-h-60 overflow-y-auto text-sm text-foreground prose prose-sm dark:prose-invert max-w-none break-words [overflow-wrap:anywhere] min-w-0">
+          <div className="w-full min-h-10 max-h-60 overflow-y-auto text-sm text-foreground prose prose-sm dark:prose-invert max-w-none wrap-anywhere min-w-0">
             {message.trim() ? (
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}

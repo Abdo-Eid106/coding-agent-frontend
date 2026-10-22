@@ -18,7 +18,7 @@ export default function TurnItem({ message }: { message: MessageDto }) {
       {/* 1. Main user message */}
       <div className="flex flex-col items-end group w-full min-w-0">
         <div className="max-w-[92%] sm:max-w-[85%] md:max-w-[75%] rounded-2xl border border-border bg-popover text-popover-foreground p-3 sm:p-4 text-sm shadow-xs min-w-0">
-          <p className="whitespace-pre-wrap leading-relaxed break-words [overflow-wrap:anywhere]">
+          <p className="whitespace-pre-wrap leading-relaxed wrap-anywhere">
             {message.content}
           </p>
         </div>
@@ -37,7 +37,7 @@ export default function TurnItem({ message }: { message: MessageDto }) {
       {replies.map((reply) => (
         <div key={reply.id} className="px-1 text-sm text-foreground w-full min-w-0 overflow-hidden">
           <div
-            className="ai-message prose prose-sm dark:prose-invert max-w-none min-w-0 break-words [overflow-wrap:anywhere]
+            className="ai-message prose prose-sm dark:prose-invert max-w-none min-w-0 wrap-anywhere
                  prose-code:before:content-none prose-code:after:content-none
                  prose-code:rounded prose-code:bg-muted prose-code:px-1 prose-code:py-0.5
                  prose-code:font-mono prose-code:font-normal"

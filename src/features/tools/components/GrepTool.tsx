@@ -44,7 +44,7 @@ export function GrepTool({ pattern, directory, content }: GrepToolCallProps) {
           <span>Searching matches...</span>
         </div>
       ) : (
-        <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] font-mono rounded-md border border-border/50 bg-muted/30 p-2.5 min-w-0">
+        <pre className="max-h-96 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono rounded-md border border-border/50 bg-muted/30 p-2.5 min-w-0">
           {text || (
             <span className="italic text-muted-foreground">
               No matches found

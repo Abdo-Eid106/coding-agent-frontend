@@ -34,13 +34,13 @@ export default function ChatHeader() {
         <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-foreground min-w-0">
           {projectTitle && (
             <>
-              <span className="truncate max-w-[120px] sm:max-w-[200px] text-muted-foreground font-medium">
+              <span className="truncate max-w-30 sm:max-w-50 text-muted-foreground font-medium">
                 {projectTitle}
               </span>
               <span className="text-muted-foreground/60 font-normal shrink-0">/</span>
             </>
           )}
-          <span className="truncate max-w-[150px] sm:max-w-[280px] md:max-w-[400px]">
+          <span className="truncate max-w-37.5 sm:max-w-70 md:max-w-100">
             {sessionTitle}
           </span>
         </div>

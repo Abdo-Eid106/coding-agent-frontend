@@ -58,7 +58,7 @@ export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
           )}
 
           {showMarkdown && (
-            <div className="prose prose-sm dark:prose-invert max-h-96 max-w-none overflow-auto break-words [overflow-wrap:anywhere] min-w-0 text-xs">
+            <div className="prose prose-sm dark:prose-invert max-h-96 max-w-none overflow-auto wrap-anywhere min-w-0 text-xs">
               <ReactMarkdown components={markdownComponents}>
                 {content}
               </ReactMarkdown>
@@ -66,7 +66,7 @@ export function FetchTool({ url, content, format = "text" }: FetchToolProps) {
           )}
 
           {showText && (
-            <pre className="max-h-96 overflow-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] font-mono rounded-md border border-border/50 bg-muted/30 p-2.5 min-w-0">
+            <pre className="max-h-96 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono rounded-md border border-border/50 bg-muted/30 p-2.5 min-w-0">
               {content}
             </pre>
           )}

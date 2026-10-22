@@ -58,7 +58,7 @@ export function ViewFileToolCall({ filePath, content }: ViewFileToolCallProps) {
         </div>
       ) : (
         <div className="flex items-start gap-2 rounded-md border border-border/50 bg-muted/30 p-2.5 min-w-0">
-          <pre className="max-h-96 min-w-0 flex-1 overflow-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] font-mono">
+          <pre className="max-h-96 min-w-0 flex-1 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono">
             <code className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
           </pre>
           {content && (

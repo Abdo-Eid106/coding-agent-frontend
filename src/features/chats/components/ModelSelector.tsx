@@ -142,7 +142,7 @@ export default function ModelSelector() {
         type="button"
         onClick={() => setIsOpen((v) => !v)}
         disabled={isLoading}
-        className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent cursor-pointer disabled:opacity-50 min-w-0 max-w-[140px] sm:max-w-[220px]"
+        className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent cursor-pointer disabled:opacity-50 min-w-0 max-w-35 sm:max-w-55"
       >
         {isLoading && <Loader2 className="size-3 animate-spin text-primary shrink-0" />}
         <span className="truncate">

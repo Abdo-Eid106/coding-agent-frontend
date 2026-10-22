@@ -18,10 +18,10 @@ export interface GenericToolProps {
 const styles = {
   section: "overflow-hidden rounded-md border border-border bg-muted/30",
   label:
-    "flex items-center justify-between border-b border-border bg-muted/50 px-3 py-1 min-h-[30px]",
+    "flex items-center justify-between border-b border-border bg-muted/50 px-3 py-1 min-h-7.5",
   labelText:
     "text-[10px] font-medium uppercase tracking-wide text-muted-foreground",
-  code: "overflow-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] p-3 font-mono leading-relaxed min-w-0",
+  code: "overflow-auto whitespace-pre-wrap wrap-anywhere p-3 font-mono leading-relaxed min-w-0",
 };
 
 const escapeHtml = (text: string) =>

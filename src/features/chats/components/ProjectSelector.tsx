@@ -28,7 +28,7 @@ export default function ProjectSelector() {
     <div className="relative min-w-0" ref={ref}>
       <button
         onClick={() => setIsOpen((v) => !v)}
-        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-popover border border-border text-xs sm:text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer min-w-0 max-w-[240px] sm:max-w-xs"
+        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-popover border border-border text-xs sm:text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer min-w-0 max-w-60 sm:max-w-xs"
       >
         <FolderOpen className="size-3.5 text-muted-foreground shrink-0" />
         <span className="truncate">{selectedProject?.name || "Select Project"}</span>
