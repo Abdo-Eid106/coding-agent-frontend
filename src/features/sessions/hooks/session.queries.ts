@@ -80,6 +80,7 @@ export const useDeleteSession = () => {
 
 export const useActiveSessions = () => {
   const queryClient = useQueryClient();
+  const { data: sessionIds = [] } = useFetchActiveSessions();
 
   const addActiveSession = (id: string) =>
     queryClient.setQueryData<string[]>(activeSessionsKey, (old = []) =>
@@ -91,5 +92,8 @@ export const useActiveSessions = () => {
       old.filter((sessionId) => sessionId !== id),
     );
 
-  return { addActiveSession, removeActiveSession };
+  const isActive = (sessionId: string) =>
+    sessionIds.some((id) => id == sessionId);
+
+  return { isActive, addActiveSession, removeActiveSession };
 };
