@@ -1,32 +1,46 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState } from "react";
 import { FolderOpen, ChevronDown, ChevronRight } from "lucide-react";
 import { type ProjectDto } from "../../projects/types";
 import SessionItem from "./SessionItem";
 import ProjectMenu from "../../projects/components/ProjectMenu";
+import { useCurrentSessionId } from "../../sessions/hooks/useCurrentSessionId";
 
 interface ProjectItemProps {
   project: ProjectDto;
 }
 
 export default function ProjectItem({ project }: ProjectItemProps) {
-  const { sessionId } = useParams<{ sessionId?: string }>();
+  const sessionId = useCurrentSessionId();
 
   // Directly access the sessions populated inside the project
   const projectSessions = project.sessions ?? [];
 
-  const [isOpen, setIsOpen] = useState(() =>
-    Boolean(sessionId && project.sessions?.some((s) => s.id === sessionId))
+  const containsOpenedSession = Boolean(
+    sessionId && projectSessions.some((s) => s.id === sessionId)
   );
 
-  const ChevronIcon = isOpen ? ChevronDown : ChevronRight;
+  const [isOpen, setIsOpen] = useState(containsOpenedSession);
+  const [prevContainsOpenedSession, setPrevContainsOpenedSession] =
+    useState(containsOpenedSession);
+  const [prevSessionId, setPrevSessionId] = useState(sessionId);
 
-  // Auto-expand if the active session belongs to this project
-  useEffect(() => {
-    if (sessionId && project.sessions?.some((s) => s.id === sessionId)) {
-      setIsOpen(true);
-    }
-  }, [sessionId, project.sessions]);
+  // Auto-expand if the active session belongs to this project (e.g. navigated to it or sessions loaded)
+  if (
+    containsOpenedSession &&
+    (!prevContainsOpenedSession || sessionId !== prevSessionId)
+  ) {
+    setPrevContainsOpenedSession(containsOpenedSession);
+    setPrevSessionId(sessionId);
+    setIsOpen(true);
+  } else if (
+    containsOpenedSession !== prevContainsOpenedSession ||
+    sessionId !== prevSessionId
+  ) {
+    setPrevContainsOpenedSession(containsOpenedSession);
+    setPrevSessionId(sessionId);
+  }
+
+  const ChevronIcon = isOpen ? ChevronDown : ChevronRight;
 
   const handleToggleSelect = () => {
     setIsOpen((prev) => !prev);

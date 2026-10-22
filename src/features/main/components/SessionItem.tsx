@@ -1,7 +1,8 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MessageSquare, Trash2 } from "lucide-react";
 import { useUIStore } from "../hooks/useUIStore";
 import { type SessionDto } from "../../sessions/types";
+import { useCurrentSessionId } from "../../sessions/hooks/useCurrentSessionId";
 
 interface SessionItemProps {
   session: SessionDto;
@@ -9,7 +10,7 @@ interface SessionItemProps {
 }
 
 export default function SessionItem({ session }: SessionItemProps) {
-  const { sessionId } = useParams<{ sessionId?: string }>();
+  const sessionId = useCurrentSessionId();
   const navigate = useNavigate();
   const openDeleteSession = useUIStore((s) => s.openDeleteSession);
   const setSidebarOpen = useUIStore((s) => s.setSidebarOpen);

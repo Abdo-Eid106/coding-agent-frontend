@@ -1,10 +1,11 @@
 import { useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AlertTriangle, Loader2, X } from "lucide-react";
 import { useDeleteSession } from "../hooks/session.queries";
 import { useUIStore, type SessionToDelete } from "../../main/hooks/useUIStore";
 import { getErrorMessage } from "../../../shared/lib/get-error-message";
 import { toast } from "../../main/components/Toaster";
+import { useCurrentSessionId } from "../hooks/useCurrentSessionId";
 
 export default function DeleteSessionModal() {
   const sessionToDelete = useUIStore((s) => s.sessionToDelete);
@@ -23,7 +24,7 @@ interface DeleteSessionDialogProps {
 function DeleteSessionDialog({ session, onClose }: DeleteSessionDialogProps) {
   const cancelBtnRef = useRef<HTMLButtonElement>(null);
   const { mutate: deleteSession, isPending } = useDeleteSession();
-  const { sessionId } = useParams<{ sessionId?: string }>();
+  const sessionId = useCurrentSessionId();
   const navigate = useNavigate();
 
   // Focus cancel button on mount for safety

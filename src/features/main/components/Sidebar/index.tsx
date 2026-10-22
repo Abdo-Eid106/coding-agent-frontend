@@ -5,7 +5,7 @@ import {
   type ComponentType,
   type ReactNode,
 } from "react";
-import { matchPath, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Plus, Settings } from "lucide-react";
 import ProjectItem from "../ProjectItem";
 import SessionItem from "../SessionItem";
@@ -16,6 +16,7 @@ import { useUIStore } from "../../hooks/useUIStore";
 import { useCloseSidebarOnMobile } from "./useCloseSidebar";
 import { useProjectStore } from "../../../projects/hooks/useProjectStore";
 import { useFetchSessions } from "../../../sessions/hooks/session.queries";
+import { useCurrentSessionId } from "../../../sessions/hooks/useCurrentSessionId";
 
 interface SidebarButtonProps {
   icon: ComponentType<{ className?: string }>;
@@ -45,7 +46,6 @@ const ASIDE_CLOSED =
 
 export default function Sidebar() {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
 
   const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
   const setSidebarOpen = useUIStore((s) => s.setSidebarOpen);
@@ -60,8 +60,7 @@ export default function Sidebar() {
   const [isProjectsOpen, setIsProjectsOpen] = useState(true);
   const [isConversationsOpen, setIsConversationsOpen] = useState(true);
 
-  const currentSessionId = matchPath("/sessions/:sessionId", pathname)?.params
-    .sessionId;
+  const currentSessionId = useCurrentSessionId();
 
   // Booleans, so the effects below run when the *location* of the current
   // session changes, not on every refetch of the lists
