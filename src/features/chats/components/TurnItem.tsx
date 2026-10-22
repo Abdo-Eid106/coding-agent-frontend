@@ -5,12 +5,13 @@ import ToolCall from "../../tools/components/ToolCall";
 import rehypeHighlight from "rehype-highlight";
 import ReactMarkdown from "react-markdown";
 import type { MessageDto } from "../types";
+import { memo } from "react";
 
 import { useRef, useState, type ComponentPropsWithoutRef } from "react";
 import { Check, Copy } from "lucide-react";
 import { cn } from "../../../shared/lib/cn";
 
-export default function TurnItem({ message }: { message: MessageDto }) {
+function TurnItem({ message }: { message: MessageDto }) {
   const replies = message.replies ?? [];
 
   return (
@@ -35,7 +36,10 @@ export default function TurnItem({ message }: { message: MessageDto }) {
 
       {/* 2. Replies (AI responses) */}
       {replies.map((reply) => (
-        <div key={reply.id} className="px-1 text-sm text-foreground w-full min-w-0 overflow-hidden">
+        <div
+          key={reply.id}
+          className="px-1 text-sm text-foreground w-full min-w-0 overflow-hidden"
+        >
           <div
             className="ai-message prose prose-sm dark:prose-invert max-w-none min-w-0 wrap-anywhere
                  prose-code:before:content-none prose-code:after:content-none
@@ -57,6 +61,10 @@ export default function TurnItem({ message }: { message: MessageDto }) {
     </div>
   );
 }
+
+export default memo(TurnItem, (prevProps, nextProps) => {
+  return prevProps.message.id === nextProps.message.id;
+});
 
 function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<"pre">) {
   const preRef = useRef<HTMLPreElement>(null);
