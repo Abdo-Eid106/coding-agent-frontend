@@ -1,23 +1,22 @@
 import { useParams } from "react-router-dom";
 import { PanelLeft } from "lucide-react";
 import { useUIStore } from "../../main/hooks/useUIStore";
+import { useFetchSession } from "../../sessions/hooks/session.queries";
 import ThemeToggle from "../../main/components/ThemeToggle";
-import { useFetchSessions } from "../../sessions/hooks/session.queries";
-import { useFetchProjects } from "../../projects/hooks/project.queries";
-import { useProjectStore } from "../../projects/hooks/useProjectStore";
 
 export default function ChatHeader() {
-  const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const { sessionId } = useParams<{ sessionId?: string }>();
-  const { data: sessions = [] } = useFetchSessions();
-  const { data: projects = [] } = useFetchProjects();
-  const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
+  const isNew = !sessionId;
 
-  const currentSession = sessions.find((s) => s.id === sessionId);
-  const selectedProject = projects.find((p) => p.id === selectedProjectId);
+  const { data, isLoading } = useFetchSession(sessionId);
+  const toggleSidebar = useUIStore((state) => state.toggleSidebar);
 
-  const projectTitle = currentSession?.project?.name ?? selectedProject?.name;
-  const sessionTitle = currentSession?.title ?? (sessionId ? "Session" : "New Chat");
+  const projectTitle = data?.project?.name;
+  const sessionTitle = isNew
+    ? "New Chat"
+    : isLoading
+      ? "...Loading"
+      : data?.title;
 
   return (
     <header className="flex h-13 shrink-0 items-center justify-between border-b border-border px-3 sm:px-4 min-w-0 bg-background">
@@ -37,7 +36,9 @@ export default function ChatHeader() {
               <span className="truncate max-w-30 sm:max-w-50 text-muted-foreground font-medium">
                 {projectTitle}
               </span>
-              <span className="text-muted-foreground/60 font-normal shrink-0">/</span>
+              <span className="text-muted-foreground/60 font-normal shrink-0">
+                /
+              </span>
             </>
           )}
           <span className="truncate max-w-37.5 sm:max-w-70 md:max-w-100">

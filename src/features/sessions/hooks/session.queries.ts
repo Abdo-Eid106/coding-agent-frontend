@@ -12,6 +12,11 @@ const fetchSessions = async (): Promise<SessionDto[]> => {
   return data;
 };
 
+const fetchSession = async (id: string): Promise<SessionDto> => {
+  const { data } = await Api.get<SessionDto>(`/sessions/${id}`);
+  return data;
+};
+
 const createSession = async (
   createSessionDto: CreateSessionDto,
 ): Promise<CreateSessionResponse> => {
@@ -28,6 +33,13 @@ export const useFetchSessions = () =>
   useQuery({
     queryKey: [QueryKeys.SESSIONS],
     queryFn: fetchSessions,
+  });
+
+export const useFetchSession = (id?: string) =>
+  useQuery({
+    queryKey: [QueryKeys.SESSIONS, id],
+    queryFn: () => fetchSession(id!),
+    enabled: !!id,
   });
 
 export const useCreateSession = () => {
