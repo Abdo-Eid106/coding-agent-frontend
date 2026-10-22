@@ -15,7 +15,7 @@ export interface LsToolProps {
 
 export function LsTool({ directory, entries }: LsToolProps) {
   const isLoading = !entries;
-  const count = !isLoading ? entries.length : 0;
+  const count = entries?.length ?? 0;
 
   const header = (
     <div className="flex min-w-0 items-center gap-2">
