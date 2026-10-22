@@ -21,7 +21,6 @@ export interface BashToolCall {
     env?: Record<string, string>;
   };
   output?: {
-    content?: string;
     stdout?: string;
     stderr?: string;
     exitCode?: number;

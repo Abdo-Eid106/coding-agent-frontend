@@ -17,7 +17,7 @@ export default function ToolCall({ toolCall }: Props) {
       <BashToolCall
         command={toolCall.input.command}
         cwd={toolCall.input.cwd}
-        output={toolCall.output?.content}
+        output={toolCall.output?.stdout}
       />
     );
 
