@@ -3,12 +3,13 @@ import type {
   CreateSessionDto,
   SessionDto,
   CreateSessionResponse,
+  GetSessionsResponse,
 } from "../types";
 import { QueryKeys } from "../../../shared";
 import { Api } from "../../../shared";
 
-const fetchSessions = async (): Promise<SessionDto[]> => {
-  const { data } = await Api.get<SessionDto[]>("/sessions");
+const fetchSessions = async (): Promise<GetSessionsResponse> => {
+  const { data } = await Api.get<GetSessionsResponse>("/sessions");
   return data;
 };
 

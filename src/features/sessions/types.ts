@@ -13,3 +13,8 @@ export interface CreateSessionDto {
 }
 
 export interface CreateSessionResponse extends SessionDto {}
+
+export interface GetSessionsResponse {
+  projects: ProjectDto[];
+  sessions: SessionDto[];
+}
