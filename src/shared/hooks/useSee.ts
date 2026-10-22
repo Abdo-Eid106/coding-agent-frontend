@@ -5,7 +5,7 @@ import {
   handleAgentError,
 } from "../../features/chats/hooks/useMessages";
 import { useQueryClient } from "@tanstack/react-query";
-import { useActiveSessions } from "../../features/sessions/hooks/session.queries";
+import { activeSessionsKey } from "../../features/sessions/hooks/session.queries";
 import { SessionStatus } from "../../features/sessions/enums/session-status";
 import type { SessionEvent } from "../../features/sessions/types";
 
@@ -13,7 +13,6 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export function useSSE() {
   const queryClient = useQueryClient();
-  const { addActiveSession, removeActiveSession } = useActiveSessions();
 
   useEffect(() => {
     const es = new EventSource(`${API_URL}/events`);
@@ -25,10 +24,20 @@ export function useSSE() {
     });
 
     es.addEventListener("session_status", (e) => {
-      const event = e.data as SessionEvent;
-      event.status == SessionStatus.RUNNING
-        ? addActiveSession(event.sessionId)
-        : removeActiveSession(event.sessionId);
+      try {
+        const event = JSON.parse((e as MessageEvent).data) as SessionEvent;
+        if (event.status === SessionStatus.RUNNING) {
+          queryClient.setQueryData<string[]>(activeSessionsKey, (old = []) =>
+            old.includes(event.sessionId) ? old : [...old, event.sessionId],
+          );
+        } else {
+          queryClient.setQueryData<string[]>(activeSessionsKey, (old = []) =>
+            old.filter((sessionId) => sessionId !== event.sessionId),
+          );
+        }
+      } catch (err) {
+        console.error("Failed to parse session_status event", err);
+      }
     });
 
     // "error" is used by both the server and the browser

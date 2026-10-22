@@ -11,22 +11,12 @@ export default function CreateSessionInput() {
   const [message, setMessage] = useState("");
   const selectedModelId = useChatStore((state) => state.selectedModelId);
   const selectedProjectId = useProjectStore((state) => state.selectedProjectId);
-  const isAgentRunning = useChatStore((state) => state.isAgentRunning);
-  const setIsAgentRunning = useChatStore((state) => state.setIsAgentRunning);
-
   const { mutate, isPending } = useCreateSession();
-
-  const isRunning = isPending || isAgentRunning;
-
-  const handleStop = () => {
-    setIsAgentRunning(false);
-  };
 
   const handleSend = () => {
     const messageContent = message.trim();
-    if (!messageContent || isRunning) return;
+    if (!messageContent || isPending) return;
 
-    setIsAgentRunning(true);
     mutate(
       {
         messageContent,
@@ -38,9 +28,6 @@ export default function CreateSessionInput() {
           setMessage("");
           navigate(`/sessions/${session.id}`);
         },
-        onError: () => {
-          setIsAgentRunning(false);
-        },
       },
     );
   };
@@ -50,8 +37,7 @@ export default function CreateSessionInput() {
       message={message}
       setMessage={setMessage}
       onSend={handleSend}
-      isPending={isRunning}
-      onStop={handleStop}
+      isPending={isPending}
     />
   );
 }

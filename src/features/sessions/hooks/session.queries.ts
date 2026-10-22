@@ -18,9 +18,13 @@ const fetchSession = async (id: string): Promise<SessionDto> => {
   return data;
 };
 
-const fetchActiveSessions = async () => {
-  const { data } = await Api.get<string[]>("/sessions");
+const fetchActiveSessions = async (): Promise<string[]> => {
+  const { data } = await Api.get<string[]>("/sessions/running");
   return data;
+};
+
+const stopSession = async (id: string): Promise<void> => {
+  await Api.post(`/sessions/${id}/stop`);
 };
 
 const createSession = async (
@@ -39,14 +43,6 @@ export const useFetchSessions = () =>
   useQuery({
     queryKey: [QueryKeys.SESSIONS],
     queryFn: fetchSessions,
-  });
-
-const activeSessionsKey = [QueryKeys.SESSIONS, "active"] as const;
-
-export const useFetchActiveSessions = () =>
-  useQuery({
-    queryKey: activeSessionsKey,
-    queryFn: fetchActiveSessions,
   });
 
 export const useFetchSession = (id?: string) =>
@@ -78,6 +74,14 @@ export const useDeleteSession = () => {
   });
 };
 
+export const activeSessionsKey = [QueryKeys.SESSIONS, "active"] as const;
+
+export const useFetchActiveSessions = () =>
+  useQuery({
+    queryKey: activeSessionsKey,
+    queryFn: fetchActiveSessions,
+  });
+
 export const useActiveSessions = () => {
   const queryClient = useQueryClient();
   const { data: sessionIds = [] } = useFetchActiveSessions();
@@ -93,7 +97,17 @@ export const useActiveSessions = () => {
     );
 
   const isActive = (sessionId: string) =>
-    sessionIds.some((id) => id == sessionId);
+    sessionIds.some((id) => id === sessionId);
 
-  return { isActive, addActiveSession, removeActiveSession };
+  return { isActive, addActiveSession, removeActiveSession, sessionIds };
+};
+
+export const useStopSession = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: stopSession,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: activeSessionsKey });
+    },
+  });
 };
