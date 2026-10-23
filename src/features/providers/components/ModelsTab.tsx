@@ -7,11 +7,7 @@ import ModelCard from "./ModelCard";
 
 const ALL = "all";
 
-interface ModelsTabProps {
-  onNavigateToProviders: () => void;
-}
-
-export default function ModelsTab({ onNavigateToProviders }: ModelsTabProps) {
+export default function ModelsTab() {
   const { data: providers = [], isLoading } = useFetchProviders();
 
   const [providerFilter, setProviderFilter] = useState<string>(ALL);
@@ -94,15 +90,6 @@ export default function ModelsTab({ onNavigateToProviders }: ModelsTabProps) {
                 ? `No models configured for ${selectedProvider.displayName}.`
                 : "Add a provider with models in the Providers tab to load models."}
             </p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="mt-2 cursor-pointer"
-              onClick={onNavigateToProviders}
-            >
-              Go to Providers
-            </Button>
           </div>
         )}
       </div>

@@ -1,32 +1,25 @@
 import { KeyRound, Cpu, Sliders, Palette } from "lucide-react";
 import { SettingsTab } from "../types";
-import { Badge } from "@/components/ui/badge";
 
 interface SettingsSidebarProps {
   activeTab: SettingsTab;
   onSelectTab: (tab: SettingsTab) => void;
-  configuredCount: number;
-  modelsCount?: number;
 }
 
 export default function SettingsSidebar({
   activeTab,
   onSelectTab,
-  configuredCount,
-  modelsCount,
 }: SettingsSidebarProps) {
   const navItems = [
     {
       id: SettingsTab.PROVIDERS,
       label: "Providers",
       icon: KeyRound,
-      badge: configuredCount > 0 ? configuredCount : undefined,
     },
     {
       id: SettingsTab.MODELS,
       label: "Models",
       icon: Cpu,
-      badge: modelsCount ?? 0,
     },
     {
       id: SettingsTab.GENERAL,
@@ -67,14 +60,6 @@ export default function SettingsSidebar({
               >
                 <Icon className="size-4 shrink-0" />
                 <span>{item.label}</span>
-                {item.badge !== undefined && (
-                  <Badge
-                    variant="outline"
-                    className="ml-auto text-[11px] font-mono px-1.5 py-0 h-4.5"
-                  >
-                    {item.badge}
-                  </Badge>
-                )}
               </button>
             );
           })}

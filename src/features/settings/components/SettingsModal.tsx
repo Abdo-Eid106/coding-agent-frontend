@@ -15,7 +15,6 @@ import ProvidersTab from "../../providers/components/ProvidersTab";
 import ModelsTab from "../../providers/components/ModelsTab";
 import AppearanceTab from "./AppearanceTab";
 import { useUIStore } from "../../main/hooks/useUIStore";
-import { useFetchProviders } from "@/features/providers/hooks/provider.queries";
 
 interface SettingsModalProps {
   isOpen?: boolean;
@@ -56,29 +55,13 @@ export default function SettingsModal({
     SettingsTab.PROVIDERS,
   );
 
-  const { data: providers = [] } = useFetchProviders();
-
-  const configuredCount = providers.filter((p) =>
-    Boolean(p.apiKey?.trim()),
-  ).length;
-
-  const totalModelsCount = providers.reduce(
-    (acc, p) => acc + (p.models?.length || 0),
-    0,
-  );
-
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         showCloseButton={false}
         className="w-[92vw] max-w-5xl h-[84vh] max-h-180 min-h-125 p-0 gap-0 overflow-hidden flex flex-row rounded-2xl border border-border bg-card text-card-foreground shadow-2xl sm:max-w-5xl"
       >
-        <SettingsSidebar
-          activeTab={activeTab}
-          onSelectTab={setActiveTab}
-          configuredCount={configuredCount}
-          modelsCount={totalModelsCount}
-        />
+        <SettingsSidebar activeTab={activeTab} onSelectTab={setActiveTab} />
 
         <main className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-background">
           <DialogHeader className="flex flex-row items-start justify-between px-6 py-5 border-b border-border space-y-0">
@@ -108,17 +91,8 @@ export default function SettingsModal({
 
           <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
             {activeTab === SettingsTab.PROVIDERS && <ProvidersTab />}
-
-            {activeTab === SettingsTab.MODELS && (
-              <ModelsTab
-                onNavigateToProviders={() =>
-                  setActiveTab(SettingsTab.PROVIDERS)
-                }
-              />
-            )}
-
+            {activeTab === SettingsTab.MODELS && <ModelsTab />}
             {activeTab === SettingsTab.APPEARANCE && <AppearanceTab />}
-
             {activeTab === SettingsTab.GENERAL && (
               <div className="h-64 flex flex-col items-center justify-center text-center p-8 border border-dashed border-border rounded-xl">
                 <Sliders className="size-10 text-muted-foreground mb-3 opacity-60" />
