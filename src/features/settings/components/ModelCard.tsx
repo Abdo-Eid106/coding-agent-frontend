@@ -6,6 +6,7 @@ export interface DisplayModel {
   apiModel: string;
   provider: string;
   providerName: string;
+  providerId?: string;
   contextWindow?: string;
   description?: string;
   tag?: string;

@@ -15,8 +15,10 @@ interface ProviderCardProps {
   savedKey: string;
   onSave: (providerId: string, key: string) => void;
   onClear?: (providerId: string) => void;
+  onDelete?: (providerId: string) => void;
   isSaving?: boolean;
   isRemoving?: boolean;
+  isDeleting?: boolean;
 }
 
 export default function ProviderCard({
@@ -24,8 +26,10 @@ export default function ProviderCard({
   savedKey,
   onSave,
   onClear,
+  onDelete,
   isSaving = false,
   isRemoving = false,
+  isDeleting = false,
 }: ProviderCardProps) {
   const [currentValue, setCurrentValue] = useState(savedKey);
   const [showKey, setShowKey] = useState(false);
@@ -45,14 +49,14 @@ export default function ProviderCard({
 
   const handleSave = () => {
     const trimmed = currentValue.trim();
-    if (!trimmed || isSaving || isRemoving) return;
+    if (!trimmed || isSaving || isRemoving || isDeleting) return;
     onSave(provider.id, trimmed);
     setJustSaved(true);
     setTimeout(() => setJustSaved(false), 2000);
   };
 
   const handleClear = () => {
-    if (isRemoving || isSaving) return;
+    if (isRemoving || isSaving || isDeleting) return;
     onClear?.(provider.id);
   };
 
@@ -86,15 +90,41 @@ export default function ProviderCard({
           </div>
         </div>
 
-        <a
-          href={provider.docsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground shrink-0 mt-1 cursor-pointer transition-colors"
-        >
-          <span>Get key</span>
-          <ExternalLink className="size-3" />
-        </a>
+        <div className="flex items-center gap-2.5 shrink-0 mt-1">
+          {provider.docsUrl && provider.docsUrl !== "#" && (
+            <a
+              href={provider.docsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+            >
+              <span>{onDelete ? "Endpoint" : "Get key"}</span>
+              <ExternalLink className="size-3" />
+            </a>
+          )}
+
+          {onDelete && (
+            <button
+              type="button"
+              onClick={() => onDelete(provider.id)}
+              disabled={isDeleting || isSaving || isRemoving}
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive cursor-pointer transition-colors disabled:opacity-50"
+              title="Delete provider"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="size-3 animate-spin" />
+                  <span>Deleting...</span>
+                </>
+              ) : (
+                <>
+                  <Trash2 className="size-3" />
+                  <span>Delete</span>
+                </>
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Input Row */}
@@ -111,7 +141,7 @@ export default function ProviderCard({
             <button
               type="button"
               onClick={handleClear}
-              disabled={isRemoving || isSaving}
+              disabled={isRemoving || isSaving || isDeleting}
               className="text-[11px] text-muted-foreground hover:text-destructive flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
             >
               {isRemoving ? (
@@ -136,7 +166,7 @@ export default function ProviderCard({
               type={showKey ? "text" : "password"}
               value={currentValue}
               onChange={(e) => setCurrentValue(e.target.value)}
-              disabled={isSaving || isRemoving}
+              disabled={isSaving || isRemoving || isDeleting}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSave();
               }}
@@ -149,7 +179,7 @@ export default function ProviderCard({
             <button
               type="button"
               onClick={() => setShowKey((v) => !v)}
-              disabled={isSaving || isRemoving}
+              disabled={isSaving || isRemoving || isDeleting}
               className="absolute right-2.5 p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer disabled:opacity-50"
               title={showKey ? "Hide API key" : "Show API key"}
             >
@@ -165,7 +195,7 @@ export default function ProviderCard({
             type="button"
             onClick={handleSave}
             disabled={
-              !isDirty || !currentValue.trim() || isSaving || isRemoving
+              !isDirty || !currentValue.trim() || isSaving || isRemoving || isDeleting
             }
             className="px-3.5 py-2 rounded-lg text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shrink-0 flex items-center gap-1.5"
           >

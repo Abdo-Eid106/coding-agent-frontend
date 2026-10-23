@@ -1,9 +1,7 @@
 import { useState, useMemo } from "react";
-import { Search, Loader2 } from "lucide-react";
-import { useFetchConfiguredProviders } from "../hooks/provider.queries";
+import { Loader2 } from "lucide-react";
+import { useFetchProviders } from "@/features/providers/hooks/provider.queries";
 import ModelCard, { type DisplayModel } from "./ModelCard";
-
-const PROVIDER_FILTERS = ["All", "Google", "Anthropic", "OpenAI"] as const;
 
 interface ModelsTabProps {
   onNavigateToProviders: () => void;
@@ -21,27 +19,55 @@ function formatTokens(count: number): string {
   return `${count} tokens`;
 }
 
+function getProviderDisplayName(provider: { id?: string; name?: string }): string {
+  const pName = (provider.name || provider.id || "").toLowerCase();
+  const pId = (provider.id || "").toLowerCase();
+  if (pName.includes("anthropic") || pId === "anthropic") {
+    return "Anthropic";
+  }
+  if (pName.includes("openai") || pId === "openai") {
+    return "OpenAI";
+  }
+  if (pName.includes("google") || pName.includes("gemini") || pId === "gemini") {
+    return "Google";
+  }
+  return provider.name || provider.id || "Custom";
+}
+
 export default function ModelsTab({ onNavigateToProviders }: ModelsTabProps) {
-  const [search, setSearch] = useState("");
   const [providerFilter, setProviderFilter] = useState<string>("All");
 
-  const { data: configuredProviders = [], isLoading } =
-    useFetchConfiguredProviders();
+  const { data: providers = [], isLoading } = useFetchProviders();
 
-  // Flatten models from configured providers
+  // Dynamically compute provider filters from all providers
+  const providerFilters = useMemo(() => {
+    const list: string[] = ["All"];
+    const builtIns = ["Google", "Anthropic", "OpenAI"];
+    const customNames = new Set<string>();
+
+    for (const provider of providers) {
+      const displayName = getProviderDisplayName(provider);
+      if (!builtIns.includes(displayName)) {
+        customNames.add(displayName);
+      }
+    }
+
+    // Always include standard built-in filters first
+    list.push(...builtIns);
+
+    // Append custom provider filters
+    Array.from(customNames)
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((name) => list.push(name));
+
+    return list;
+  }, [providers]);
+
+  // Flatten models from all providers
   const allModels: (DisplayModel & { isKeyConfigured: boolean })[] =
     useMemo(() => {
-      return configuredProviders.flatMap((provider) => {
-        let displayProvider = "Google";
-        const pName = provider.name.toLowerCase();
-        if (pName.includes("anthropic")) {
-          displayProvider = "Anthropic";
-        } else if (pName.includes("openai")) {
-          displayProvider = "OpenAI";
-        } else {
-          displayProvider = "Google";
-        }
-
+      return providers.flatMap((provider) => {
+        const displayProvider = getProviderDisplayName(provider);
         const isKeyConfigured = Boolean(provider.apiKey?.trim());
 
         return (provider.models || []).map((m) => ({
@@ -49,7 +75,7 @@ export default function ModelsTab({ onNavigateToProviders }: ModelsTabProps) {
           name: m.name,
           apiModel: m.apiModel,
           provider: displayProvider,
-          providerName: provider.name,
+          providerName: provider.name || provider.id,
           providerId: provider.id,
           contextWindow: m.contextWindow
             ? formatTokens(m.contextWindow)
@@ -60,66 +86,37 @@ export default function ModelsTab({ onNavigateToProviders }: ModelsTabProps) {
           isKeyConfigured,
         }));
       });
-    }, [configuredProviders]);
+    }, [providers]);
 
-  // Client-side filtering by provider tab and search keyword
+  // Client-side filtering by provider tab
   const filteredModels = useMemo(() => {
     return allModels.filter((model) => {
-      const matchesFilter =
+      return (
         providerFilter === "All" ||
-        model.provider.toLowerCase() === providerFilter.toLowerCase();
-
-      const q = search.trim().toLowerCase();
-      const matchesSearch =
-        !q ||
-        model.name.toLowerCase().includes(q) ||
-        model.apiModel.toLowerCase().includes(q) ||
-        model.provider.toLowerCase().includes(q) ||
-        model.providerName.toLowerCase().includes(q);
-
-      return matchesFilter && matchesSearch;
+        model.provider.toLowerCase() === providerFilter.toLowerCase() ||
+        model.providerName.toLowerCase() === providerFilter.toLowerCase() ||
+        model.providerId?.toLowerCase() === providerFilter.toLowerCase()
+      );
     });
-  }, [allModels, providerFilter, search]);
+  }, [allModels, providerFilter]);
 
   return (
     <div className="space-y-5 max-w-4xl">
-      {/* Search & Provider Filter Controls */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search models..."
-            className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-card border border-input text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
-          />
-          {search && (
-            <button
-              onClick={() => setSearch("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs"
-            >
-              ×
-            </button>
-          )}
-        </div>
-
-        {/* Filter Pills */}
-        <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
-          {PROVIDER_FILTERS.map((prov) => (
-            <button
-              key={prov}
-              onClick={() => setProviderFilter(prov)}
-              className={`px-2.5 py-1 text-xs rounded-lg font-medium transition-colors cursor-pointer shrink-0 ${
-                providerFilter === prov
-                  ? "bg-accent text-accent-foreground border border-border"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-              }`}
-            >
-              {prov}
-            </button>
-          ))}
-        </div>
+      {/* Provider Filter Pills */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2">
+        {providerFilters.map((prov) => (
+          <button
+            key={prov}
+            onClick={() => setProviderFilter(prov)}
+            className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors cursor-pointer shrink-0 ${
+              providerFilter === prov
+                ? "bg-accent text-accent-foreground border border-border"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+            }`}
+          >
+            {prov}
+          </button>
+        ))}
       </div>
 
       {/* Models List */}
@@ -147,11 +144,11 @@ export default function ModelsTab({ onNavigateToProviders }: ModelsTabProps) {
               No models found
             </p>
             <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-              {search || providerFilter !== "All"
-                ? "No models match your filter criteria."
-                : "No configured providers found. Add an API key in the Providers tab to load models."}
+              {providerFilter !== "All"
+                ? `No models found for ${providerFilter}.`
+                : "No models found. Add a provider or configure API keys in the Providers tab to load models."}
             </p>
-            {!search && providerFilter === "All" && (
+            {providerFilter === "All" && (
               <button
                 type="button"
                 onClick={onNavigateToProviders}

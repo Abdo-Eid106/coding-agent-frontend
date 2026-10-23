@@ -6,7 +6,7 @@ import ProvidersTab from "./ProvidersTab";
 import ModelsTab from "./ModelsTab";
 import AppearanceTab from "./AppearanceTab";
 import { useUIStore } from "../../main/hooks/useUIStore";
-import { useFetchConfiguredProviders } from "../hooks/provider.queries";
+import { useFetchProviders } from "@/features/providers/hooks/provider.queries";
 
 interface SettingsModalProps {
   isOpen?: boolean;
@@ -26,13 +26,13 @@ export default function SettingsModal({
   const [activeTab, setActiveTab] = useState<SettingsTab>("providers");
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const { data: configuredProviders = [] } = useFetchConfiguredProviders();
+  const { data: providers = [] } = useFetchProviders();
 
-  const configuredCount = configuredProviders.filter((p) =>
+  const configuredCount = providers.filter((p) =>
     Boolean(p.apiKey?.trim()),
   ).length;
 
-  const configuredModelsCount = configuredProviders.reduce(
+  const totalModelsCount = providers.reduce(
     (acc, p) => acc + (p.models?.length || 0),
     0,
   );
@@ -41,7 +41,7 @@ export default function SettingsModal({
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape" && !e.defaultPrevented) onClose();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -50,7 +50,7 @@ export default function SettingsModal({
   if (!isOpen) return null;
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+    if (e.target === e.currentTarget) {
       onClose();
     }
   };
@@ -89,7 +89,7 @@ export default function SettingsModal({
           activeTab={activeTab}
           onSelectTab={setActiveTab}
           configuredCount={configuredCount}
-          modelsCount={configuredModelsCount}
+          modelsCount={totalModelsCount}
         />
 
         <main className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-background">

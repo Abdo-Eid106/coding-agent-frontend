@@ -2,6 +2,14 @@ export interface AddApiKeyDto {
   apiKey: string;
 }
 
+export interface ConfiguredProviderDto {
+  id: string;
+  name: string;
+  apiKey: string | null;
+  baseUrl: string | null;
+  models: ModelDto[];
+}
+
 export interface ModelDto {
   id: string;
   name: string;
@@ -10,14 +18,6 @@ export interface ModelDto {
   defaultMaxTokens: number;
   supportsAttachments: boolean;
   provider: string;
-}
-
-export interface ConfiguredProviderDto {
-  id: string;
-  name: string;
-  apiKey: string | null;
-  baseUrl: string | null;
-  models: ModelDto[];
 }
 
 import type { LucideIcon } from "lucide-react";
