@@ -38,6 +38,7 @@ export const useCreateProject = () => {
     mutationFn: createProject,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.PROJECTS] });
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.SESSIONS] });
     },
   });
 };
@@ -45,9 +46,11 @@ export const useCreateProject = () => {
 export const useDeleteProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => deleteProject(id),
-    onSuccess: () => {
+    mutationFn: (projectId: string) => deleteProject(projectId),
+    onSuccess: (_) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.PROJECTS] });
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.SESSIONS] });
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.MESSAGES] });
     },
   });
 };
