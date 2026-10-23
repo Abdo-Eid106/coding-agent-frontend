@@ -6,10 +6,11 @@ import {
   useCallback,
 } from "react";
 import { toast } from "sonner";
-import { ArrowDown } from "lucide-react";
 import { useFetchMessages } from "../hooks/useMessages";
 import TurnItem from "./TurnItem";
 import type { MessageDto } from "../types";
+import { useActiveSessions } from "../../sessions/hooks/session.queries";
+import { ArrowDown, LoaderCircle } from "lucide-react";
 
 const BOTTOM_THRESHOLD_PX = 80;
 
@@ -55,6 +56,7 @@ interface MessageListProps {
 
 export default function MessagesList({ sessionId }: MessageListProps) {
   const { data, isPending, isError, error } = useFetchMessages(sessionId);
+  const { isActive } = useActiveSessions();
 
   useEffect(() => {
     if (isError) {
@@ -72,10 +74,22 @@ export default function MessagesList({ sessionId }: MessageListProps) {
     return <StatusMessage>Loading messages...</StatusMessage>;
   }
 
-  return <Messages key={sessionId} messages={data ?? []} />;
+  return (
+    <Messages
+      key={sessionId}
+      messages={data ?? []}
+      isActive={isActive(sessionId)}
+    />
+  );
 }
 
-function Messages({ messages }: { messages: MessageDto[] }) {
+function Messages({
+  messages,
+  isActive,
+}: {
+  messages: MessageDto[];
+  isActive: boolean;
+}) {
   const { scrollRef, atEnd, handleScroll, scrollToBottom } =
     useScrollToBottom<HTMLDivElement>();
 
@@ -92,6 +106,13 @@ function Messages({ messages }: { messages: MessageDto[] }) {
               <TurnItem message={message} />
             </div>
           ))}
+
+          {isActive && (
+            <div className="flex items-center gap-2 py-3 text-sm text-muted-foreground">
+              <LoaderCircle className="size-4 animate-spin" />
+              <span>Working</span>
+            </div>
+          )}
         </div>
       </div>
 
