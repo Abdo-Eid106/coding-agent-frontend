@@ -12,15 +12,10 @@ import {
 } from "../types";
 import {
   type AgentStreamEvent,
-  type AgentErrorEvent,
-  AgentEventEnum,
   type TokenEvent,
-  type ToolCallEvent,
 } from "../../../types/agent-stream-event";
-import { addToolCall } from "../../tools/hooks/useAddToolCall";
 import { QueryKeys } from "../../../shared";
 import { Api } from "../../../shared/api/axios-instance";
-import { toast } from "sonner";
 
 const fetchMessages = async (
   sessionId: string,
@@ -104,10 +99,8 @@ export const useAddMessage = (sessionId: string) => {
   });
 };
 
-type Handler<T> = (queryClient: QueryClient, event: T) => void;
-
-const addToken: Handler<AgentStreamEvent> = (queryClient, event) => {
-  const { sessionId, messageId, payload } = event as TokenEvent;
+export const addToken = (queryClient: QueryClient, event: TokenEvent) => {
+  const { sessionId, messageId, payload } = event;
   const { replyId, token } = payload;
 
   queryClient.setQueryData<
@@ -150,30 +143,9 @@ const addToken: Handler<AgentStreamEvent> = (queryClient, event) => {
   });
 };
 
-const finishMessage: Handler<AgentStreamEvent> = (queryClient, event) => {
+export const finishMessage = (
+  queryClient: QueryClient,
+  event: AgentStreamEvent,
+) => {
   queryClient.invalidateQueries({ queryKey: messagesKey(event.sessionId) });
-};
-
-const handleInterrupt: Handler<AgentStreamEvent> = (_queryClient, event) => {
-  console.log("interrupt", event.payload);
-};
-
-const handleToolStart: Handler<AgentStreamEvent> = (queryClient, event) => {
-  addToolCall(queryClient, event as ToolCallEvent);
-};
-
-const handleToolEnd: Handler<AgentStreamEvent> = (queryClient, event) => {
-  addToolCall(queryClient, event as ToolCallEvent);
-};
-
-export const agentHandlers = {
-  [AgentEventEnum.TOKEN]: addToken,
-  [AgentEventEnum.DONE]: finishMessage,
-  [AgentEventEnum.INTERRUPT]: handleInterrupt,
-  [AgentEventEnum.TOOL_START]: handleToolStart,
-  [AgentEventEnum.TOOL_END]: handleToolEnd,
-};
-
-export const handleAgentError = (event: AgentErrorEvent) => {
-  toast.error(event.error);
 };

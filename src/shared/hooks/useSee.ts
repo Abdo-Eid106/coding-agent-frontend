@@ -1,13 +1,17 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
-import {
-  agentHandlers,
-  handleAgentError,
-} from "../../features/chats/hooks/useMessages";
 import { useQueryClient } from "@tanstack/react-query";
 import { activeSessionsKey } from "../../features/sessions/hooks/session.queries";
 import { SessionStatus } from "../../features/sessions/enums/session-status";
 import type { SessionEvent } from "../../features/sessions/types";
+import {
+  AgentEventEnum,
+  type AgentErrorEvent,
+  type TokenEvent,
+  type ToolCallEvent,
+} from "../../types/agent-stream-event";
+import { addToolCall } from "../../features/tools/helpers/addToolCall";
+import { addToken } from "../../features/chats/hooks/useMessages";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -17,10 +21,17 @@ export function useSSE() {
   useEffect(() => {
     const es = new EventSource(`${API_URL}/events`);
 
-    Object.entries(agentHandlers).forEach(([type, handler]) => {
-      es.addEventListener(type, (e) => {
-        handler(queryClient, JSON.parse((e as MessageEvent).data));
-      });
+    es.addEventListener(AgentEventEnum.TOKEN, (e) => {
+      alert("TOkEN EVENT is " + JSON.stringify(e));
+      addToken(queryClient, e.data as TokenEvent);
+    });
+
+    es.addEventListener(AgentEventEnum.TOOL_START, (e) => {
+      addToolCall(queryClient, e.data as ToolCallEvent);
+    });
+
+    es.addEventListener(AgentEventEnum.TOOL_END, (e) => {
+      addToolCall(queryClient, e.data as ToolCallEvent);
     });
 
     es.addEventListener("session_status", (e) => {
@@ -45,7 +56,7 @@ export function useSSE() {
       const msg = e as MessageEvent;
 
       if (typeof msg.data === "string") {
-        handleAgentError(JSON.parse(msg.data));
+        toast.error((JSON.parse(msg.data) as AgentErrorEvent).error);
         return;
       }
 

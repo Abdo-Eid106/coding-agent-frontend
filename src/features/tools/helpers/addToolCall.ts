@@ -1,9 +1,5 @@
 import type { ToolCallEvent } from "../../../types/agent-stream-event";
-import {
-  QueryClient,
-  useQueryClient,
-  type InfiniteData,
-} from "@tanstack/react-query";
+import { QueryClient, type InfiniteData } from "@tanstack/react-query";
 import type { GetMessagesResponseDto } from "../../chats/types";
 import { messagesKey } from "../../chats/hooks/useMessages";
 import type { ToolCallDto } from "../types";
@@ -57,22 +53,17 @@ export const addToolCall = (queryClient: QueryClient, event: ToolCallEvent) => {
 
       return {
         ...page,
-        items: page.items.map((message) => {
-          if (message.id !== messageId) return message;
-
-          return {
-            ...message,
-            toolCalls: upsertToolCall(message.toolCalls, toolCall),
-          };
-        }),
+        items: page.items.map((message) =>
+          message.id === messageId
+            ? {
+                ...message,
+                toolCalls: upsertToolCall(message.toolCalls, toolCall),
+              }
+            : message,
+        ),
       };
     });
 
     return found ? { ...old, pages } : old;
   });
-};
-
-export const useAddToolCall = () => {
-  const queryClient = useQueryClient();
-  return (event: ToolCallEvent) => addToolCall(queryClient, event);
 };
