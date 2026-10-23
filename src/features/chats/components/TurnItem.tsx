@@ -5,7 +5,6 @@ import ToolCall from "../../tools/components/ToolCall";
 import rehypeHighlight from "rehype-highlight";
 import ReactMarkdown from "react-markdown";
 import type { MessageDto } from "../types";
-import { memo } from "react";
 
 import { useRef, useState, type ComponentPropsWithoutRef } from "react";
 import { Check, Copy } from "lucide-react";
