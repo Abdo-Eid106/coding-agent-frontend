@@ -1,15 +1,10 @@
 import {
-  useInfiniteQuery,
   useMutation,
   useQueryClient,
   QueryClient,
-  type InfiniteData,
+  useQuery,
 } from "@tanstack/react-query";
-import {
-  MessageRole,
-  type AddMessageDto,
-  type GetMessagesResponseDto,
-} from "../types";
+import { MessageRole, type AddMessageDto, type MessageDto } from "../types";
 import {
   type AgentStreamEvent,
   type TokenEvent,
@@ -20,8 +15,8 @@ import { Api } from "../../../shared/api/axios-instance";
 const fetchMessages = async (
   sessionId: string,
   cursor?: string,
-): Promise<GetMessagesResponseDto> => {
-  const { data } = await Api.get<GetMessagesResponseDto>(
+): Promise<MessageDto[]> => {
+  const { data } = await Api.get<MessageDto[]>(
     `sessions/${sessionId}/messages`,
     { params: { cursor } },
   );
@@ -43,12 +38,9 @@ const addMessage = async (
 };
 
 export const useFetchMessages = (sessionId?: string) => {
-  return useInfiniteQuery({
+  return useQuery({
     queryKey: messagesKey(sessionId!),
-    queryFn: ({ pageParam }) => fetchMessages(sessionId!, pageParam),
-    initialPageParam: undefined as string | undefined,
-    getPreviousPageParam: (firstPage) => firstPage.nextCursor ?? undefined,
-    getNextPageParam: (_) => undefined,
+    queryFn: () => fetchMessages(sessionId!),
     enabled: !!sessionId,
   });
 };
@@ -62,33 +54,17 @@ export const useAddMessage = (sessionId: string) => {
     onMutate: async (dto) => {
       await queryClient.cancelQueries({ queryKey });
 
-      const previousData =
-        queryClient.getQueryData<
-          InfiniteData<GetMessagesResponseDto, string | undefined>
-        >(queryKey);
+      const previousData = queryClient.getQueryData<MessageDto[]>(queryKey);
 
-      queryClient.setQueryData<
-        InfiniteData<GetMessagesResponseDto, string | undefined>
-      >(queryKey, (old) => {
-        if (!old || old.pages.length === 0) return old;
-
-        const optimisticMessage = {
+      queryClient.setQueryData<MessageDto[]>(queryKey, (old = []) => {
+        const optimisticMessage: MessageDto = {
           id: dto.messageId!,
           content: dto.messageContent,
           role: MessageRole.USER,
           createdAt: new Date().toISOString(),
         };
 
-        const pages = [...old.pages];
-        const lastPageIndex = pages.length - 1;
-        const lastPage = pages[lastPageIndex];
-
-        pages[lastPageIndex] = {
-          ...lastPage,
-          items: [...lastPage.items, optimisticMessage],
-        };
-
-        return { ...old, pages };
+        return [...old, optimisticMessage];
       });
 
       return { previousData };
@@ -108,33 +84,20 @@ export const addToken = (queryClient: QueryClient, event: TokenEvent) => {
 
   const key = messagesKey(sessionId);
 
-  console.log(
-    "[addToken] key:",
-    key,
-    "cache exists:",
-    !!queryClient.getQueryData(key),
-  );
-
-  queryClient.setQueryData<
-    InfiniteData<GetMessagesResponseDto, string | undefined>
-  >(key, (old) => {
+  queryClient.setQueryData<MessageDto[]>(key, (old) => {
     if (!old) {
       console.warn("[addToken] no cache for key");
       return old;
     }
 
-    const pageIdx = old.pages.findIndex((page) =>
-      page.items.some((message) => message.id === messageId),
-    );
+    const messageIdx = old.findIndex((m) => m.id === messageId);
 
-    if (pageIdx === -1) {
+    if (messageIdx === -1) {
       console.warn("[addToken] messageId not found:", messageId);
       return old;
     }
 
-    const page = old.pages[pageIdx];
-    const messageIdx = page.items.findIndex((m) => m.id === messageId);
-    const message = page.items[messageIdx];
+    const message = old[messageIdx];
     const replies = message.replies ?? [];
     const lastReply = replies.at(-1);
 
@@ -155,14 +118,10 @@ export const addToken = (queryClient: QueryClient, event: TokenEvent) => {
             },
           ];
 
-    const items = page.items.map((item, idx) =>
-      idx === messageIdx ? { ...item, replies: updatedReplies } : item,
-    );
+    const updatedMessages = [...old];
+    updatedMessages[messageIdx] = { ...message, replies: updatedReplies };
 
-    const pages = old.pages.slice();
-    pages[pageIdx] = { ...page, items };
-
-    return { ...old, pages };
+    return updatedMessages;
   });
 };
 
