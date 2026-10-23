@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Loader2, Plus, Globe } from "lucide-react";
-import ProviderCard from "@/features/settings/components/ProviderCard";
+import ProviderCard from "@/features/providers/components/ProviderCard";
 import { useFetchProviders } from "@/features/providers/hooks/provider.queries";
 import { Button } from "@/components/ui/button";
 import AddProvider from "./AddProviderModal";
