@@ -14,8 +14,10 @@ import { ArrowDown, LoaderCircle } from "lucide-react";
 
 const BOTTOM_THRESHOLD_PX = 80;
 
-function useScrollToBottom<T extends HTMLElement>() {
+function useScrollToBottom<T extends HTMLElement, C extends HTMLElement>() {
   const scrollRef = useRef<T>(null);
+  const contentRef = useRef<C>(null);
+  const stickRef = useRef(true);
   const [atEnd, setAtEnd] = useState(true);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
@@ -30,16 +32,30 @@ function useScrollToBottom<T extends HTMLElement>() {
     if (!el) return;
 
     const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-    setAtEnd(distanceFromBottom < BOTTOM_THRESHOLD_PX);
+    const isAtBottom = distanceFromBottom < BOTTOM_THRESHOLD_PX;
+    stickRef.current = isAtBottom;
+    setAtEnd(isAtBottom);
   }, []);
 
   useLayoutEffect(() => {
     scrollToBottom();
-    const id = requestAnimationFrame(() => scrollToBottom());
-    return () => cancelAnimationFrame(id);
   }, [scrollToBottom]);
 
-  return { scrollRef, atEnd, handleScroll, scrollToBottom };
+  useEffect(() => {
+    const content = contentRef.current;
+    if (!content) return;
+
+    const observer = new ResizeObserver(() => {
+      if (stickRef.current) {
+        scrollToBottom();
+      }
+    });
+
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, [scrollToBottom]);
+
+  return { scrollRef, contentRef, atEnd, handleScroll, scrollToBottom };
 }
 
 function StatusMessage({ children }: { children: React.ReactNode }) {
@@ -90,8 +106,8 @@ function Messages({
   messages: MessageDto[];
   isActive: boolean;
 }) {
-  const { scrollRef, atEnd, handleScroll, scrollToBottom } =
-    useScrollToBottom<HTMLDivElement>();
+  const { scrollRef, contentRef, atEnd, handleScroll, scrollToBottom } =
+    useScrollToBottom<HTMLDivElement, HTMLDivElement>();
 
   return (
     <div className="relative flex-1 min-h-0 min-w-0 flex flex-col">
@@ -100,7 +116,10 @@ function Messages({
         onScroll={handleScroll}
         className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden min-w-0 px-3 sm:px-4"
       >
-        <div className="relative mx-auto w-full max-w-3xl min-w-0 flex flex-col">
+        <div
+          ref={contentRef}
+          className="relative mx-auto w-full max-w-3xl min-w-0 flex flex-col"
+        >
           {messages.map((message) => (
             <div key={message.id} className="w-full py-3 sm:py-4">
               <TurnItem message={message} />
