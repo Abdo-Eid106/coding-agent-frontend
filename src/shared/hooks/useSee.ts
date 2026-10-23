@@ -8,6 +8,7 @@ import {
   AgentEventEnum,
   type AgentErrorEvent,
   type SessionEvent,
+  type ToolCallEvent,
 } from "../../types/agent-stream-event";
 
 import {
@@ -17,6 +18,7 @@ import {
 
 import { SessionStatus } from "../../features/sessions/enums/session-status";
 import { useActiveSessions } from "../../features/sessions/hooks/session.queries";
+import { addToolCall } from "../../features/tools/helpers/addToolCall";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -47,6 +49,12 @@ export const useSSE = () => {
     const onAgentError = (e: Event) =>
       handleEvent<AgentErrorEvent>(e, (event) => toast.error(event.error));
 
+    const onToolStart = (e: Event) =>
+      handleEvent<ToolCallEvent>(e, (event) => addToolCall(queryClient, event));
+
+    const onToolEnd = (e: Event) =>
+      handleEvent<ToolCallEvent>(e, (event) => addToolCall(queryClient, event));
+
     const onSessionStatus = (e: Event) =>
       handleEvent<SessionEvent>(e, (event) => {
         if (event.status === SessionStatus.RUNNING) {
@@ -59,6 +67,8 @@ export const useSSE = () => {
     es.addEventListener(AgentEventEnum.TOKEN, onToken);
     es.addEventListener(AgentEventEnum.DONE, onDone);
     es.addEventListener(AgentEventEnum.SESSION_STATUS, onSessionStatus);
+    es.addEventListener(AgentEventEnum.TOOL_START, onToolStart);
+    es.addEventListener(AgentEventEnum.TOOL_END, onToolEnd);
     es.addEventListener(AgentEventEnum.ERROR, onAgentError);
 
     return () => es.close();
