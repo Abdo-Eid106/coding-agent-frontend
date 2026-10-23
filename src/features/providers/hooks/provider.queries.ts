@@ -1,4 +1,4 @@
-import type { AddCustomProviderDto } from "../types";
+import type { AddProviderDto, UpdateProviderDto } from "../types";
 import { Api, QueryKeys } from "../../../shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AddApiKeyDto, ProviderDto } from "../types";
@@ -13,11 +13,15 @@ const fetchConfiguredProviders = async (): Promise<ProviderDto[]> => {
   return data;
 };
 
-const addCustomProvider = async (dto: AddCustomProviderDto): Promise<void> => {
+const addProvider = async (dto: AddProviderDto): Promise<void> => {
   await Api.post("/providers", dto);
 };
 
-const deleteCustomProvider = async (providerId: string): Promise<void> => {
+const updateProvider = async (id: string, dto: UpdateProviderDto) => {
+  await Api.put(`/providers/${id}`, dto);
+};
+
+const deleteProvider = async (providerId: string): Promise<void> => {
   await Api.delete(`/providers/${providerId}`);
 };
 
@@ -47,10 +51,10 @@ export const useFetchConfiguredProviders = () =>
     queryFn: fetchConfiguredProviders,
   });
 
-export const useAddCustomProvider = () => {
+export const useAddProvider = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: addCustomProvider,
+    mutationFn: addProvider,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QueryKeys.PROVIDERS],
@@ -69,6 +73,16 @@ export const useAddProviderApiKey = () => {
   });
 };
 
+export const useUpdateProvider = (id: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: UpdateProviderDto) => updateProvider(id, dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.PROVIDERS] });
+    },
+  });
+};
+
 export const useRemoveProviderApiKey = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -79,10 +93,10 @@ export const useRemoveProviderApiKey = () => {
   });
 };
 
-export const useDeleteCustomProvider = () => {
+export const useDeleteProvider = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteCustomProvider,
+    mutationFn: deleteProvider,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.PROVIDERS] });
     },

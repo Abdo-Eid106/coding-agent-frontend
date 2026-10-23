@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { X, Sliders } from "lucide-react";
 import { type SettingsTab } from "../types";
 import SettingsSidebar from "./SettingsSidebar";
-import ProvidersTab from "./ProvidersTab";
+import ProvidersTab from "../../providers/components/ProvidersTab";
 import ModelsTab from "./ModelsTab";
 import AppearanceTab from "./AppearanceTab";
 import { useUIStore } from "../../main/hooks/useUIStore";

@@ -20,7 +20,7 @@ function Status({ children }: { children: React.ReactNode }) {
 
 type Model = {
   id: string;
-  name: string;
+  displayName: string;
   contextWindow?: number | null;
 };
 
@@ -45,7 +45,7 @@ function ModelOption({
     >
       <div className="mr-2 flex min-w-0 flex-col items-start">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="truncate">{model.name}</span>
+          <span className="truncate">{model.displayName}</span>
           {!!model.contextWindow && (
             <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
               {formatTokens(model.contextWindow)}
@@ -82,8 +82,8 @@ export default function ModelSelector() {
   // Keep the store in sync: fall back to the first model if the selection is gone
   useEffect(() => {
     if (!current) return;
-    if (current.id !== selectedModelId || current.name !== selectedModel) {
-      setSelectedModel(current.name, current.id);
+    if (current.id !== selectedModelId || current.displayName !== selectedModel) {
+      setSelectedModel(current.displayName, current.id);
     }
   }, [current, selectedModelId, selectedModel, setSelectedModel]);
 
@@ -119,7 +119,7 @@ export default function ModelSelector() {
     return groups.map((provider) => (
       <div key={provider.id} className="py-1">
         <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {provider.name}
+          {provider.displayName}
         </div>
         {provider.models.map((model) => (
           <ModelOption
@@ -127,7 +127,7 @@ export default function ModelSelector() {
             model={model}
             selected={model.id === current?.id}
             onSelect={() => {
-              setSelectedModel(model.name, model.id);
+              setSelectedModel(model.displayName, model.id);
               setIsOpen(false);
             }}
           />
@@ -146,7 +146,7 @@ export default function ModelSelector() {
       >
         {isLoading && <Loader2 className="size-3 animate-spin text-primary shrink-0" />}
         <span className="truncate">
-          {isLoading ? "Loading..." : (current?.name ?? "Select Model")}
+          {isLoading ? "Loading..." : (current?.displayName ?? "Select Model")}
         </span>
         <ChevronDown
           className={`size-3 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}

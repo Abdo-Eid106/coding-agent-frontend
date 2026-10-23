@@ -5,12 +5,17 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import ModelSelector from "../ModelSelector";
 
+import { cn } from "@/lib/utils";
+
 interface ChatInputBaseProps {
   message: string;
   setMessage: (message: string) => void;
   onSend: () => void;
   isPending: boolean;
   onStop?: () => void;
+  disabled?: boolean;
+  placeholder?: string;
+  className?: string;
 }
 
 export default function ChatInputBase({
@@ -19,6 +24,9 @@ export default function ChatInputBase({
   onSend,
   isPending,
   onStop,
+  disabled = false,
+  placeholder,
+  className,
 }: ChatInputBaseProps) {
   const [isPreview, setIsPreview] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -34,7 +42,7 @@ export default function ChatInputBase({
   }, [message, isPreview]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key !== "Enter" || e.shiftKey || e.nativeEvent.isComposing) {
+    if (disabled || e.key !== "Enter" || e.shiftKey || e.nativeEvent.isComposing) {
       return;
     }
 
@@ -45,6 +53,7 @@ export default function ChatInputBase({
   };
 
   const handleActionClick = () => {
+    if (disabled) return;
     if (isPending) {
       onStop?.();
     } else {
@@ -53,7 +62,12 @@ export default function ChatInputBase({
   };
 
   return (
-    <div className="rounded-xl border border-border bg-popover text-popover-foreground shadow-xs">
+    <div
+      className={cn(
+        "rounded-xl border border-border bg-popover text-popover-foreground shadow-xs",
+        className,
+      )}
+    >
       <div className="px-4 pt-3 pb-2">
         {isPreview ? (
           <div className="w-full min-h-10 max-h-60 overflow-y-auto text-sm text-foreground prose prose-sm dark:prose-invert max-w-none wrap-anywhere min-w-0">
@@ -76,9 +90,12 @@ export default function ChatInputBase({
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type your message… (Markdown supported)"
+            disabled={disabled || isPending}
+            placeholder={
+              placeholder ?? "Type your message… (Markdown supported)"
+            }
             rows={1}
-            className="w-full resize-none bg-transparent text-foreground text-sm placeholder:text-muted-foreground focus:outline-none min-h-10 max-h-60 overflow-y-auto leading-relaxed"
+            className="w-full resize-none bg-transparent text-foreground text-sm placeholder:text-muted-foreground focus:outline-none min-h-10 max-h-60 overflow-y-auto leading-relaxed disabled:cursor-not-allowed disabled:opacity-60"
           />
         )}
       </div>
@@ -89,8 +106,9 @@ export default function ChatInputBase({
 
           <button
             type="button"
+            disabled={disabled}
             onClick={() => setIsPreview((prev) => !prev)}
-            className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer shrink-0 ${
+            className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed ${
               isPreview
                 ? "bg-accent text-accent-foreground"
                 : "text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -114,7 +132,7 @@ export default function ChatInputBase({
         <button
           type="button"
           onClick={handleActionClick}
-          disabled={!isPending && !message.trim()}
+          disabled={disabled || (!isPending && !message.trim())}
           className="flex cursor-pointer items-center justify-center rounded-lg bg-primary p-1.5 text-primary-foreground shadow-xs transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
           title={isPending ? "Stop generating" : "Send message"}
         >

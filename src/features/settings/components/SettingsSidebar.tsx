@@ -85,23 +85,6 @@ export default function SettingsSidebar({
           </button>
         </nav>
       </div>
-
-      {/* User Profile */}
-      <div className="pt-3 border-t border-border">
-        <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-accent transition-colors">
-          <div className="size-7 rounded-full bg-muted text-foreground border border-border flex items-center justify-center font-medium text-xs shrink-0">
-            A
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-medium truncate text-foreground">
-              Abdo Eid
-            </p>
-            <p className="text-[11px] text-muted-foreground truncate">
-              abdoeid2121@gmail.com
-            </p>
-          </div>
-        </div>
-      </div>
     </aside>
   );
 }

@@ -5,7 +5,17 @@ import { useChatStore } from "../../hooks/useChatStore";
 import { useProjectStore } from "../../../projects/hooks/useProjectStore";
 import ChatInputBase from "./Base";
 
-export default function CreateSessionInput() {
+interface CreateSessionInputProps {
+  disabled?: boolean;
+  placeholder?: string;
+  className?: string;
+}
+
+export default function CreateSessionInput({
+  disabled,
+  placeholder,
+  className,
+}: CreateSessionInputProps = {}) {
   const navigate = useNavigate();
 
   const [message, setMessage] = useState("");
@@ -38,6 +48,9 @@ export default function CreateSessionInput() {
       setMessage={setMessage}
       onSend={handleSend}
       isPending={isPending}
+      disabled={disabled}
+      placeholder={placeholder}
+      className={className}
     />
   );
 }

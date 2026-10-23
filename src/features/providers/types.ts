@@ -1,14 +1,21 @@
-export interface AddCustomModel {
-  modelId: string;
+export interface AddModelDto {
+  id: string;
   displayName: string;
 }
 
-export interface AddCustomProviderDto {
-  providerId: string;
+export interface AddProviderDto {
+  id: string;
   displayName: string;
   baseUrl: string;
   apiKey: string;
-  models: AddCustomModel[];
+  models: AddModelDto[];
+}
+
+export interface UpdateProviderDto {
+  displayName: string;
+  baseUrl: string;
+  apiKey: string;
+  models: AddModelDto[];
 }
 
 export interface AddApiKeyDto {
@@ -17,7 +24,7 @@ export interface AddApiKeyDto {
 
 export interface ModelDto {
   id: string;
-  name: string;
+  displayName: string;
   apiModel: string;
   contextWindow: number;
   defaultMaxTokens: number;
@@ -27,8 +34,8 @@ export interface ModelDto {
 
 export interface ProviderDto {
   id: string;
-  name: string;
-  apiKey: string | null;
-  baseUrl: string | null;
+  displayName: string;
+  apiKey: string;
+  baseUrl: string;
   models: ModelDto[];
 }

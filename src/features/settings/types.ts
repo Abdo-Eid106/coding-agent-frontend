@@ -4,7 +4,7 @@ export interface AddApiKeyDto {
 
 export interface ConfiguredProviderDto {
   id: string;
-  name: string;
+  displayName: string;
   apiKey: string | null;
   baseUrl: string | null;
   models: ModelDto[];
@@ -12,7 +12,7 @@ export interface ConfiguredProviderDto {
 
 export interface ModelDto {
   id: string;
-  name: string;
+  displayName: string;
   apiModel: string;
   contextWindow: number;
   defaultMaxTokens: number;
@@ -26,8 +26,8 @@ import { Sparkles, Bot, BrainCircuit } from "lucide-react";
 export type SettingsTab = "providers" | "models" | "general" | "appearance";
 
 export interface ProviderConfig {
-  id: "gemini" | "openai" | "anthropic";
-  name: string;
+  id: string;
+  displayName: string;
   tagline: string;
   models: string;
   placeholder: string;
@@ -38,7 +38,7 @@ export interface ProviderConfig {
 export const PROVIDERS_CONFIG: ProviderConfig[] = [
   {
     id: "gemini",
-    name: "Google Gemini",
+    displayName: "Google Gemini",
     tagline: "High-speed reasoning & multimodal capabilities",
     models: "Gemini 3.8 Flash, 2.5 Pro, 2.5 Flash",
     placeholder: "AIzaSy...",
@@ -47,7 +47,7 @@ export const PROVIDERS_CONFIG: ProviderConfig[] = [
   },
   {
     id: "openai",
-    name: "OpenAI",
+    displayName: "OpenAI",
     tagline: "Industry standard models & deep reasoning",
     models: "GPT-4o, GPT-4o mini, o1, o3-mini",
     placeholder: "sk-proj-...",
@@ -56,7 +56,7 @@ export const PROVIDERS_CONFIG: ProviderConfig[] = [
   },
   {
     id: "anthropic",
-    name: "Anthropic",
+    displayName: "Anthropic",
     tagline: "Exceptional coding & nuanced reasoning",
     models: "Claude 3.7 Sonnet, Opus 4.6, 3.5 Haiku",
     placeholder: "sk-ant-api03-...",

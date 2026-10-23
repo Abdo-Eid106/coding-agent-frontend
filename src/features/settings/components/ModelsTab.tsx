@@ -19,8 +19,8 @@ function formatTokens(count: number): string {
   return `${count} tokens`;
 }
 
-function getProviderDisplayName(provider: { id?: string; name?: string }): string {
-  const pName = (provider.name || provider.id || "").toLowerCase();
+function getProviderDisplayName(provider: { id?: string; displayName?: string; name?: string }): string {
+  const pName = (provider.displayName || provider.name || provider.id || "").toLowerCase();
   const pId = (provider.id || "").toLowerCase();
   if (pName.includes("anthropic") || pId === "anthropic") {
     return "Anthropic";
@@ -31,7 +31,7 @@ function getProviderDisplayName(provider: { id?: string; name?: string }): strin
   if (pName.includes("google") || pName.includes("gemini") || pId === "gemini") {
     return "Google";
   }
-  return provider.name || provider.id || "Custom";
+  return provider.displayName || provider.name || provider.id || "Other";
 }
 
 export default function ModelsTab({ onNavigateToProviders }: ModelsTabProps) {
@@ -43,20 +43,20 @@ export default function ModelsTab({ onNavigateToProviders }: ModelsTabProps) {
   const providerFilters = useMemo(() => {
     const list: string[] = ["All"];
     const builtIns = ["Google", "Anthropic", "OpenAI"];
-    const customNames = new Set<string>();
+    const otherNames = new Set<string>();
 
     for (const provider of providers) {
       const displayName = getProviderDisplayName(provider);
       if (!builtIns.includes(displayName)) {
-        customNames.add(displayName);
+        otherNames.add(displayName);
       }
     }
 
     // Always include standard built-in filters first
     list.push(...builtIns);
 
-    // Append custom provider filters
-    Array.from(customNames)
+    // Append additional provider filters
+    Array.from(otherNames)
       .sort((a, b) => a.localeCompare(b))
       .forEach((name) => list.push(name));
 
@@ -72,10 +72,10 @@ export default function ModelsTab({ onNavigateToProviders }: ModelsTabProps) {
 
         return (provider.models || []).map((m) => ({
           id: m.id,
-          name: m.name,
+          name: m.displayName || (m as any).name || m.id,
           apiModel: m.apiModel,
           provider: displayProvider,
-          providerName: provider.name || provider.id,
+          providerName: provider.displayName || (provider as any).name || provider.id,
           providerId: provider.id,
           contextWindow: m.contextWindow
             ? formatTokens(m.contextWindow)

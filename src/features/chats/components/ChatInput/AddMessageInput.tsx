@@ -9,7 +9,17 @@ import {
 } from "../../../sessions/hooks/session.queries";
 import ChatInputBase from "./Base";
 
-export default function AddMessageInput() {
+interface AddMessageInputProps {
+  disabled?: boolean;
+  placeholder?: string;
+  className?: string;
+}
+
+export default function AddMessageInput({
+  disabled,
+  placeholder,
+  className,
+}: AddMessageInputProps = {}) {
   const { sessionId } = useParams<{ sessionId: string }>();
 
   const [message, setMessage] = useState("");
@@ -53,6 +63,9 @@ export default function AddMessageInput() {
       onSend={handleSend}
       isPending={isRunning || isStopping}
       onStop={handleStop}
+      disabled={disabled}
+      placeholder={placeholder}
+      className={className}
     />
   );
 }
