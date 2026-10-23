@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { MessageSquare, Trash2 } from "lucide-react";
+import { Trash2, CircleStop } from "lucide-react";
 import { useUIStore } from "../hooks/useUIStore";
 import { type SessionDto } from "../../sessions/types";
 import { useCurrentSessionId } from "../../sessions/hooks/useCurrentSessionId";
@@ -7,7 +7,6 @@ import {
   useActiveSessions,
   useStopSession,
 } from "../../sessions/hooks/session.queries";
-import AntigravityPauseIcon from "../../../shared/components/AntigravityPauseIcon";
 
 interface SessionItemProps {
   session: SessionDto;
@@ -58,7 +57,9 @@ export default function SessionItem({ session }: SessionItemProps) {
           : "text-muted-foreground hover:text-foreground hover:bg-accent"
       }`}
     >
-      <span className="truncate ps-7">{session.title || "Untitled Session"}</span>
+      <span className="truncate ps-7">
+        {session.title || "Untitled Session"}
+      </span>
 
       <div className="flex items-center gap-1 shrink-0 ml-1">
         {isRunning && (
@@ -69,7 +70,7 @@ export default function SessionItem({ session }: SessionItemProps) {
             className="size-6 flex items-center justify-center text-foreground hover:text-destructive rounded transition-colors cursor-pointer"
             title="Stop session"
           >
-            <AntigravityPauseIcon className="size-3.5" />
+            <CircleStop className="size-3.5" />
           </button>
         )}
 

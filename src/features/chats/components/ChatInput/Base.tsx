@@ -4,7 +4,6 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import ModelSelector from "../ModelSelector";
-import AntigravityPauseIcon from "../../../../shared/components/AntigravityPauseIcon";
 
 interface ChatInputBaseProps {
   message: string;
