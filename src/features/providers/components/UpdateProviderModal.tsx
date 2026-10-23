@@ -56,7 +56,7 @@ export default function UpdateProvider({
           <DialogHeader className="gap-4 text-left pb-6">
             <div className="flex items-center gap-4">
               <Sparkles className="size-5" />
-              <DialogTitle className="text-xl">Add provider</DialogTitle>
+              <DialogTitle className="text-xl">Edit provider</DialogTitle>
             </div>
             <DialogDescription>
               Configure an OpenAI-compatible provider.

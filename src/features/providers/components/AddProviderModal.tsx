@@ -43,7 +43,7 @@ export default function AddProvider({ open, onOpenChange }: AddProviderProps) {
           <DialogHeader className="gap-4 text-left pb-6">
             <div className="flex items-center gap-4">
               <Sparkles className="size-5" />
-              <DialogTitle className="text-xl">Edit provider</DialogTitle>
+              <DialogTitle className="text-xl">Add provider</DialogTitle>
             </div>
             <DialogDescription>
               Update provider configuration and models.
