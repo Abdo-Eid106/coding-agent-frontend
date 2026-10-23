@@ -11,7 +11,7 @@ import { useRef, useState, type ComponentPropsWithoutRef } from "react";
 import { Check, Copy } from "lucide-react";
 import { cn } from "../../../shared/lib/cn";
 
-function TurnItem({ message }: { message: MessageDto }) {
+export default function TurnItem({ message }: { message: MessageDto }) {
   const replies = message.replies ?? [];
 
   return (
@@ -61,10 +61,6 @@ function TurnItem({ message }: { message: MessageDto }) {
     </div>
   );
 }
-
-export default memo(TurnItem, (prevProps, nextProps) => {
-  return prevProps.message.id === nextProps.message.id;
-});
 
 function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<"pre">) {
   const preRef = useRef<HTMLPreElement>(null);
