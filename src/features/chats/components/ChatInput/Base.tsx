@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, type KeyboardEvent } from "react";
-import { Send, Square, Eye, PenLine } from "lucide-react";
+import { Send, Eye, PenLine } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import ModelSelector from "../ModelSelector";
+import AntigravityPauseIcon from "../../../../shared/components/AntigravityPauseIcon";
 
 interface ChatInputBaseProps {
   message: string;
@@ -119,7 +120,7 @@ export default function ChatInputBase({
           title={isPending ? "Stop generating" : "Send message"}
         >
           {isPending ? (
-            <Square className="size-3.5 fill-current" />
+            <AntigravityPauseIcon className="size-3.5" />
           ) : (
             <Send className="size-3.5" />
           )}

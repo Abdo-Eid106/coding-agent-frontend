@@ -3,6 +3,11 @@ import { MessageSquare, Trash2 } from "lucide-react";
 import { useUIStore } from "../hooks/useUIStore";
 import { type SessionDto } from "../../sessions/types";
 import { useCurrentSessionId } from "../../sessions/hooks/useCurrentSessionId";
+import {
+  useActiveSessions,
+  useStopSession,
+} from "../../sessions/hooks/session.queries";
+import AntigravityPauseIcon from "../../../shared/components/AntigravityPauseIcon";
 
 interface SessionItemProps {
   session: SessionDto;
@@ -14,13 +19,24 @@ export default function SessionItem({ session }: SessionItemProps) {
   const navigate = useNavigate();
   const openDeleteSession = useUIStore((s) => s.openDeleteSession);
   const setSidebarOpen = useUIStore((s) => s.setSidebarOpen);
+  const { isActive: isSessionRunning } = useActiveSessions();
+  const { mutate: stopSession, isPending: isStopping } = useStopSession();
 
   const isActive = sessionId === session.id;
+  const isRunning = isSessionRunning(session.id);
 
   const handleClick = () => {
     navigate(`/sessions/${session.id}`);
     if (typeof window !== "undefined" && window.innerWidth < 768) {
       setSidebarOpen(false);
+    }
+  };
+
+  const handleStop = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!isStopping) {
+      stopSession(session.id);
     }
   };
 
@@ -47,14 +63,28 @@ export default function SessionItem({ session }: SessionItemProps) {
         <span className="truncate">{session.title || "Untitled Session"}</span>
       </div>
 
-      <button
-        type="button"
-        onClick={handleDelete}
-        className="opacity-0 group-hover/session:opacity-100 size-6 flex items-center justify-center text-muted-foreground hover:text-destructive rounded transition-opacity cursor-pointer shrink-0"
-        title="Delete session"
-      >
-        <Trash2 className="size-3.5" />
-      </button>
+      <div className="flex items-center gap-1 shrink-0 ml-1">
+        {isRunning && (
+          <button
+            type="button"
+            onClick={handleStop}
+            disabled={isStopping}
+            className="size-6 flex items-center justify-center text-foreground hover:text-destructive rounded transition-colors cursor-pointer"
+            title="Stop session"
+          >
+            <AntigravityPauseIcon className="size-3.5" />
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="opacity-0 group-hover/session:opacity-100 size-6 flex items-center justify-center text-muted-foreground hover:text-destructive rounded transition-opacity cursor-pointer shrink-0"
+          title="Delete session"
+        >
+          <Trash2 className="size-3.5" />
+        </button>
+      </div>
     </div>
   );
 }
