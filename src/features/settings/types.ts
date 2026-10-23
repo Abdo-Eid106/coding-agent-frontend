@@ -23,7 +23,12 @@ export interface ModelDto {
 import type { LucideIcon } from "lucide-react";
 import { Sparkles, Bot, BrainCircuit } from "lucide-react";
 
-export type SettingsTab = "providers" | "models" | "general" | "appearance";
+export enum SettingsTab {
+  PROVIDERS = "providers",
+  MODELS = "models",
+  GENERAL = "general",
+  APPEARANCE = "appearance",
+}
 
 export interface ProviderConfig {
   id: string;

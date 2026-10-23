@@ -1,5 +1,6 @@
 import { KeyRound, Cpu, Sliders, Palette } from "lucide-react";
-import type { SettingsTab } from "../types";
+import { SettingsTab } from "../types";
+import { Badge } from "@/components/ui/badge";
 
 interface SettingsSidebarProps {
   activeTab: SettingsTab;
@@ -14,6 +15,31 @@ export default function SettingsSidebar({
   configuredCount,
   modelsCount,
 }: SettingsSidebarProps) {
+  const navItems = [
+    {
+      id: SettingsTab.PROVIDERS,
+      label: "Providers",
+      icon: KeyRound,
+      badge: configuredCount > 0 ? configuredCount : undefined,
+    },
+    {
+      id: SettingsTab.MODELS,
+      label: "Models",
+      icon: Cpu,
+      badge: modelsCount ?? 0,
+    },
+    {
+      id: SettingsTab.GENERAL,
+      label: "General",
+      icon: Sliders,
+    },
+    {
+      id: SettingsTab.APPEARANCE,
+      label: "Appearance",
+      icon: Palette,
+    },
+  ];
+
   return (
     <aside className="w-56 sm:w-64 min-w-56 shrink-0 border-r border-border bg-sidebar flex flex-col justify-between p-3 select-none">
       <div className="space-y-4">
@@ -24,65 +50,34 @@ export default function SettingsSidebar({
         </div>
 
         <nav className="space-y-1">
-          {/* Providers */}
-          <button
-            onClick={() => onSelectTab("providers")}
-            className={`flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-              activeTab === "providers"
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent"
-            }`}
-          >
-            <KeyRound className="size-4 shrink-0" />
-            <span>Providers</span>
-            {configuredCount > 0 && (
-              <span className="ml-auto text-[11px] font-mono px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground border border-border">
-                {configuredCount}
-              </span>
-            )}
-          </button>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
 
-          {/* Models */}
-          <button
-            onClick={() => onSelectTab("models")}
-            className={`flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-              activeTab === "models"
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent"
-            }`}
-          >
-            <Cpu className="size-4 shrink-0" />
-            <span>Models</span>
-            <span className="ml-auto text-[11px] font-mono px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground border border-border">
-              {modelsCount ?? 0}
-            </span>
-          </button>
-
-          {/* General */}
-          <button
-            onClick={() => onSelectTab("general")}
-            className={`flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-              activeTab === "general"
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent"
-            }`}
-          >
-            <Sliders className="size-4 shrink-0" />
-            <span>General</span>
-          </button>
-
-          {/* Appearance */}
-          <button
-            onClick={() => onSelectTab("appearance")}
-            className={`flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-              activeTab === "appearance"
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent"
-            }`}
-          >
-            <Palette className="size-4 shrink-0" />
-            <span>Appearance</span>
-          </button>
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onSelectTab(item.id)}
+                className={`flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                  isActive
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                }`}
+              >
+                <Icon className="size-4 shrink-0" />
+                <span>{item.label}</span>
+                {item.badge !== undefined && (
+                  <Badge
+                    variant="outline"
+                    className="ml-auto text-[11px] font-mono px-1.5 py-0 h-4.5"
+                  >
+                    {item.badge}
+                  </Badge>
+                )}
+              </button>
+            );
+          })}
         </nav>
       </div>
     </aside>
