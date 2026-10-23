@@ -22,16 +22,17 @@ export function useSSE() {
     const es = new EventSource(`${API_URL}/events`);
 
     es.addEventListener(AgentEventEnum.TOKEN, (e) => {
-      alert("TOkEN EVENT is " + JSON.stringify(e));
-      addToken(queryClient, e.data as TokenEvent);
+      const event = JSON.parse((e as MessageEvent<string>).data) as TokenEvent;
+      addToken(queryClient, event);
     });
 
-    es.addEventListener(AgentEventEnum.TOOL_START, (e) => {
-      addToolCall(queryClient, e.data as ToolCallEvent);
-    });
-
-    es.addEventListener(AgentEventEnum.TOOL_END, (e) => {
-      addToolCall(queryClient, e.data as ToolCallEvent);
+    [AgentEventEnum.TOOL_START, AgentEventEnum.TOOL_END].map((type) => {
+      es.addEventListener(type, (e) => {
+        const event = JSON.parse(
+          (e as MessageEvent<string>).data,
+        ) as ToolCallEvent;
+        addToolCall(queryClient, event);
+      });
     });
 
     es.addEventListener("session_status", (e) => {
