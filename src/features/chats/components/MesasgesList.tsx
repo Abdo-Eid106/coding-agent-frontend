@@ -1,9 +1,53 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { toast } from "sonner";
+import { ArrowDown } from "lucide-react";
 import { useFetchMessages } from "../hooks/useMessages";
 import TurnItem from "./TurnItem";
-import { ArrowDown } from "lucide-react";
 import type { MessageDto } from "../types";
+
+const BOTTOM_THRESHOLD_PX = 80;
+
+function useScrollToBottom<T extends HTMLElement>() {
+  const scrollRef = useRef<T>(null);
+  const [atEnd, setAtEnd] = useState(true);
+
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
+    const el = scrollRef.current;
+    if (el) {
+      el.scrollTo({ top: el.scrollHeight, behavior });
+    }
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setAtEnd(distanceFromBottom < BOTTOM_THRESHOLD_PX);
+  }, []);
+
+  useLayoutEffect(() => {
+    scrollToBottom();
+    const id = requestAnimationFrame(() => scrollToBottom());
+    return () => cancelAnimationFrame(id);
+  }, [scrollToBottom]);
+
+  return { scrollRef, atEnd, handleScroll, scrollToBottom };
+}
+
+function StatusMessage({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex flex-1 items-center justify-center px-4 py-20 text-center text-sm text-muted-foreground min-w-0">
+      {children}
+    </div>
+  );
+}
 
 interface MessageListProps {
   sessionId?: string;
@@ -20,55 +64,20 @@ export default function MessagesList({ sessionId }: MessageListProps) {
 
   if (!sessionId) {
     return (
-      <div className="flex flex-1 items-center justify-center px-4 py-20 text-center text-sm text-muted-foreground min-w-0">
-        Start a new conversation by typing below...
-      </div>
+      <StatusMessage>Start a new conversation by typing below...</StatusMessage>
     );
   }
 
   if (isPending) {
-    return (
-      <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-        Loading messages...
-      </div>
-    );
+    return <StatusMessage>Loading messages...</StatusMessage>;
   }
 
-  const messages = data ?? [];
-
-  return <NormalMessages key={sessionId} messages={messages} />;
+  return <Messages key={sessionId} messages={data ?? []} />;
 }
 
-function NormalMessages({ messages }: { messages: MessageDto[] }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [atEnd, setAtEnd] = useState(true);
-
-  const scrollToBottom = (behavior: "auto" | "smooth" = "auto") => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({
-        top: scrollRef.current.scrollHeight,
-        behavior,
-      });
-    }
-  };
-
-  // Track scroll position to show/hide the "scroll to bottom" button
-  const handleScroll = () => {
-    if (!scrollRef.current) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-    // 80px threshold to hide the button before hitting the exact bottom pixel
-    const isAtBottom = scrollHeight - scrollTop - clientHeight < 80;
-
-    setAtEnd(isAtBottom);
-  };
-
-  // Initial scroll to bottom on mount
-  useLayoutEffect(() => {
-    scrollToBottom();
-    const id = requestAnimationFrame(() => scrollToBottom());
-    return () => cancelAnimationFrame(id);
-  }, []);
+function Messages({ messages }: { messages: MessageDto[] }) {
+  const { scrollRef, atEnd, handleScroll, scrollToBottom } =
+    useScrollToBottom<HTMLDivElement>();
 
   return (
     <div className="relative flex-1 min-h-0 min-w-0 flex flex-col">
