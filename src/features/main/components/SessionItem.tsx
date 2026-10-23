@@ -58,10 +58,7 @@ export default function SessionItem({ session }: SessionItemProps) {
           : "text-muted-foreground hover:text-foreground hover:bg-accent"
       }`}
     >
-      <div className="flex items-center gap-2.5 min-w-0 flex-1">
-        <MessageSquare className="size-4 shrink-0" />
-        <span className="truncate">{session.title || "Untitled Session"}</span>
-      </div>
+      <span className="truncate ps-7">{session.title || "Untitled Session"}</span>
 
       <div className="flex items-center gap-1 shrink-0 ml-1">
         {isRunning && (
