@@ -1,10 +1,5 @@
-import { Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { AddProviderDto, ProviderDto } from "../types";
@@ -26,15 +21,11 @@ type ProviderFormContentProps = Omit<
 
 const COPY = {
   create: {
-    title: "Add provider",
-    description: "Configure an OpenAI-compatible provider.",
     idHint: "Lowercase letters, numbers, hyphens, or underscores",
     submit: "Submit",
     pending: "Adding...",
   },
   edit: {
-    title: "Edit provider",
-    description: "Update provider configuration and models.",
     idHint: "Provider ID cannot be modified.",
     submit: "Save Changes",
     pending: "Saving...",
@@ -52,18 +43,7 @@ export function ProviderForm({
   const copy = isEdit ? COPY.edit : COPY.create;
 
   return (
-    <form
-      onSubmit={handleFormSubmit}
-      className="flex flex-col gap-6 px-8 py-10"
-    >
-      <DialogHeader className="gap-4 text-left">
-        <div className="flex items-center gap-4">
-          <Sparkles className="size-5" />
-          <DialogTitle className="text-xl">{copy.title}</DialogTitle>
-        </div>
-        <DialogDescription>{copy.description}</DialogDescription>
-      </DialogHeader>
-
+    <form onSubmit={handleFormSubmit} className="flex flex-col gap-6">
       {/* A disabled fieldset disables every control inside it. */}
       <fieldset disabled={isLoading} className="flex min-w-0 flex-col gap-6">
         <div className="grid gap-2">
