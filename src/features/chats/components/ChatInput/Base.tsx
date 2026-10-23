@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, type KeyboardEvent } from "react";
-import { Send, Eye, PenLine } from "lucide-react";
+import { Send, Eye, PenLine, CircleStop } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -120,7 +120,7 @@ export default function ChatInputBase({
           title={isPending ? "Stop generating" : "Send message"}
         >
           {isPending ? (
-            <AntigravityPauseIcon className="size-3.5" />
+            <CircleStop className="size-3.5" />
           ) : (
             <Send className="size-3.5" />
           )}
