@@ -25,11 +25,11 @@ export interface AddApiKeyDto {
 export interface ModelDto {
   id: string;
   displayName: string;
-  apiModel: string;
-  contextWindow: number;
-  defaultMaxTokens: number;
-  supportsAttachments: boolean;
-  provider: string;
+  apiModel?: string;
+  contextWindow?: number;
+  defaultMaxTokens?: number;
+  supportsAttachments?: boolean;
+  provider?: string;
 }
 
 export interface ProviderDto {

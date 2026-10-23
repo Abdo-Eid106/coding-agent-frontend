@@ -3,7 +3,7 @@ import { X, Sliders } from "lucide-react";
 import { type SettingsTab } from "../types";
 import SettingsSidebar from "./SettingsSidebar";
 import ProvidersTab from "../../providers/components/ProvidersTab";
-import ModelsTab from "./ModelsTab";
+import ModelsTab from "../../providers/components/ModelsTab";
 import AppearanceTab from "./AppearanceTab";
 import { useUIStore } from "../../main/hooks/useUIStore";
 import { useFetchProviders } from "@/features/providers/hooks/provider.queries";
