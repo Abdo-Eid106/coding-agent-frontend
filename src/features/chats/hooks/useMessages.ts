@@ -100,46 +100,69 @@ export const useAddMessage = (sessionId: string) => {
 };
 
 export const addToken = (queryClient: QueryClient, event: TokenEvent) => {
-  const { sessionId, messageId, payload } = event;
-  const { replyId, token } = payload;
+  const {
+    sessionId,
+    messageId,
+    payload: { replyId, token },
+  } = event;
+
+  const key = messagesKey(sessionId);
+
+  console.log(
+    "[addToken] key:",
+    key,
+    "cache exists:",
+    !!queryClient.getQueryData(key),
+  );
 
   queryClient.setQueryData<
     InfiniteData<GetMessagesResponseDto, string | undefined>
-  >(messagesKey(sessionId), (old) => {
-    if (!old) return old;
+  >(key, (old) => {
+    if (!old) {
+      console.warn("[addToken] no cache for key");
+      return old;
+    }
 
-    let found = false;
+    const pageIdx = old.pages.findIndex((page) =>
+      page.items.some((message) => message.id === messageId),
+    );
 
-    const pages = old.pages.map((page) => ({
-      ...page,
-      items: page.items.map((message) => {
-        if (message.id !== messageId) return message;
-        found = true;
+    if (pageIdx === -1) {
+      console.warn("[addToken] messageId not found:", messageId);
+      return old;
+    }
 
-        const replies = message.replies ?? [];
-        const index = replies.findIndex((r) => r.id === replyId);
+    const page = old.pages[pageIdx];
+    const messageIdx = page.items.findIndex((m) => m.id === messageId);
+    const message = page.items[messageIdx];
+    const replies = message.replies ?? [];
+    const lastReply = replies.at(-1);
 
-        const nextReplies =
-          index === -1
-            ? [
-                ...replies,
-                {
-                  id: replyId,
-                  content: token,
-                  role: "ai" as const,
-                  createdAt: new Date().toISOString(),
-                  parentMessage: messageId,
-                },
-              ]
-            : replies.map((r, i) =>
-                i === index ? { ...r, content: r.content + token } : r,
-              );
+    const updatedReplies =
+      lastReply?.id === replyId
+        ? [
+            ...replies.slice(0, -1),
+            { ...lastReply, content: lastReply.content + token },
+          ]
+        : [
+            ...replies,
+            {
+              id: replyId,
+              content: token,
+              role: MessageRole.AI,
+              createdAt: new Date().toISOString(),
+              parentMessage: messageId,
+            },
+          ];
 
-        return { ...message, replies: nextReplies };
-      }),
-    }));
+    const items = page.items.map((item, idx) =>
+      idx === messageIdx ? { ...item, replies: updatedReplies } : item,
+    );
 
-    return found ? { ...old, pages } : old;
+    const pages = old.pages.slice();
+    pages[pageIdx] = { ...page, items };
+
+    return { ...old, pages };
   });
 };
 

@@ -1,9 +1,13 @@
+import type { SessionStatus } from "../features/sessions/enums/session-status";
+
 export enum AgentEventEnum {
   DONE = "done",
   TOKEN = "token",
   INTERRUPT = "interrupt",
   TOOL_START = "tool-started",
   TOOL_END = "tool-finished",
+  ERROR = "error",
+  SESSION_STATUS = "session_status",
 }
 
 export interface AgentStreamEvent {
@@ -35,4 +39,9 @@ export interface AgentErrorEvent {
   sessionId?: string;
   messageId: string;
   error: string;
+}
+
+export interface SessionEvent {
+  sessionId: string;
+  status: SessionStatus;
 }
