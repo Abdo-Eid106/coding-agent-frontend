@@ -14,15 +14,21 @@ import { ArrowDown, LoaderCircle } from "lucide-react";
 
 const BOTTOM_THRESHOLD_PX = 80;
 
-function useScrollToBottom<T extends HTMLElement, C extends HTMLElement>() {
+function useScrollToBottom<T extends HTMLElement, C extends HTMLElement>(
+  dependency?: unknown,
+) {
   const scrollRef = useRef<T>(null);
   const contentRef = useRef<C>(null);
   const stickRef = useRef(true);
   const [atEnd, setAtEnd] = useState(true);
+  const isMessageUpdateRef = useRef(false);
+  const prevDependencyRef = useRef(dependency);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
     const el = scrollRef.current;
     if (el) {
+      stickRef.current = true;
+      setAtEnd(true);
       el.scrollTo({ top: el.scrollHeight, behavior });
     }
   }, []);
@@ -42,11 +48,37 @@ function useScrollToBottom<T extends HTMLElement, C extends HTMLElement>() {
   }, [scrollToBottom]);
 
   useEffect(() => {
+    if (prevDependencyRef.current !== dependency) {
+      const prevList = Array.isArray(prevDependencyRef.current)
+        ? prevDependencyRef.current
+        : [];
+      const currentList = Array.isArray(dependency) ? dependency : [];
+
+      if (currentList.length > prevList.length) {
+        stickRef.current = true;
+        setAtEnd(true);
+      }
+
+      prevDependencyRef.current = dependency;
+
+      if (stickRef.current) {
+        isMessageUpdateRef.current = true;
+        scrollToBottom();
+
+        const raf = requestAnimationFrame(() => {
+          isMessageUpdateRef.current = false;
+        });
+        return () => cancelAnimationFrame(raf);
+      }
+    }
+  }, [dependency, scrollToBottom]);
+
+  useEffect(() => {
     const content = contentRef.current;
     if (!content) return;
 
     const observer = new ResizeObserver(() => {
-      if (stickRef.current) {
+      if (isMessageUpdateRef.current && stickRef.current) {
         scrollToBottom();
       }
     });
@@ -55,7 +87,25 @@ function useScrollToBottom<T extends HTMLElement, C extends HTMLElement>() {
     return () => observer.disconnect();
   }, [scrollToBottom]);
 
-  return { scrollRef, contentRef, atEnd, handleScroll, scrollToBottom };
+  const handleInteractionCapture = useCallback((e: React.SyntheticEvent) => {
+    const target = (e.target as HTMLElement | null)?.closest?.(
+      '[data-slot="collapsible-trigger"], [data-slot="collapsible"]',
+    );
+    if (target) {
+      stickRef.current = false;
+      isMessageUpdateRef.current = false;
+      setAtEnd(false);
+    }
+  }, []);
+
+  return {
+    scrollRef,
+    contentRef,
+    atEnd,
+    handleScroll,
+    scrollToBottom,
+    handleInteractionCapture,
+  };
 }
 
 function StatusMessage({ children }: { children: React.ReactNode }) {
@@ -106,14 +156,22 @@ function Messages({
   messages: MessageDto[];
   isActive: boolean;
 }) {
-  const { scrollRef, contentRef, atEnd, handleScroll, scrollToBottom } =
-    useScrollToBottom<HTMLDivElement, HTMLDivElement>();
+  const {
+    scrollRef,
+    contentRef,
+    atEnd,
+    handleScroll,
+    scrollToBottom,
+    handleInteractionCapture,
+  } = useScrollToBottom<HTMLDivElement, HTMLDivElement>(messages);
 
   return (
     <div className="relative flex-1 min-h-0 min-w-0 flex flex-col">
       <div
         ref={scrollRef}
         onScroll={handleScroll}
+        onClickCapture={handleInteractionCapture}
+        onKeyDownCapture={handleInteractionCapture}
         className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden min-w-0 px-3 sm:px-4"
       >
         <div
