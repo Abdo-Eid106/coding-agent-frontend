@@ -31,3 +31,17 @@ export interface AddMessageDto {
   messageContent: string;
   modelId: string;
 }
+
+export interface ResumeInterruptDto {
+  interruptId: string;
+  messageId: string;
+  payload: { selectedId: string };
+}
+
+export interface Interrupt {
+  interruptId: string;
+  payload: {
+    message: string;
+    options: { id: string; label: string }[];
+  };
+}

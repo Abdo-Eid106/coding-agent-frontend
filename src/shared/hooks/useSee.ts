@@ -9,6 +9,7 @@ import {
   type AgentErrorEvent,
   type SessionEvent,
   type ToolCallEvent,
+  type InterruptEvent,
 } from "../../types/agent-stream-event";
 
 import {
@@ -19,6 +20,7 @@ import {
 import { SessionStatus } from "@/features/sessions/types";
 import { useActiveSessions } from "../../features/sessions/hooks/session.queries";
 import { addToolCall } from "../../features/tools/helpers/addToolCall";
+import { useInterruptsStore } from "@/features/chats/hooks/useInterruptStore";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -34,6 +36,7 @@ function handleEvent<T>(event: Event, handler: (data: T) => void) {
 export const useSSE = () => {
   const queryClient = useQueryClient();
   const { addActiveSession, removeActiveSession } = useActiveSessions();
+  const addInterrupt = useInterruptsStore((store) => store.addInterrupt);
 
   useEffect(() => {
     const es = new EventSource(`${API_URL}/events`);
@@ -64,12 +67,18 @@ export const useSSE = () => {
         }
       });
 
+    const onInterrupt = (e: Event) =>
+      handleEvent<InterruptEvent>(e, (event) => {
+        addInterrupt(event.messageId, event.payload);
+      });
+
     es.addEventListener(AgentEventEnum.TOKEN, onToken);
     es.addEventListener(AgentEventEnum.DONE, onDone);
     es.addEventListener(AgentEventEnum.SESSION_STATUS, onSessionStatus);
     es.addEventListener(AgentEventEnum.TOOL_START, onToolStart);
     es.addEventListener(AgentEventEnum.TOOL_END, onToolEnd);
     es.addEventListener(AgentEventEnum.ERROR, onAgentError);
+    es.addEventListener(AgentEventEnum.INTERRUPT, onInterrupt);
 
     return () => es.close();
   }, []);

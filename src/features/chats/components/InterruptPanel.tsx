@@ -5,57 +5,43 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
+import { useResumeInterrupt } from "../hooks/useMessages";
+import { useInterruptsStore } from "../hooks/useInterruptStore";
 
-export type InterruptOption = {
-  id: string;
-  label: string;
-  description?: string;
-};
-
-export type Interrupt = {
-  question: string;
-  options: InterruptOption[];
-};
-
-export interface InterruptPanelProps {
-  interrupt: Interrupt;
-  onResolve: (optionId: string) => void;
-  onDismiss?: () => void;
-  isSubmitting?: boolean;
-  className?: string;
+interface Props {
+  messageId: string;
 }
 
-export function InterruptPanel({
-  interrupt,
-  onResolve,
-  onDismiss,
-  isSubmitting = false,
-  className,
-}: InterruptPanelProps) {
+export function InterruptPanel({ messageId }: Props) {
+  const interrupt = useInterruptsStore((store) =>
+    store.getInterrupt(messageId),
+  );
+
+  const removeInterrupt = useInterruptsStore((store) => store.removeInterrupt);
   const [selected, setSelected] = useState("");
   const baseId = useId();
+
+  const { mutate: resumeInterrupt, isPending } = useResumeInterrupt();
+  if (!interrupt) return null;
 
   return (
     <div
       role="group"
       aria-labelledby={baseId}
-      className={cn(
-        "rounded-t-xl border border-b-0 bg-muted/50 p-3",
-        className,
-      )}
+      className={cn("rounded-t-xl border border-b-0 bg-muted/50 p-3")}
     >
       <h3 id={baseId} className="text-xs font-medium text-foreground">
-        {interrupt.question}
+        {interrupt.payload.message}
       </h3>
 
       <RadioGroup
         value={selected}
         onValueChange={setSelected}
-        disabled={isSubmitting}
+        disabled={isPending}
         aria-labelledby={baseId}
         className="mt-2 gap-0 divide-y overflow-hidden rounded-md border bg-background"
       >
-        {interrupt.options.map((option) => {
+        {interrupt.payload.options.map((option) => {
           const optionId = `${baseId}-${option.id}`;
           return (
             <Label
@@ -70,10 +56,8 @@ export function InterruptPanel({
               />
               <span className="flex flex-col gap-0.5">
                 <span className="text-foreground">{option.label}</span>
-                {option.description && (
-                  <span className="text-muted-foreground">
-                    {option.description}
-                  </span>
+                {option.label && (
+                  <span className="text-muted-foreground">{option.label}</span>
                 )}
               </span>
             </Label>
@@ -82,26 +66,31 @@ export function InterruptPanel({
       </RadioGroup>
 
       <div className="mt-2 flex justify-end gap-1.5">
-        {onDismiss && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-7 px-2.5 text-xs"
-            disabled={isSubmitting}
-            onClick={onDismiss}
-          >
-            Dismiss
-          </Button>
-        )}
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-7 px-2.5 text-xs"
+          disabled={isPending}
+          onClick={() => removeInterrupt(messageId)}
+        >
+          Dismiss
+        </Button>
+
         <Button
           type="button"
           size="sm"
           className="h-7 px-2.5 text-xs"
-          disabled={!selected || isSubmitting}
-          onClick={() => onResolve(selected)}
+          disabled={!selected || isPending}
+          onClick={() =>
+            resumeInterrupt({
+              messageId,
+              interruptId: interrupt.interruptId,
+              payload: { selectedId: selected },
+            })
+          }
         >
-          {isSubmitting && <Loader2 className="size-3 animate-spin" />}
+          {isPending && <Loader2 className="size-3 animate-spin" />}
           Continue
         </Button>
       </div>

@@ -4,13 +4,19 @@ import {
   QueryClient,
   useQuery,
 } from "@tanstack/react-query";
-import { MessageRole, type AddMessageDto, type MessageDto } from "../types";
+import {
+  MessageRole,
+  type AddMessageDto,
+  type MessageDto,
+  type ResumeInterruptDto,
+} from "../types";
 import {
   type AgentStreamEvent,
   type TokenEvent,
 } from "../../../types/agent-stream-event";
 import { QueryKeys } from "../../../shared";
 import { Api } from "../../../shared/api/axios-instance";
+import { useInterruptsStore } from "./useInterruptStore";
 
 const fetchMessages = async (
   sessionId: string,
@@ -34,6 +40,11 @@ const addMessage = async (
   dto: AddMessageDto,
 ): Promise<unknown> => {
   const { data } = await Api.post(`sessions/${sessionId}/messages`, dto);
+  return data;
+};
+
+const resumeInterrupt = async (dto: ResumeInterruptDto) => {
+  const { data } = await Api.post("/resume-interrupt", dto);
   return data;
 };
 
@@ -72,6 +83,15 @@ export const useAddMessage = (sessionId: string) => {
     onError: (_error, _dto, context) => {
       queryClient.setQueryData(queryKey, context?.previousData);
     },
+  });
+};
+
+export const useResumeInterrupt = () => {
+  const removeInterrupt = useInterruptsStore((store) => store.removeInterrupt);
+
+  return useMutation({
+    mutationFn: resumeInterrupt,
+    onSuccess: (_, { messageId }) => removeInterrupt(messageId),
   });
 };
 

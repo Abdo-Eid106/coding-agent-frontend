@@ -45,3 +45,15 @@ export interface SessionEvent {
   sessionId: string;
   status: SessionStatus;
 }
+
+export interface Interrupt {
+  interruptId: string;
+  payload: {
+    message: string;
+    options: { id: string; label: string }[];
+  };
+}
+
+export interface InterruptEvent extends AgentStreamEvent {
+  payload: Interrupt;
+}
