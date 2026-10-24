@@ -17,15 +17,15 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-import { useProjectStore } from "../../projects/hooks/useProjectStore";
-import { useFetchProjects } from "../../projects/hooks/project.queries";
+import { useProjectStore } from "../hooks/useProjectStore";
+import { useFetchProjects } from "../hooks/project.queries";
 
 export default function ProjectSelector() {
   const [isOpen, setIsOpen] = useState(false);
-
-  const { data: projects = [] } = useFetchProjects();
   const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
+
+  const { data: projects = [] } = useFetchProjects();
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 

@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import ChatHeader from "./ChatHeader";
 import MessagesList from "./MesasgesList";
 import ChatInput from "./ChatInput";
-import ProjectSelector from "./ProjectSelector";
+import ProjectSelector from "../../projects/components/ProjectSelector";
 
 export default function ChatArea() {
   const { sessionId } = useParams<{ sessionId?: string }>();
