@@ -1,5 +1,6 @@
 import { Sun, Moon, Monitor, Check } from "lucide-react";
 import { useThemeStore, Theme } from "../../main/hooks/useThemeStore";
+import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 
 const THEMES = [
   {
@@ -42,30 +43,39 @@ export default function AppearanceTab() {
           const isSelected = theme === item.id;
 
           return (
-            <button
+            <Card
               key={item.id}
-              type="button"
+              role="button"
+              tabIndex={0}
               onClick={() => setTheme(item.id)}
-              className={`flex flex-col text-left p-4 rounded-xl border transition-all cursor-pointer ${
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setTheme(item.id);
+                }
+              }}
+              className={`p-4 gap-3 cursor-pointer transition-all ${
                 isSelected
-                  ? "border-primary bg-primary/5 ring-1 ring-primary"
-                  : "border-border bg-card hover:bg-accent/40"
+                  ? "border-primary bg-primary/5 ring-1 ring-primary shadow-xs"
+                  : "hover:bg-accent/40"
               }`}
             >
-              <div className="flex items-center justify-between w-full mb-3">
+              <div className="flex items-center justify-between w-full">
                 <div className="size-8 rounded-lg border border-border bg-muted/60 flex items-center justify-center text-foreground">
                   <Icon className="size-4" />
                 </div>
                 {isSelected && <Check className="size-4 text-primary" />}
               </div>
 
-              <span className="text-sm font-semibold text-foreground">
-                {item.label}
-              </span>
-              <span className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                {item.description}
-              </span>
-            </button>
+              <div className="space-y-1">
+                <CardTitle className="text-sm font-semibold text-foreground">
+                  {item.label}
+                </CardTitle>
+                <CardDescription className="text-xs text-muted-foreground line-clamp-2">
+                  {item.description}
+                </CardDescription>
+              </div>
+            </Card>
           );
         })}
       </div>
