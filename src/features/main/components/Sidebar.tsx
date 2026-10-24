@@ -7,7 +7,6 @@ import AddProjectModal from "@/features/projects/components/AddProjectModal";
 import { useProjectStore } from "../../projects/hooks/useProjectStore";
 import { useFetchSessions } from "../../sessions/hooks/session.queries";
 import { useSidebarStore } from "../hooks/useSidebarStore";
-import { useSettingsStore } from "@/features/settings/hooks/useSettingsStore";
 import {
   Sidebar as ShadcnSidebar,
   SidebarContent,
@@ -25,6 +24,11 @@ import {
 } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "cn";
+import SettingsModal from "@/features/settings/components/SettingsModal";
+import DeleteProjectModal from "@/features/projects/components/DeleteProjectModal";
+import { useSelectionModal } from "@/shared/hooks/useSelectionModal";
+import { useModal } from "@/shared/hooks/useModal";
+import DeleteSessionModal from "@/features/sessions/components/DeleteSessionModal";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -39,7 +43,10 @@ export default function Sidebar() {
     (s) => s.toggleConversationsOpen,
   );
   const ensureSessionVisible = useSidebarStore((s) => s.ensureSessionVisible);
-  const openSettings = useSettingsStore((s) => s.openSettings);
+
+  const settingsModal = useModal();
+  const deleteProjectModal = useSelectionModal<{ id: string; name: string }>();
+  const deleteSessionModal = useSelectionModal<{ id: string; title: string }>();
 
   const { data, isLoading } = useFetchSessions();
   const projects = data?.projects ?? [];
@@ -56,7 +63,7 @@ export default function Sidebar() {
   };
 
   const handleOpenSettings = () => {
-    openSettings();
+    settingsModal.open();
     setOpenMobile(false);
   };
 
@@ -129,7 +136,12 @@ export default function Sidebar() {
                     </div>
                   ) : (
                     projects.map((project) => (
-                      <ProjectItem key={project.id} project={project} />
+                      <ProjectItem
+                        key={project.id}
+                        project={project}
+                        deleteProjectModal={deleteProjectModal}
+                        deleteSessionModal={deleteSessionModal}
+                      />
                     ))
                   )}
                 </SidebarMenu>
@@ -192,7 +204,11 @@ export default function Sidebar() {
                     </div>
                   ) : (
                     sessions.map((session) => (
-                      <SessionItem key={session.id} session={session} />
+                      <SessionItem
+                        key={session.id}
+                        session={session}
+                        deleteModal={deleteSessionModal}
+                      />
                     ))
                   )}
                 </SidebarMenu>
@@ -216,6 +232,9 @@ export default function Sidebar() {
         </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
+      <SettingsModal modal={settingsModal} />
+      <DeleteProjectModal modal={deleteProjectModal} />
+      <DeleteSessionModal modal={deleteSessionModal} />
     </ShadcnSidebar>
   );
 }

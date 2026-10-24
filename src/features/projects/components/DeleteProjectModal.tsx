@@ -12,23 +12,25 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { type SelectionModal } from "@/shared/hooks/useSelectionModal";
 
-export type { ProjectToDelete } from "../hooks/useProjectStore";
+interface Props {
+  modal: SelectionModal<{ id: string; name: string }>;
+}
 
-export default function DeleteProjectModal() {
-  const project = useProjectStore((s) => s.projectToDelete);
-  const closeDeleteProject = useProjectStore((s) => s.closeDeleteProject);
+export default function DeleteProjectModal({ modal }: Props) {
   const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
 
   const { mutate: deleteProject, isPending } = useDeleteProject();
 
+  const project = modal.selected;
   if (!project) return null;
 
   const onSuccess = () => {
     if (selectedProjectId === project.id) setSelectedProjectId(null);
     toast.success(`Project "${project.name}" deleted`);
-    closeDeleteProject();
+    modal.close();
   };
 
   const onError = (err: Error) => {
@@ -45,7 +47,7 @@ export default function DeleteProjectModal() {
       open={!!project}
       onOpenChange={(open) => {
         if (!open && !isPending) {
-          closeDeleteProject();
+          modal.close();
         }
       }}
     >
@@ -78,7 +80,7 @@ export default function DeleteProjectModal() {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => closeDeleteProject()}
+            onClick={() => modal.close()}
             disabled={isPending}
             className="cursor-pointer"
           >

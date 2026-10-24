@@ -14,11 +14,10 @@ import SettingsSidebar from "./SettingsSidebar";
 import ProvidersTab from "../../providers/components/ProvidersTab";
 import ModelsTab from "../../providers/components/ModelsTab";
 import AppearanceTab from "./AppearanceTab";
-import { useSettingsStore } from "../hooks/useSettingsStore";
+import type { Modal } from "@/shared/hooks/useModal";
 
 interface SettingsModalProps {
-  isOpen?: boolean;
-  onClose?: () => void;
+  modal: Modal;
 }
 
 const TAB_TITLES: Record<SettingsTab, { title: string; subtitle: string }> = {
@@ -41,22 +40,13 @@ const TAB_TITLES: Record<SettingsTab, { title: string; subtitle: string }> = {
   },
 };
 
-export default function SettingsModal({
-  isOpen: propsIsOpen,
-  onClose: propsOnClose,
-}: SettingsModalProps = {}) {
-  const storeIsOpen = useSettingsStore((s) => s.isSettingsOpen);
-  const storeClose = useSettingsStore((s) => s.closeSettings);
-
-  const isOpen = propsIsOpen !== undefined ? propsIsOpen : storeIsOpen;
-  const onClose = propsOnClose ?? storeClose;
-
+export default function SettingsModal({ modal }: SettingsModalProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>(
     SettingsTab.PROVIDERS,
   );
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={modal.isOpen} onOpenChange={(open) => !open && modal.close()}>
       <DialogContent
         showCloseButton={false}
         className="w-[92vw] max-w-5xl h-[84vh] max-h-180 min-h-125 p-0 gap-0 overflow-hidden flex flex-row rounded-2xl border border-border bg-card text-card-foreground shadow-2xl sm:max-w-5xl"

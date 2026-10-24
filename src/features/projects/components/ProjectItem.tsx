@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { FolderOpen, ChevronRight } from "lucide-react";
+import { FolderOpen, ChevronRight, Trash2 } from "lucide-react";
 import { type ProjectDto } from "../types";
 import SessionItem from "../../sessions/components/SessionItem";
-import ProjectMenu from "./ProjectMenu";
 import {
   SidebarMenuItem,
   SidebarMenuButton,
@@ -10,18 +9,35 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "cn";
 import { useParams } from "react-router-dom";
+import type { SelectionModal } from "@/shared/hooks/useSelectionModal";
 
 interface ProjectItemProps {
   project: ProjectDto;
+  deleteProjectModal: SelectionModal<{
+    id: string;
+    name: string;
+  }>;
+  deleteSessionModal: SelectionModal<{
+    id: string;
+    title: string;
+  }>;
 }
 
-export default function ProjectItem({ project }: ProjectItemProps) {
+export default function ProjectItem({
+  project,
+  deleteProjectModal,
+  deleteSessionModal,
+}: ProjectItemProps) {
   const { sessionId } = useParams<{ sessionId?: string }>();
+
+  const handleDelete = (e: React.MouseEvent) => {
+    (e.stopPropagation(), e.preventDefault());
+    deleteProjectModal.open(project);
+  };
 
   const sessions = project.sessions ?? [];
   const containsOpenedSession =
     !!sessionId && sessions.some((s) => s.id === sessionId);
-
   const [isOpen, setIsOpen] = useState(containsOpenedSession);
 
   useEffect(() => {
@@ -49,7 +65,21 @@ export default function ProjectItem({ project }: ProjectItemProps) {
       </SidebarMenuButton>
 
       <div className="absolute right-1 top-1.5 flex items-center gap-1">
-        <ProjectMenu projectId={project.id} projectName={project.name} />
+        <div
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          className="hidden group-hover/menu-item:flex group-focus-within/menu-item:flex items-center gap-0.5 shrink-0"
+        >
+          <button
+            type="button"
+            onClick={handleDelete}
+            onMouseDown={(e) => e.stopPropagation()}
+            className="size-6 flex items-center justify-center rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+            title="Delete project"
+          >
+            <Trash2 className="size-3.5" />
+          </button>
+        </div>
       </div>
 
       <div
@@ -71,7 +101,7 @@ export default function ProjectItem({ project }: ProjectItemProps) {
                 <SessionItem
                   key={session.id}
                   session={session}
-                  projectId={project.id}
+                  deleteModal={deleteSessionModal}
                 />
               ))
             )}

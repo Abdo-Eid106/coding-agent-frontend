@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useDeleteSession } from "../hooks/session.queries";
-import { useSessionStore } from "../hooks/useSessionStore";
 import { getErrorMessage } from "../../../shared/lib/get-error-message";
 import { toast } from "sonner";
 import {
@@ -13,22 +12,25 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-export type { SessionToDelete } from "../hooks/useSessionStore";
+import { type SelectionModal } from "@/shared/hooks/useSelectionModal";
 
-export default function DeleteSessionModal() {
+interface Props {
+  modal: SelectionModal<{ id: string; title: string }>;
+}
+
+export default function DeleteSessionModal({ modal }: Props) {
   const navigate = useNavigate();
   const { sessionId } = useParams<{ sessionId?: string }>();
-  const session = useSessionStore((s) => s.sessionToDelete);
-  const closeDeleteSession = useSessionStore((s) => s.closeDeleteSession);
 
   const { mutate: deleteSession, isPending } = useDeleteSession();
 
+  const session = modal.selected;
   if (!session) return null;
 
   const onSuccess = () => {
     if (sessionId === session.id) navigate("/");
     toast.success(`Session "${session.title || "Untitled Session"}" deleted`);
-    closeDeleteSession();
+    modal.close();
   };
 
   const onError = (err: Error) => {
@@ -45,7 +47,7 @@ export default function DeleteSessionModal() {
       open={!!session}
       onOpenChange={(open) => {
         if (!open && !isPending) {
-          closeDeleteSession();
+          modal.close();
         }
       }}
     >
@@ -78,7 +80,7 @@ export default function DeleteSessionModal() {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => closeDeleteSession()}
+            onClick={() => modal.close()}
             disabled={isPending}
             className="cursor-pointer"
           >

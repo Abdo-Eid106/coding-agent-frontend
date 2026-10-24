@@ -13,13 +13,14 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useModal } from "@/shared/hooks/useModal";
 
 const INPUT_ID = "project-directory-path";
 const PATH_PLACEHOLDER =
   "/home/username/projects/my-app or C:\\projects\\my-app";
 
 export default function AddProjectModal() {
-  const [open, setOpen] = useState(false);
+  const { isOpen, setIsOpen } = useModal();
   const [directory, setDirectory] = useState("");
   const { mutate: createProject, isPending } = useCreateProject();
 
@@ -28,7 +29,7 @@ export default function AddProjectModal() {
 
   const handleOpenChange = (next: boolean) => {
     if (!next && isPending) return;
-    setOpen(next);
+    setIsOpen(next);
     if (!next) setDirectory("");
   };
 
@@ -59,7 +60,7 @@ export default function AddProjectModal() {
         <FolderPlus className="size-3.5" />
       </Button>
 
-      <Dialog open={open} onOpenChange={handleOpenChange}>
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-md">
           <form onSubmit={handleSubmit} className="space-y-4">
             <DialogHeader>
