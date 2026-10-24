@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Trash2, CircleStop } from "lucide-react";
 import { type SessionDto } from "../../sessions/types";
-import { useCurrentSessionId } from "../../sessions/hooks/useCurrentSessionId";
 import {
   useActiveSessions,
   useStopSession,
@@ -22,15 +21,14 @@ interface SessionItemProps {
 }
 
 export default function SessionItem({ session }: SessionItemProps) {
-  const sessionId = useCurrentSessionId();
   const navigate = useNavigate();
+  const { sessionId } = useParams<{ sessionId?: string }>();
+
   const { isMobile, setOpenMobile } = useSidebar();
-  const { isActive: isSessionRunning } = useActiveSessions();
-  const { mutate: stopSession, isPending: isStopping } = useStopSession();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const isActive = sessionId === session.id;
-  const isRunning = isSessionRunning(session.id);
+  const { isActive: isSessionRunning } = useActiveSessions();
+  const { mutate: stopSession, isPending: isStopping } = useStopSession();
 
   const handleClick = () => {
     navigate(`/sessions/${session.id}`);
@@ -57,14 +55,19 @@ export default function SessionItem({ session }: SessionItemProps) {
     <>
       <SidebarMenuItem>
         <SidebarMenuButton
-          isActive={isActive}
+          isActive={sessionId === session.id}
           onClick={handleClick}
-          className={cn("h-8 cursor-pointer select-none", isRunning && "pr-12!")}
+          className={cn(
+            "h-8 cursor-pointer select-none",
+            isSessionRunning(session.id) && "pr-12!",
+          )}
         >
-          <span className="truncate">{session.title || "Untitled Session"}</span>
+          <span className="truncate">
+            {session.title || "Untitled Session"}
+          </span>
         </SidebarMenuButton>
 
-        {isRunning && (
+        {isSessionRunning(session.id) && (
           <button
             type="button"
             onClick={handleStop}

@@ -1,9 +1,8 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useDeleteSession } from "../hooks/session.queries";
 import { getErrorMessage } from "../../../shared/lib/get-error-message";
 import { toast } from "sonner";
-import { useCurrentSessionId } from "../hooks/useCurrentSessionId";
 import {
   Dialog,
   DialogContent,
@@ -30,8 +29,8 @@ export default function DeleteSessionModal({
   onOpenChange,
   session,
 }: DeleteSessionModalProps) {
+  const { sessionId } = useParams<{ sessionId?: string }>();
   const { mutate: deleteSession, isPending } = useDeleteSession();
-  const currentSessionId = useCurrentSessionId();
   const navigate = useNavigate();
 
   const handleConfirmDelete = () => {
@@ -39,7 +38,7 @@ export default function DeleteSessionModal({
 
     deleteSession(session.id, {
       onSuccess: () => {
-        if (currentSessionId === session.id) {
+        if (sessionId === session.id) {
           navigate("/");
         }
         toast.success(`Session "${session.title}" deleted`);

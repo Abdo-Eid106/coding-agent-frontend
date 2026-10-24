@@ -1,68 +1,69 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Plus, Settings } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ChevronRight, Plus, Settings } from "lucide-react";
 import ProjectItem from "../ProjectItem";
 import SessionItem from "../SessionItem";
-import SidebarSection from "./SidebarSection";
-import SidebarList from "./SidebarList";
 import AddProjectModal from "@/features/projects/components/AddProjectModal";
-import { useUIStore } from "../../hooks/useUIStore";
-import { useCloseSidebarOnMobile } from "./useCloseSidebar";
+import SettingsModal from "@/features/settings/components/SettingsModal";
 import { useProjectStore } from "../../../projects/hooks/useProjectStore";
 import { useFetchSessions } from "../../../sessions/hooks/session.queries";
-import { useCurrentSessionId } from "../../../sessions/hooks/useCurrentSessionId";
 import {
   Sidebar as ShadcnSidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuSkeleton,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "cn";
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const { sessionId } = useParams<{ sessionId?: string }>();
 
-  const openSettings = useUIStore((s) => s.openSettings);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
-  const closeOnMobile = useCloseSidebarOnMobile();
+  const { setOpenMobile } = useSidebar();
 
   const { data, isLoading } = useFetchSessions();
-  const projects = useMemo(() => data?.projects ?? [], [data?.projects]);
-  const sessions = useMemo(() => data?.sessions ?? [], [data?.sessions]);
+  const projects = data?.projects ?? [];
+  const sessions = data?.sessions ?? [];
 
   const [isProjectsOpen, setIsProjectsOpen] = useState(true);
   const [isConversationsOpen, setIsConversationsOpen] = useState(true);
 
-  const currentSessionId = useCurrentSessionId();
-  const [prevSessionId, setPrevSessionId] = useState(currentSessionId);
+  useEffect(() => {
+    if (!sessionId || !data) return;
 
-  // Auto-expand sections if the active session belongs to them
-  if (currentSessionId && currentSessionId !== prevSessionId) {
-    setPrevSessionId(currentSessionId);
-    if (sessions.some((s) => s.id === currentSessionId)) {
+    const isStandalone = data.sessions.some((s) => s.id === sessionId);
+    if (isStandalone) {
       setIsConversationsOpen(true);
+      return;
     }
-    if (
-      projects.some((p) => p.sessions?.some((s) => s.id === currentSessionId))
-    ) {
-      setIsProjectsOpen(true);
-    }
-  } else if (currentSessionId !== prevSessionId) {
-    setPrevSessionId(currentSessionId);
-  }
+
+    const inProject = data.projects.some((p) =>
+      p.sessions?.some((s) => s.id === sessionId),
+    );
+    if (inProject) setIsProjectsOpen(true);
+  }, [sessionId, data]);
 
   const handleNewConversation = () => {
     setSelectedProjectId(null);
     navigate("/");
-    closeOnMobile();
+    setOpenMobile(false);
   };
 
   const handleOpenSettings = () => {
-    openSettings();
-    closeOnMobile();
+    setIsSettingsOpen(true);
+    setOpenMobile(false);
   };
 
   return (
@@ -82,40 +83,129 @@ export default function Sidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-2 space-y-3">
-        <SidebarSection
-          title="Projects"
-          open={isProjectsOpen}
-          onToggle={() => setIsProjectsOpen((v) => !v)}
-          action={<AddProjectModal />}
-        >
-          <SidebarList
-            items={projects}
-            isLoading={isLoading}
-            loadingText="Loading projects..."
-            emptyText="No projects added yet"
-            renderItem={(project) => (
-              <ProjectItem key={project.id} project={project} />
+        {/* Projects */}
+        <SidebarGroup className="p-0">
+          <div className="flex items-center justify-between">
+            <SidebarGroupLabel
+              render={
+                <button
+                  type="button"
+                  onClick={() => setIsProjectsOpen((v) => !v)}
+                  aria-expanded={isProjectsOpen}
+                  className="flex flex-1 items-center gap-1.5 cursor-pointer select-none text-muted-foreground hover:text-sidebar-foreground transition-colors p-0 h-7"
+                />
+              }
+            >
+              <ChevronRight
+                className={cn(
+                  "size-3.5 shrink-0 transition-transform duration-200 ease-in-out",
+                  isProjectsOpen && "rotate-90",
+                )}
+              />
+              <span className="text-[11px] font-semibold uppercase tracking-wider">
+                Projects
+              </span>
+            </SidebarGroupLabel>
+
+            <div className="shrink-0">
+              <AddProjectModal />
+            </div>
+          </div>
+
+          <div
+            className={cn(
+              "grid transition-[grid-template-rows,opacity] duration-200 ease-in-out",
+              isProjectsOpen
+                ? "grid-rows-[1fr] opacity-100"
+                : "grid-rows-[0fr] opacity-0 pointer-events-none",
             )}
-          />
-        </SidebarSection>
+          >
+            <div className="overflow-hidden">
+              <SidebarGroupContent className="mt-1">
+                <SidebarMenu className="gap-0.5">
+                  {isLoading ? (
+                    <div className="flex flex-col gap-1 py-1">
+                      <SidebarMenuSkeleton showIcon />
+                      <SidebarMenuSkeleton showIcon />
+                      <SidebarMenuSkeleton showIcon />
+                    </div>
+                  ) : projects.length === 0 ? (
+                    <div className="px-2 py-2 text-xs text-muted-foreground select-none">
+                      No projects added yet
+                    </div>
+                  ) : (
+                    projects.map((project) => (
+                      <ProjectItem key={project.id} project={project} />
+                    ))
+                  )}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </div>
+          </div>
+        </SidebarGroup>
 
         {/* Standalone sessions not linked to a project */}
-        <SidebarSection
-          title="Conversations"
-          open={isConversationsOpen}
-          onToggle={() => setIsConversationsOpen((v) => !v)}
-          count={sessions.length}
-        >
-          <SidebarList
-            items={sessions}
-            isLoading={isLoading}
-            loadingText="Loading conversations..."
-            emptyText="No conversations yet"
-            renderItem={(session) => (
-              <SessionItem key={session.id} session={session} />
+        <SidebarGroup className="p-0">
+          <div className="flex items-center justify-between">
+            <SidebarGroupLabel
+              render={
+                <button
+                  type="button"
+                  onClick={() => setIsConversationsOpen((v) => !v)}
+                  aria-expanded={isConversationsOpen}
+                  className="flex flex-1 items-center gap-1.5 cursor-pointer select-none text-muted-foreground hover:text-sidebar-foreground transition-colors p-0 h-7"
+                />
+              }
+            >
+              <ChevronRight
+                className={cn(
+                  "size-3.5 shrink-0 transition-transform duration-200 ease-in-out",
+                  isConversationsOpen && "rotate-90",
+                )}
+              />
+              <span className="text-[11px] font-semibold uppercase tracking-wider">
+                Conversations
+              </span>
+              <Badge
+                variant="secondary"
+                className="ml-auto mr-1 h-4 px-1.5 text-[10px] font-mono text-muted-foreground"
+              >
+                {sessions.length}
+              </Badge>
+            </SidebarGroupLabel>
+          </div>
+
+          <div
+            className={cn(
+              "grid transition-[grid-template-rows,opacity] duration-200 ease-in-out",
+              isConversationsOpen
+                ? "grid-rows-[1fr] opacity-100"
+                : "grid-rows-[0fr] opacity-0 pointer-events-none",
             )}
-          />
-        </SidebarSection>
+          >
+            <div className="overflow-hidden">
+              <SidebarGroupContent className="mt-1">
+                <SidebarMenu className="gap-0.5">
+                  {isLoading ? (
+                    <div className="flex flex-col gap-1 py-1">
+                      <SidebarMenuSkeleton showIcon />
+                      <SidebarMenuSkeleton showIcon />
+                      <SidebarMenuSkeleton showIcon />
+                    </div>
+                  ) : sessions.length === 0 ? (
+                    <div className="px-2 py-2 text-xs text-muted-foreground select-none">
+                      No conversations yet
+                    </div>
+                  ) : (
+                    sessions.map((session) => (
+                      <SessionItem key={session.id} session={session} />
+                    ))
+                  )}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </div>
+          </div>
+        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border">
@@ -131,7 +221,10 @@ export default function Sidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
       <SidebarRail />
     </ShadcnSidebar>
   );

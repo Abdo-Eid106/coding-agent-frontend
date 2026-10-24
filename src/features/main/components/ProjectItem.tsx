@@ -1,51 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FolderOpen, ChevronRight } from "lucide-react";
 import { type ProjectDto } from "../../projects/types";
 import SessionItem from "./SessionItem";
 import ProjectMenu from "../../projects/components/ProjectMenu";
-import { useCurrentSessionId } from "../../sessions/hooks/useCurrentSessionId";
 import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarMenuSub,
 } from "@/components/ui/sidebar";
 import { cn } from "cn";
+import { useParams } from "react-router-dom";
 
 interface ProjectItemProps {
   project: ProjectDto;
 }
 
 export default function ProjectItem({ project }: ProjectItemProps) {
-  const sessionId = useCurrentSessionId();
+  const { sessionId } = useParams<{ sessionId?: string }>();
 
-  // Directly access the sessions populated inside the project
-  const projectSessions = project.sessions ?? [];
-
-  const containsOpenedSession = Boolean(
-    sessionId && projectSessions.some((s) => s.id === sessionId),
-  );
+  const sessions = project.sessions ?? [];
+  const containsOpenedSession =
+    !!sessionId && sessions.some((s) => s.id === sessionId);
 
   const [isOpen, setIsOpen] = useState(containsOpenedSession);
-  const [prevContainsOpenedSession, setPrevContainsOpenedSession] = useState(
-    containsOpenedSession,
-  );
-  const [prevSessionId, setPrevSessionId] = useState(sessionId);
 
-  // Auto-expand if the active session belongs to this project (e.g. navigated to it or sessions loaded)
-  if (
-    containsOpenedSession &&
-    (!prevContainsOpenedSession || sessionId !== prevSessionId)
-  ) {
-    setPrevContainsOpenedSession(containsOpenedSession);
-    setPrevSessionId(sessionId);
-    setIsOpen(true);
-  } else if (
-    containsOpenedSession !== prevContainsOpenedSession ||
-    sessionId !== prevSessionId
-  ) {
-    setPrevContainsOpenedSession(containsOpenedSession);
-    setPrevSessionId(sessionId);
-  }
+  useEffect(() => {
+    if (containsOpenedSession) setIsOpen(true);
+  }, [sessionId, containsOpenedSession]);
 
   const handleToggleSelect = () => {
     setIsOpen((prev) => !prev);
@@ -81,12 +62,12 @@ export default function ProjectItem({ project }: ProjectItemProps) {
       >
         <div className="overflow-hidden">
           <SidebarMenuSub className="gap-0.5">
-            {projectSessions.length === 0 ? (
+            {sessions.length === 0 ? (
               <div className="py-1 px-2 text-xs text-muted-foreground italic">
                 No sessions yet
               </div>
             ) : (
-              projectSessions.map((session) => (
+              sessions.map((session) => (
                 <SessionItem
                   key={session.id}
                   session={session}
