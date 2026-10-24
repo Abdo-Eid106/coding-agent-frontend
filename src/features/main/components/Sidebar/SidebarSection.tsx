@@ -1,5 +1,13 @@
 import type { ReactNode } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+} from "@/components/ui/sidebar";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "cn";
 
 interface SidebarSectionProps {
   title: string;
@@ -18,33 +26,55 @@ export default function SidebarSection({
   action,
   children,
 }: SidebarSectionProps) {
-  const Chevron = open ? ChevronDown : ChevronRight;
-
   return (
-    <section>
-      <div className="flex items-center justify-between mb-1 rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-expanded={open}
-          className="flex flex-1 items-center gap-1.5 px-2 py-1 cursor-pointer select-none"
+    <SidebarGroup className="p-0">
+      <div className="flex items-center justify-between">
+        <SidebarGroupLabel
+          render={
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-expanded={open}
+              className="flex flex-1 items-center gap-1.5 cursor-pointer select-none text-muted-foreground hover:text-sidebar-foreground transition-colors p-0 h-7"
+            />
+          }
         >
-          <Chevron className="size-3.5 shrink-0" />
+          <ChevronRight
+            className={cn(
+              "size-3.5 shrink-0 transition-transform duration-200 ease-in-out",
+              open && "rotate-90",
+            )}
+          />
           <span className="text-[11px] font-semibold uppercase tracking-wider">
             {title}
           </span>
-        </button>
+          {count !== undefined && (
+            <Badge
+              variant="secondary"
+              className="ml-auto mr-1 h-4 px-1.5 text-[10px] font-mono text-muted-foreground"
+            >
+              {count}
+            </Badge>
+          )}
+        </SidebarGroupLabel>
 
-        {action && <div className="pr-1">{action}</div>}
-
-        {!!count && (
-          <span className="mr-2 text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border shrink-0">
-            {count}
-          </span>
-        )}
+        {action && <div className="shrink-0">{action}</div>}
       </div>
 
-      {open && <div className="space-y-1">{children}</div>}
-    </section>
+      <div
+        className={cn(
+          "grid transition-[grid-template-rows,opacity] duration-200 ease-in-out",
+          open
+            ? "grid-rows-[1fr] opacity-100"
+            : "grid-rows-[0fr] opacity-0 pointer-events-none",
+        )}
+      >
+        <div className="overflow-hidden">
+          <SidebarGroupContent className="mt-1">
+            <SidebarMenu className="gap-0.5">{children}</SidebarMenu>
+          </SidebarGroupContent>
+        </div>
+      </div>
+    </SidebarGroup>
   );
 }

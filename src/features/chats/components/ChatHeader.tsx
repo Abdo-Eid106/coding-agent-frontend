@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
-import { PanelLeft } from "lucide-react";
-import { useUIStore } from "../../main/hooks/useUIStore";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useFetchSession } from "../../sessions/hooks/session.queries";
 import ThemeToggle from "../../main/components/ThemeToggle";
 
@@ -9,7 +8,6 @@ export default function ChatHeader() {
   const isNew = !sessionId;
 
   const { data, isLoading } = useFetchSession(sessionId);
-  const toggleSidebar = useUIStore((state) => state.toggleSidebar);
 
   const projectTitle = data?.project?.name;
   const sessionTitle = isNew
@@ -21,14 +19,7 @@ export default function ChatHeader() {
   return (
     <header className="flex h-13 shrink-0 items-center justify-between border-b border-border px-3 sm:px-4 min-w-0 bg-background">
       <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
-        <button
-          type="button"
-          onClick={toggleSidebar}
-          className="cursor-pointer rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors shrink-0"
-          aria-label="Toggle sidebar"
-        >
-          <PanelLeft className="size-4 shrink-0" />
-        </button>
+        <SidebarTrigger className="cursor-pointer" />
 
         <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-foreground min-w-0">
           {projectTitle && (

@@ -7,6 +7,13 @@ import {
   useActiveSessions,
   useStopSession,
 } from "../../sessions/hooks/session.queries";
+import {
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarMenuAction,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { cn } from "cn";
 
 interface SessionItemProps {
   session: SessionDto;
@@ -17,7 +24,7 @@ export default function SessionItem({ session }: SessionItemProps) {
   const sessionId = useCurrentSessionId();
   const navigate = useNavigate();
   const openDeleteSession = useUIStore((s) => s.openDeleteSession);
-  const setSidebarOpen = useUIStore((s) => s.setSidebarOpen);
+  const { isMobile, setOpenMobile } = useSidebar();
   const { isActive: isSessionRunning } = useActiveSessions();
   const { mutate: stopSession, isPending: isStopping } = useStopSession();
 
@@ -26,8 +33,8 @@ export default function SessionItem({ session }: SessionItemProps) {
 
   const handleClick = () => {
     navigate(`/sessions/${session.id}`);
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
-      setSidebarOpen(false);
+    if (isMobile) {
+      setOpenMobile(false);
     }
   };
 
@@ -49,40 +56,35 @@ export default function SessionItem({ session }: SessionItemProps) {
   };
 
   return (
-    <div
-      onClick={handleClick}
-      className={`group/session flex items-center justify-between w-full h-8 px-3 rounded-lg font-medium transition-colors cursor-pointer select-none ${
-        isActive
-          ? "bg-accent text-accent-foreground"
-          : "text-muted-foreground hover:text-foreground hover:bg-accent"
-      }`}
-    >
-      <span className="truncate ps-7">
-        {session.title || "Untitled Session"}
-      </span>
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        isActive={isActive}
+        onClick={handleClick}
+        className={cn("h-8 cursor-pointer select-none", isRunning && "pr-12!")}
+      >
+        <span className="truncate">{session.title || "Untitled Session"}</span>
+      </SidebarMenuButton>
 
-      <div className="flex items-center gap-1 shrink-0 ml-1">
-        {isRunning && (
-          <button
-            type="button"
-            onClick={handleStop}
-            disabled={isStopping}
-            className="size-6 flex items-center justify-center text-foreground hover:text-destructive rounded transition-colors cursor-pointer"
-            title="Stop session"
-          >
-            <CircleStop className="size-3.5" />
-          </button>
-        )}
-
+      {isRunning && (
         <button
           type="button"
-          onClick={handleDelete}
-          className="opacity-0 group-hover/session:opacity-100 size-6 flex items-center justify-center text-muted-foreground hover:text-destructive rounded transition-opacity cursor-pointer shrink-0"
-          title="Delete session"
+          onClick={handleStop}
+          disabled={isStopping}
+          className="absolute top-1.5 right-6 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-foreground hover:text-destructive transition-colors cursor-pointer"
+          title="Stop session"
         >
-          <Trash2 className="size-3.5" />
+          <CircleStop className="size-3.5 text-destructive animate-pulse" />
         </button>
-      </div>
-    </div>
+      )}
+
+      <SidebarMenuAction
+        showOnHover
+        onClick={handleDelete}
+        title="Delete session"
+        className="cursor-pointer"
+      >
+        <Trash2 className="size-3.5" />
+      </SidebarMenuAction>
+    </SidebarMenuItem>
   );
 }

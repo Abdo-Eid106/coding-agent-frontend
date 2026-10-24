@@ -1,12 +1,12 @@
 import { useCallback } from "react";
-import { useUIStore } from "../../hooks/useUIStore";
-
-const MOBILE_QUERY = "(max-width: 767px)"; // matches Tailwind's md breakpoint
+import { useSidebar } from "@/components/ui/sidebar";
 
 export function useCloseSidebarOnMobile() {
-  const setSidebarOpen = useUIStore((s) => s.setSidebarOpen);
+  const { isMobile, setOpenMobile } = useSidebar();
 
   return useCallback(() => {
-    if (window.matchMedia(MOBILE_QUERY).matches) setSidebarOpen(false);
-  }, [setSidebarOpen]);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }, [isMobile, setOpenMobile]);
 }

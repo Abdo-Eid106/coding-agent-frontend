@@ -9,6 +9,8 @@ import DeleteSessionModal from "./features/sessions/components/DeleteSessionModa
 import { Toaster } from "./features/main/components/Toaster";
 import { useSSE } from "./shared/hooks/useSee";
 
+import { SidebarProvider, SidebarInset } from "./components/ui/sidebar";
+
 function SessionRedirect() {
   const { sessionId } = useParams<{ sessionId?: string }>();
   return <Navigate to={sessionId ? `/sessions/${sessionId}` : "/"} replace />;
@@ -18,19 +20,21 @@ export default function App() {
   useSSE();
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
+    <SidebarProvider className="h-screen w-full overflow-hidden bg-background text-foreground">
       <Sidebar />
-      <Routes>
-        <Route path="/" element={<ChatArea />} />
-        <Route path="/sessions/:sessionId" element={<ChatArea />} />
-        <Route path="/session/:sessionId" element={<SessionRedirect />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <SidebarInset className="h-screen overflow-hidden">
+        <Routes>
+          <Route path="/" element={<ChatArea />} />
+          <Route path="/sessions/:sessionId" element={<ChatArea />} />
+          <Route path="/session/:sessionId" element={<SessionRedirect />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </SidebarInset>
       <SettingsModal />
       <AddProjectModal />
       <DeleteProjectModal />
       <DeleteSessionModal />
       <Toaster />
-    </div>
+    </SidebarProvider>
   );
 }

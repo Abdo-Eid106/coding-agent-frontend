@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, Trash2 } from "lucide-react";
 import { useProjectStore } from "../hooks/useProjectStore";
 import { useUIStore } from "../../main/hooks/useUIStore";
+import { useSidebar } from "@/components/ui/sidebar";
 
 interface ProjectMenuProps {
   projectId: string;
@@ -14,7 +15,7 @@ export default function ProjectMenu({
 }: ProjectMenuProps) {
   const navigate = useNavigate();
   const openDeleteProject = useUIStore((s) => s.openDeleteProject);
-  const setSidebarOpen = useUIStore((s) => s.setSidebarOpen);
+  const { isMobile, setOpenMobile } = useSidebar();
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
 
   const handleStartNewChatForProject = (e: React.MouseEvent) => {
@@ -22,8 +23,8 @@ export default function ProjectMenu({
     e.preventDefault();
     setSelectedProjectId(projectId);
     navigate("/");
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
-      setSidebarOpen(false);
+    if (isMobile) {
+      setOpenMobile(false);
     }
   };
 
@@ -37,7 +38,7 @@ export default function ProjectMenu({
     <div
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
-      className="hidden group-hover:flex items-center gap-0.5 shrink-0"
+      className="hidden group-hover/menu-item:flex group-focus-within/menu-item:flex items-center gap-0.5 shrink-0"
     >
       <button
         type="button"

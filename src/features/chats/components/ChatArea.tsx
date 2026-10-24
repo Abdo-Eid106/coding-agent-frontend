@@ -8,7 +8,7 @@ export default function ChatArea() {
   const { sessionId } = useParams<{ sessionId?: string }>();
 
   return (
-    <main className="flex h-screen flex-1 flex-col bg-background min-w-0 overflow-hidden relative">
+    <div className="flex h-full flex-1 flex-col bg-background min-w-0 overflow-hidden relative">
       <ChatHeader />
       <MessagesList sessionId={sessionId} />
       <div className="w-full px-3 sm:px-4 pb-3 sm:pb-4 min-w-0">
@@ -21,6 +21,6 @@ export default function ChatArea() {
           <ChatInput />
         </div>
       </div>
-    </main>
+    </div>
   );
 }
