@@ -66,7 +66,7 @@ export default function ModelSelector() {
   const models = groups.flatMap((provider) => provider.models);
 
   const currentModel =
-    models.find((model) => model.id === selectedModelId) ?? models[0];
+    models.find((model) => model.id === selectedModelId);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
