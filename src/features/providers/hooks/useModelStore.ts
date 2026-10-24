@@ -3,10 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 interface ModelState {
   selectedModelMap: Map<string, string>;
-  toggleModelSelection: (params: {
-    sessionId?: string;
-    modelId: string;
-  }) => void;
+  selectModel: (params: { sessionId?: string; modelId: string }) => void;
   getSelectedModel: (sessionId?: string) => string | undefined;
 }
 
@@ -15,17 +12,12 @@ export const useModelStore = create<ModelState>()(
     (set, get) => ({
       selectedModelMap: new Map(),
 
-      toggleModelSelection: ({ sessionId = "default", modelId }) =>
+      selectModel: ({ sessionId = "default", modelId }) =>
         set((state) => {
-          const nextMap = new Map(state.selectedModelMap);
+          const selectedModelMap = new Map(state.selectedModelMap);
+          selectedModelMap.set(sessionId, modelId);
 
-          if (nextMap.get(sessionId) === modelId) {
-            nextMap.delete(sessionId);
-          } else {
-            nextMap.set(sessionId, modelId);
-          }
-
-          return { selectedModelMap: nextMap };
+          return { selectedModelMap };
         }),
 
       getSelectedModel: (sessionId = "default") =>
@@ -39,19 +31,16 @@ export const useModelStore = create<ModelState>()(
         selectedModelMap: Array.from(state.selectedModelMap.entries()),
       }),
 
-      merge: (persistedState, currentState) => ({
-        ...currentState,
-        ...(persistedState as {
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as {
           selectedModelMap?: [string, string][];
-        }),
-        selectedModelMap: new Map(
-          (
-            persistedState as {
-              selectedModelMap?: [string, string][];
-            }
-          )?.selectedModelMap ?? [],
-        ),
-      }),
+        };
+
+        return {
+          ...currentState,
+          selectedModelMap: new Map(persisted?.selectedModelMap ?? []),
+        };
+      },
     },
   ),
 );

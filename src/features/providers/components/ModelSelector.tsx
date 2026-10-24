@@ -26,16 +26,14 @@ function ModelOption({ model }: { model: ModelDto }) {
   const selectedModelId = useModelStore((state) =>
     state.selectedModelMap.get(sessionId),
   );
-  const toggleModelSelection = useModelStore(
-    (state) => state.toggleModelSelection,
-  );
+  const selectModel = useModelStore((state) => state.selectModel);
 
   const selected = selectedModelId == model.id;
 
   return (
     <CommandItem
       value={`${model.displayName} ${model.id}`}
-      onSelect={() => toggleModelSelection({ sessionId, modelId: model.id })}
+      onSelect={() => selectModel({ sessionId, modelId: model.id })}
       className={cn(
         "flex items-center justify-between px-3 py-2 text-sm",
         selected && "bg-accent font-medium text-accent-foreground",
@@ -65,8 +63,7 @@ export default function ModelSelector() {
   const groups = providers.filter((provider) => provider.models.length > 0);
   const models = groups.flatMap((provider) => provider.models);
 
-  const currentModel =
-    models.find((model) => model.id === selectedModelId);
+  const currentModel = models.find((model) => model.id === selectedModelId);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
