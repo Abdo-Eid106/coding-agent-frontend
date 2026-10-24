@@ -1,3 +1,17 @@
+export interface ModelDto {
+  id: string;
+  displayName: string;
+  provider?: string;
+}
+
+export interface ProviderDto {
+  id: string;
+  displayName: string;
+  apiKey: string;
+  baseUrl: string;
+  models: ModelDto[];
+}
+
 export interface AddModelDto {
   id: string;
   displayName: string;
@@ -25,10 +39,6 @@ export interface AddApiKeyDto {
 export interface ModelDto {
   id: string;
   displayName: string;
-  apiModel?: string;
-  contextWindow?: number;
-  defaultMaxTokens?: number;
-  supportsAttachments?: boolean;
   provider?: string;
 }
 
