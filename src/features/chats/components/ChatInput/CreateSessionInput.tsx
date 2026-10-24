@@ -2,20 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreateSession } from "../../../sessions/hooks/session.queries";
 import { useProjectStore } from "../../../projects/hooks/useProjectStore";
-import ChatInputBase from "./Base";
 import { useModelStore } from "@/features/providers/hooks/useModelStore";
+import { toast } from "sonner";
+import { getErrorMessage } from "@/shared/lib/get-error-message";
+import ChatInputBase from "./Base";
 
-interface CreateSessionInputProps {
-  disabled?: boolean;
-  placeholder?: string;
-  className?: string;
-}
-
-export default function CreateSessionInput({
-  disabled,
-  placeholder,
-  className,
-}: CreateSessionInputProps = {}) {
+export default function CreateSessionInput() {
   const navigate = useNavigate();
 
   const [message, setMessage] = useState("");
@@ -39,6 +31,9 @@ export default function CreateSessionInput({
           setMessage("");
           navigate(`/sessions/${session.id}`);
         },
+        onError: (error) => {
+          toast.error(getErrorMessage(error));
+        },
       },
     );
   };
@@ -49,9 +44,6 @@ export default function CreateSessionInput({
       setMessage={setMessage}
       onSend={handleSend}
       isPending={isPending}
-      disabled={disabled}
-      placeholder={placeholder}
-      className={className}
     />
   );
 }

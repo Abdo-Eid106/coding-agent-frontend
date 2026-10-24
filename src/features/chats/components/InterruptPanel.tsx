@@ -5,23 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
-import { useResumeInterrupt } from "../hooks/useMessages";
+import { useFetchMessages, useResumeInterrupt } from "../hooks/useMessages";
 import { useInterruptsStore } from "../hooks/useInterruptStore";
+import { useParams } from "react-router-dom";
 
-interface Props {
-  messageId: string;
-}
+export function InterruptPanel() {
+  const { sessionId } = useParams<{ sessionId: string }>();
 
-export function InterruptPanel({ messageId }: Props) {
+  const { data: messages } = useFetchMessages(sessionId);
+  const { mutate: resumeInterrupt, isPending } = useResumeInterrupt();
+  const messageId = messages?.at(-1)?.id ?? "";
+
   const interrupt = useInterruptsStore((store) =>
     store.getInterrupt(messageId),
   );
-
   const removeInterrupt = useInterruptsStore((store) => store.removeInterrupt);
   const [selected, setSelected] = useState("");
   const baseId = useId();
 
-  const { mutate: resumeInterrupt, isPending } = useResumeInterrupt();
   if (!interrupt) return null;
 
   return (

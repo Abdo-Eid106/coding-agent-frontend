@@ -7,7 +7,6 @@ import {
   InputGroupButton,
   InputGroupTextarea,
 } from "@/components/ui/input-group";
-import { cn } from "@/lib/utils";
 
 import ModelSelector from "../../../providers/components/ModelSelector";
 
@@ -17,9 +16,6 @@ interface ChatInputBaseProps {
   onSend: () => void;
   isPending: boolean;
   onStop?: () => void;
-  disabled?: boolean;
-  placeholder?: string;
-  className?: string;
 }
 
 export default function ChatInputBase({
@@ -28,30 +24,23 @@ export default function ChatInputBase({
   onSend,
   isPending,
   onStop,
-  disabled = false,
-  placeholder = "Type your message…",
-  className,
 }: ChatInputBaseProps) {
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key !== "Enter" || e.shiftKey || e.nativeEvent.isComposing) return;
 
     e.preventDefault();
-    if (!disabled && !isPending && message.trim()) onSend();
+    if (!isPending && message.trim()) onSend();
   };
 
   const handleAction = () => (isPending ? onStop?.() : onSend());
 
   return (
-    <InputGroup
-      data-disabled={disabled || undefined}
-      className={cn("shadow-none ring-0 focus-within:ring-0", className)}
-    >
+    <InputGroup className="shadow-none ring-0 focus-within:ring-0">
       <InputGroupTextarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={handleKeyDown}
-        disabled={disabled}
-        placeholder={placeholder}
+        placeholder={"Type your message…"}
         rows={1}
         className="max-h-60 min-h-10"
       />
@@ -64,7 +53,7 @@ export default function ChatInputBase({
           size="icon-sm"
           className="ml-auto rounded-full"
           onClick={handleAction}
-          disabled={disabled || (!isPending && !message.trim())}
+          disabled={!isPending && !message.trim()}
           aria-label={isPending ? "Stop generating" : "Send message"}
         >
           {isPending ? <CircleStop /> : <Send />}
