@@ -1,6 +1,6 @@
 import type { ToolCallEvent } from "../../../types/agent-stream-event";
-import { QueryClient, type InfiniteData } from "@tanstack/react-query";
-import type { GetMessagesResponseDto } from "../../chats/types";
+import { QueryClient } from "@tanstack/react-query";
+import type { MessageDto } from "../../chats/types";
 import { messagesKey } from "../../chats/hooks/useMessages";
 import type { ToolCallDto } from "../types";
 
@@ -38,32 +38,22 @@ function upsertToolCall(
 export const addToolCall = (queryClient: QueryClient, event: ToolCallEvent) => {
   const { sessionId, messageId, payload: toolCall } = event;
 
-  queryClient.setQueryData<
-    InfiniteData<GetMessagesResponseDto, string | undefined>
-  >(messagesKey(sessionId), (old) => {
-    if (!old) return old;
+  queryClient.setQueryData<MessageDto[]>(messagesKey(sessionId), (messages) => {
+    if (!messages) return messages;
 
     let found = false;
 
-    const pages = old.pages.map((page) => {
-      const hasTargetMessage = page.items.some((msg) => msg.id === messageId);
-      if (!hasTargetMessage) return page;
+    const updatedMessages = messages.map((message) => {
+      if (message.id !== messageId) return message;
 
       found = true;
 
       return {
-        ...page,
-        items: page.items.map((message) =>
-          message.id === messageId
-            ? {
-                ...message,
-                toolCalls: upsertToolCall(message.toolCalls, toolCall),
-              }
-            : message,
-        ),
+        ...message,
+        toolCalls: upsertToolCall(message.toolCalls, toolCall),
       };
     });
 
-    return found ? { ...old, pages } : old;
+    return found ? updatedMessages : messages;
   });
 };
