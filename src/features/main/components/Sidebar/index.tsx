@@ -5,7 +5,7 @@ import ProjectItem from "../ProjectItem";
 import SessionItem from "../SessionItem";
 import SidebarSection from "./SidebarSection";
 import SidebarList from "./SidebarList";
-import AddProjectButton from "../../../projects/components/AddProjectButton";
+import AddProjectModal from "@/features/projects/components/AddProjectModal";
 import { useUIStore } from "../../hooks/useUIStore";
 import { useCloseSidebarOnMobile } from "./useCloseSidebar";
 import { useProjectStore } from "../../../projects/hooks/useProjectStore";
@@ -45,7 +45,9 @@ export default function Sidebar() {
     if (sessions.some((s) => s.id === currentSessionId)) {
       setIsConversationsOpen(true);
     }
-    if (projects.some((p) => p.sessions?.some((s) => s.id === currentSessionId))) {
+    if (
+      projects.some((p) => p.sessions?.some((s) => s.id === currentSessionId))
+    ) {
       setIsProjectsOpen(true);
     }
   } else if (currentSessionId !== prevSessionId) {
@@ -84,7 +86,7 @@ export default function Sidebar() {
           title="Projects"
           open={isProjectsOpen}
           onToggle={() => setIsProjectsOpen((v) => !v)}
-          action={<AddProjectButton />}
+          action={<AddProjectModal />}
         >
           <SidebarList
             items={projects}

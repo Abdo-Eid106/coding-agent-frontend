@@ -1,127 +1,129 @@
-import { useEffect, useState, type FormEvent } from "react";
-import { X, Loader2, Folder } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { Folder, FolderPlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateProject } from "../hooks/project.queries";
-import { useUIStore } from "../../main/hooks/useUIStore";
 import { getErrorMessage } from "../../../shared/lib/get-error-message";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+const INPUT_ID = "project-directory-path";
+const PATH_PLACEHOLDER =
+  "/home/username/projects/my-app or C:\\projects\\my-app";
 
 export default function AddProjectModal() {
-  const isOpen = useUIStore((s) => s.isAddProjectOpen);
-  const closeModal = useUIStore((s) => s.closeAddProject);
-
+  const [open, setOpen] = useState(false);
   const [directory, setDirectory] = useState("");
   const { mutate: createProject, isPending } = useCreateProject();
 
   const path = directory.trim();
+  const canSubmit = path.length > 0 && !isPending;
 
-  const close = () => {
-    if (isPending) return;
-    setDirectory("");
-    closeModal();
+  // Single place that handles every way of closing (button, Esc, overlay click),
+  // so state is always reset and the dialog can't be dismissed mid-request.
+  const handleOpenChange = (next: boolean) => {
+    if (!next && isPending) return;
+    setOpen(next);
+    if (!next) setDirectory("");
   };
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKeyDown = (e: KeyboardEvent) => e.key === "Escape" && close();
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isOpen, isPending]);
-
-  if (!isOpen) return null;
-
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!path || isPending) return;
+    if (!canSubmit) return;
 
     createProject(
       { directory: path },
       {
-        onSuccess: close,
+        onSuccess: () => handleOpenChange(false),
         onError: (err) => toast.error(getErrorMessage(err)),
       },
     );
   };
 
   return (
-    <div
-      onClick={(e) => e.target === e.currentTarget && close()}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 transition-opacity duration-200 starting:opacity-0"
-    >
-      <form
-        onSubmit={handleSubmit}
-        autoComplete="off"
-        data-form-type="other"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="add-project-title"
-        className="bg-card text-card-foreground border border-border w-full max-w-md rounded-xl shadow-2xl p-5 space-y-4 transition-all duration-200 starting:opacity-0 starting:scale-95 starting:translate-y-2"
+    <>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-xs"
+        onClick={() => handleOpenChange(true)}
+        title="Add project directory"
+        aria-label="Add project directory"
+        className="cursor-pointer text-muted-foreground hover:text-foreground"
       >
-        <header className="grid grid-cols-[auto_1fr_auto] items-center gap-x-2 pb-2 border-b border-border">
-          <Folder className="row-span-2 size-7 p-1.5 rounded-md bg-primary/10 text-primary" />
-          <h3 id="add-project-title" className="text-sm font-semibold">
-            Add Project
-          </h3>
-          <button
-            type="button"
-            onClick={close}
-            disabled={isPending}
-            aria-label="Close modal"
-            className="row-span-2 p-1 text-muted-foreground hover:text-foreground rounded transition-colors disabled:opacity-50 cursor-pointer"
-          >
-            <X className="size-4" />
-          </button>
-          <p className="text-xs text-muted-foreground">
-            Enter the absolute directory path on your machine
-          </p>
-        </header>
+        <FolderPlus className="size-3.5" />
+      </Button>
 
-        <div className="space-y-1.5">
-          <label
-            htmlFor="project-directory-path"
-            className="block text-xs font-medium"
-          >
-            Directory Path
-          </label>
-          <input
-            id="project-directory-path"
-            name="project_directory_path"
-            type="text"
-            autoFocus
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            data-lpignore="true"
-            data-1p-ignore="true"
-            data-bwignore="true"
-            data-form-type="other"
-            spellCheck={false}
-            value={directory}
-            onChange={(e) => setDirectory(e.target.value)}
-            disabled={isPending}
-            placeholder="/home/username/projects/my-app or C:\projects\my-app"
-            className="w-full px-3 py-2 text-xs rounded-lg bg-background border border-input placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring font-mono transition-colors disabled:opacity-50"
-          />
-        </div>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="sm:max-w-md">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <DialogHeader>
+              <div className="flex items-center gap-2">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Folder className="size-4" />
+                </div>
+                <div>
+                  <DialogTitle>Add Project</DialogTitle>
+                  <DialogDescription className="mt-0.5 text-xs">
+                    Enter the absolute directory path on your machine
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
 
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={close}
-            disabled={isPending}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer disabled:opacity-50"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isPending || !path}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 cursor-pointer"
-          >
-            {isPending && <Loader2 className="size-3.5 animate-spin" />}
-            {isPending ? "Adding..." : "Add Project"}
-          </button>
-        </div>
-      </form>
-    </div>
+            <div className="space-y-1.5">
+              <label
+                htmlFor={INPUT_ID}
+                className="block text-xs font-medium text-foreground"
+              >
+                Directory Path
+              </label>
+              <Input
+                id={INPUT_ID}
+                name="project_directory_path"
+                type="text"
+                autoFocus
+                autoComplete="off"
+                spellCheck={false}
+                value={directory}
+                onChange={(e) => setDirectory(e.target.value)}
+                disabled={isPending}
+                placeholder={PATH_PLACEHOLDER}
+                className="font-mono text-xs"
+              />
+            </div>
+
+            <DialogFooter className="mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => handleOpenChange(false)}
+                disabled={isPending}
+                className="cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                size="sm"
+                disabled={!canSubmit}
+                className="cursor-pointer"
+              >
+                {isPending && <Loader2 className="size-3.5 animate-spin" />}
+                {isPending ? "Adding..." : "Add Project"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

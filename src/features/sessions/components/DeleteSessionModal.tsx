@@ -1,58 +1,49 @@
-import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, Loader2, X } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import { useDeleteSession } from "../hooks/session.queries";
-import { useUIStore, type SessionToDelete } from "../../main/hooks/useUIStore";
 import { getErrorMessage } from "../../../shared/lib/get-error-message";
-import { toast } from "../../main/components/Toaster";
+import { toast } from "sonner";
 import { useCurrentSessionId } from "../hooks/useCurrentSessionId";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
-export default function DeleteSessionModal() {
-  const sessionToDelete = useUIStore((s) => s.sessionToDelete);
-  const onClose = useUIStore((s) => s.closeDeleteSession);
-
-  if (!sessionToDelete) return null;
-
-  return <DeleteSessionDialog session={sessionToDelete} onClose={onClose} />;
+export interface SessionToDelete {
+  id: string;
+  title: string;
 }
 
-interface DeleteSessionDialogProps {
+interface DeleteSessionModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   session: SessionToDelete;
-  onClose: () => void;
 }
 
-function DeleteSessionDialog({ session, onClose }: DeleteSessionDialogProps) {
-  const cancelBtnRef = useRef<HTMLButtonElement>(null);
+export default function DeleteSessionModal({
+  open,
+  onOpenChange,
+  session,
+}: DeleteSessionModalProps) {
   const { mutate: deleteSession, isPending } = useDeleteSession();
-  const sessionId = useCurrentSessionId();
+  const currentSessionId = useCurrentSessionId();
   const navigate = useNavigate();
-
-  // Focus cancel button on mount for safety
-  useEffect(() => {
-    cancelBtnRef.current?.focus();
-  }, []);
-
-  // Close on Escape key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !isPending) {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isPending, onClose]);
 
   const handleConfirmDelete = () => {
     if (isPending) return;
 
     deleteSession(session.id, {
       onSuccess: () => {
-        if (sessionId === session.id) {
+        if (currentSessionId === session.id) {
           navigate("/");
         }
         toast.success(`Session "${session.title}" deleted`);
-        onClose();
+        onOpenChange(false);
       },
       onError: (err) => {
         toast.error(getErrorMessage(err));
@@ -61,50 +52,22 @@ function DeleteSessionDialog({ session, onClose }: DeleteSessionDialogProps) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 transition-opacity duration-200 starting:opacity-0"
-      onClick={(e) => {
-        if (e.target === e.currentTarget && !isPending) {
-          onClose();
-        }
-      }}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="delete-session-title"
-        className="bg-card text-card-foreground border border-border w-full max-w-md rounded-xl shadow-2xl p-5 flex flex-col gap-4 transition-all duration-200 starting:opacity-0 starting:scale-95 starting:translate-y-2"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between pb-2 border-b border-border">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-destructive/10 text-destructive">
+            <div className="size-8 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center shrink-0">
               <AlertTriangle className="size-4" />
             </div>
             <div>
-              <h3
-                id="delete-session-title"
-                className="text-sm font-semibold text-foreground"
-              >
-                Delete Session
-              </h3>
-              <p className="text-xs text-muted-foreground">
+              <DialogTitle>Delete Session</DialogTitle>
+              <DialogDescription className="text-xs mt-0.5">
                 This action cannot be undone
-              </p>
+              </DialogDescription>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isPending}
-            aria-label="Close modal"
-            className="p-1 text-muted-foreground hover:text-foreground rounded transition-colors disabled:opacity-50 cursor-pointer"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+        </DialogHeader>
 
-        {/* Content */}
         <div className="text-xs text-muted-foreground leading-relaxed">
           Are you sure you want to delete{" "}
           <span className="font-semibold text-foreground break-all">
@@ -114,22 +77,24 @@ function DeleteSessionDialog({ session, onClose }: DeleteSessionDialogProps) {
           permanently removed.
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center justify-end gap-2 pt-1">
-          <button
-            ref={cancelBtnRef}
+        <DialogFooter className="mt-4">
+          <Button
             type="button"
-            onClick={onClose}
+            variant="outline"
+            size="sm"
+            onClick={() => onOpenChange(false)}
             disabled={isPending}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-border hover:bg-accent text-foreground transition-colors cursor-pointer disabled:opacity-50"
+            className="cursor-pointer"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="destructive"
+            size="sm"
             onClick={handleConfirmDelete}
             disabled={isPending}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50 cursor-pointer"
+            className="cursor-pointer"
           >
             {isPending ? (
               <>
@@ -139,9 +104,9 @@ function DeleteSessionDialog({ session, onClose }: DeleteSessionDialogProps) {
             ) : (
               <span>Delete Session</span>
             )}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

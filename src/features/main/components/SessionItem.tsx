@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trash2, CircleStop } from "lucide-react";
-import { useUIStore } from "../hooks/useUIStore";
 import { type SessionDto } from "../../sessions/types";
 import { useCurrentSessionId } from "../../sessions/hooks/useCurrentSessionId";
 import {
@@ -13,6 +13,7 @@ import {
   SidebarMenuAction,
   useSidebar,
 } from "@/components/ui/sidebar";
+import DeleteSessionModal from "../../sessions/components/DeleteSessionModal";
 import { cn } from "cn";
 
 interface SessionItemProps {
@@ -23,10 +24,10 @@ interface SessionItemProps {
 export default function SessionItem({ session }: SessionItemProps) {
   const sessionId = useCurrentSessionId();
   const navigate = useNavigate();
-  const openDeleteSession = useUIStore((s) => s.openDeleteSession);
   const { isMobile, setOpenMobile } = useSidebar();
   const { isActive: isSessionRunning } = useActiveSessions();
   const { mutate: stopSession, isPending: isStopping } = useStopSession();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const isActive = sessionId === session.id;
   const isRunning = isSessionRunning(session.id);
@@ -49,42 +50,50 @@ export default function SessionItem({ session }: SessionItemProps) {
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    openDeleteSession({
-      id: session.id,
-      title: session.title || "Untitled Session",
-    });
+    setIsDeleteDialogOpen(true);
   };
 
   return (
-    <SidebarMenuItem>
-      <SidebarMenuButton
-        isActive={isActive}
-        onClick={handleClick}
-        className={cn("h-8 cursor-pointer select-none", isRunning && "pr-12!")}
-      >
-        <span className="truncate">{session.title || "Untitled Session"}</span>
-      </SidebarMenuButton>
-
-      {isRunning && (
-        <button
-          type="button"
-          onClick={handleStop}
-          disabled={isStopping}
-          className="absolute top-1.5 right-6 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-foreground hover:text-destructive transition-colors cursor-pointer"
-          title="Stop session"
+    <>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          isActive={isActive}
+          onClick={handleClick}
+          className={cn("h-8 cursor-pointer select-none", isRunning && "pr-12!")}
         >
-          <CircleStop className="size-3.5 text-destructive animate-pulse" />
-        </button>
-      )}
+          <span className="truncate">{session.title || "Untitled Session"}</span>
+        </SidebarMenuButton>
 
-      <SidebarMenuAction
-        showOnHover
-        onClick={handleDelete}
-        title="Delete session"
-        className="cursor-pointer"
-      >
-        <Trash2 className="size-3.5" />
-      </SidebarMenuAction>
-    </SidebarMenuItem>
+        {isRunning && (
+          <button
+            type="button"
+            onClick={handleStop}
+            disabled={isStopping}
+            className="absolute top-1.5 right-6 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-foreground hover:text-destructive transition-colors cursor-pointer"
+            title="Stop session"
+          >
+            <CircleStop className="size-3.5 text-destructive animate-pulse" />
+          </button>
+        )}
+
+        <SidebarMenuAction
+          showOnHover
+          onClick={handleDelete}
+          title="Delete session"
+          className="cursor-pointer"
+        >
+          <Trash2 className="size-3.5" />
+        </SidebarMenuAction>
+      </SidebarMenuItem>
+
+      <DeleteSessionModal
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        session={{
+          id: session.id,
+          title: session.title || "Untitled Session",
+        }}
+      />
+    </>
   );
 }
