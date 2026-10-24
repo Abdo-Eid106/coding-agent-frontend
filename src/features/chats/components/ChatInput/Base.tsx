@@ -41,7 +41,7 @@ export default function ChatInputBase({
   const handleAction = () => (isPending ? onStop?.() : onSend());
 
   return (
-    <InputGroup className={className}>
+    <InputGroup data-disabled={disabled || undefined} className={className}>
       <InputGroupTextarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}

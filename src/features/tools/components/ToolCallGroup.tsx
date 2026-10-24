@@ -35,7 +35,7 @@ export default function ToolCallGroup({
         </span>
         <ChevronRight
           aria-hidden="true"
-          className="size-3.5 shrink-0 text-muted-foreground/70 transition-transform duration-200 group-hover:text-foreground group-data-[state=open]:rotate-90 group-data-[state=open]:text-foreground"
+          className="size-3.5 shrink-0 text-muted-foreground/70 transition-transform duration-200 ease-in-out group-hover:text-foreground group-data-[state=open]:rotate-90 group-data-[state=open]:text-foreground group-data-[panel-open]:rotate-90 group-data-[panel-open]:text-foreground group-aria-expanded:rotate-90 group-aria-expanded:text-foreground"
         />
       </CollapsibleTrigger>
 

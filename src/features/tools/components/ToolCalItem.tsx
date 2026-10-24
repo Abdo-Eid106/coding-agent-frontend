@@ -29,7 +29,7 @@ export default function ToolCallItem({
   const indicator = icon ?? (
     <ChevronRight
       aria-hidden="true"
-      className="size-3.5 shrink-0 text-muted-foreground/70 transition-transform duration-200 group-hover:text-foreground group-data-[state=open]:rotate-90 group-data-[state=open]:text-foreground"
+      className="size-3.5 shrink-0 text-muted-foreground/70 transition-transform duration-200 ease-in-out group-hover:text-foreground group-data-[state=open]:rotate-90 group-data-[state=open]:text-foreground group-data-[panel-open]:rotate-90 group-data-[panel-open]:text-foreground group-aria-expanded:rotate-90 group-aria-expanded:text-foreground"
     />
   );
 
@@ -39,7 +39,7 @@ export default function ToolCallItem({
         className={cn(
           "group flex w-full min-w-0 cursor-pointer select-none items-center gap-2 py-1 text-left font-normal text-muted-foreground transition-colors hover:text-foreground",
           "focus-visible:rounded-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-          "data-[state=open]:font-medium data-[state=open]:text-foreground",
+          "data-[state=open]:font-medium data-[state=open]:text-foreground data-[panel-open]:font-medium data-[panel-open]:text-foreground aria-expanded:font-medium aria-expanded:text-foreground",
           "disabled:cursor-not-allowed disabled:opacity-50",
           headerClassName,
         )}

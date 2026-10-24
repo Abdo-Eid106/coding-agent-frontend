@@ -74,7 +74,6 @@ export function ProviderForm({
             id="base-url"
             type="url"
             placeholder="https://api.myprovider.com/v1"
-            required
             {...register("baseUrl")}
           />
         </div>
