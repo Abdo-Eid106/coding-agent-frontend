@@ -88,9 +88,6 @@ export default function AddProjectModal() {
                 id={INPUT_ID}
                 name="project_directory_path"
                 type="text"
-                autoFocus
-                autoComplete="off"
-                spellCheck={false}
                 value={directory}
                 onChange={(e) => setDirectory(e.target.value)}
                 disabled={isPending}
