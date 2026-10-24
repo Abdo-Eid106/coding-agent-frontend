@@ -7,6 +7,7 @@ import {
   InputGroupButton,
   InputGroupTextarea,
 } from "@/components/ui/input-group";
+import { cn } from "@/lib/utils";
 
 import ModelSelector from "../../../providers/components/ModelSelector";
 
@@ -41,7 +42,10 @@ export default function ChatInputBase({
   const handleAction = () => (isPending ? onStop?.() : onSend());
 
   return (
-    <InputGroup data-disabled={disabled || undefined} className={className}>
+    <InputGroup
+      data-disabled={disabled || undefined}
+      className={cn("shadow-none ring-0 focus-within:ring-0", className)}
+    >
       <InputGroupTextarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
