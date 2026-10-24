@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useDeleteSession } from "../hooks/session.queries";
+import { useUIStore } from "../../main/hooks/useUIStore";
 import { getErrorMessage } from "../../../shared/lib/get-error-message";
 import { toast } from "sonner";
 import {
@@ -13,25 +14,18 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-export interface SessionToDelete {
-  id: string;
-  title: string;
-}
+export type { SessionToDelete } from "../../main/hooks/useUIStore";
 
-interface DeleteSessionModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  session: SessionToDelete;
-}
-
-export default function DeleteSessionModal({
-  open,
-  onOpenChange,
-  session,
-}: DeleteSessionModalProps) {
+export default function DeleteSessionModal() {
   const { sessionId } = useParams<{ sessionId?: string }>();
   const { mutate: deleteSession, isPending } = useDeleteSession();
   const navigate = useNavigate();
+
+  const session = useUIStore((s) => s.sessionToDelete);
+  const isOpen = useUIStore((s) => s.isDeleteSessionOpen);
+  const closeDeleteSession = useUIStore((s) => s.closeDeleteSession);
+
+  if (!session) return null;
 
   const handleConfirmDelete = () => {
     if (isPending) return;
@@ -41,8 +35,10 @@ export default function DeleteSessionModal({
         if (sessionId === session.id) {
           navigate("/");
         }
-        toast.success(`Session "${session.title}" deleted`);
-        onOpenChange(false);
+        toast.success(
+          `Session "${session.title || "Untitled Session"}" deleted`,
+        );
+        closeDeleteSession();
       },
       onError: (err) => {
         toast.error(getErrorMessage(err));
@@ -51,7 +47,14 @@ export default function DeleteSessionModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && !isPending) {
+          closeDeleteSession();
+        }
+      }}
+    >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2.5">
@@ -70,7 +73,7 @@ export default function DeleteSessionModal({
         <div className="text-xs text-muted-foreground leading-relaxed">
           Are you sure you want to delete{" "}
           <span className="font-semibold text-foreground break-all">
-            &ldquo;{session.title}&rdquo;
+            &ldquo;{session.title || "Untitled Session"}&rdquo;
           </span>
           ? All messages and conversation history in this session will be
           permanently removed.
@@ -81,7 +84,7 @@ export default function DeleteSessionModal({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => onOpenChange(false)}
+            onClick={() => closeDeleteSession()}
             disabled={isPending}
             className="cursor-pointer"
           >

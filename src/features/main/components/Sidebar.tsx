@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronRight, Plus, Settings } from "lucide-react";
-import ProjectItem from "../ProjectItem";
-import SessionItem from "../SessionItem";
+import ProjectItem from "./ProjectItem";
+import SessionItem from "../../sessions/components/SessionItem";
 import AddProjectModal from "@/features/projects/components/AddProjectModal";
 import SettingsModal from "@/features/settings/components/SettingsModal";
-import { useProjectStore } from "../../../projects/hooks/useProjectStore";
-import { useFetchSessions } from "../../../sessions/hooks/session.queries";
+import { useProjectStore } from "../../projects/hooks/useProjectStore";
+import { useFetchSessions } from "../../sessions/hooks/session.queries";
 import {
   Sidebar as ShadcnSidebar,
   SidebarContent,
@@ -30,15 +30,14 @@ export default function Sidebar() {
   const { sessionId } = useParams<{ sessionId?: string }>();
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
+  const [isProjectsOpen, setIsProjectsOpen] = useState(true);
+  const [isConversationsOpen, setIsConversationsOpen] = useState(true);
   const { setOpenMobile } = useSidebar();
+  const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
 
   const { data, isLoading } = useFetchSessions();
   const projects = data?.projects ?? [];
   const sessions = data?.sessions ?? [];
-
-  const [isProjectsOpen, setIsProjectsOpen] = useState(true);
-  const [isConversationsOpen, setIsConversationsOpen] = useState(true);
 
   useEffect(() => {
     if (!sessionId || !data) return;

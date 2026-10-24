@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FolderOpen, ChevronRight } from "lucide-react";
 import { type ProjectDto } from "../../projects/types";
-import SessionItem from "./SessionItem";
+import SessionItem from "../../sessions/components/SessionItem";
 import ProjectMenu from "../../projects/components/ProjectMenu";
 import {
   SidebarMenuItem,

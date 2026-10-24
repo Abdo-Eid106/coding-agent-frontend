@@ -1,6 +1,7 @@
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useDeleteProject } from "../hooks/project.queries";
 import { useProjectStore } from "../hooks/useProjectStore";
+import { useUIStore } from "../../main/hooks/useUIStore";
 import { getErrorMessage } from "../../../shared/lib/get-error-message";
 import { toast } from "sonner";
 import {
@@ -13,25 +14,18 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-export interface ProjectToDelete {
-  id: string;
-  name: string;
-}
+export type { ProjectToDelete } from "../../main/hooks/useUIStore";
 
-interface DeleteProjectModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  project: ProjectToDelete;
-}
+export default function DeleteProjectModal() {
+  const project = useUIStore((s) => s.projectToDelete);
+  const isOpen = useUIStore((s) => s.isDeleteProjectOpen);
+  const closeDeleteProject = useUIStore((s) => s.closeDeleteProject);
 
-export default function DeleteProjectModal({
-  open,
-  onOpenChange,
-  project,
-}: DeleteProjectModalProps) {
   const { mutate: deleteProject, isPending } = useDeleteProject();
   const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
+
+  if (!project) return null;
 
   const handleConfirmDelete = () => {
     if (isPending) return;
@@ -42,7 +36,7 @@ export default function DeleteProjectModal({
           setSelectedProjectId(null);
         }
         toast.success(`Project "${project.name}" deleted`);
-        onOpenChange(false);
+        closeDeleteProject();
       },
       onError: (err) => {
         toast.error(getErrorMessage(err));
@@ -51,7 +45,14 @@ export default function DeleteProjectModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && !isPending) {
+          closeDeleteProject();
+        }
+      }}
+    >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2.5">
@@ -81,7 +82,7 @@ export default function DeleteProjectModal({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => onOpenChange(false)}
+            onClick={() => closeDeleteProject()}
             disabled={isPending}
             className="cursor-pointer"
           >
