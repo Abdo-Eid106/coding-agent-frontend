@@ -14,7 +14,7 @@ import SettingsSidebar from "./SettingsSidebar";
 import ProvidersTab from "../../providers/components/ProvidersTab";
 import ModelsTab from "../../providers/components/ModelsTab";
 import AppearanceTab from "./AppearanceTab";
-import { useUIStore } from "../../main/hooks/useUIStore";
+import { useSettingsStore } from "../hooks/useSettingsStore";
 
 interface SettingsModalProps {
   isOpen?: boolean;
@@ -45,8 +45,8 @@ export default function SettingsModal({
   isOpen: propsIsOpen,
   onClose: propsOnClose,
 }: SettingsModalProps = {}) {
-  const storeIsOpen = useUIStore((s) => s.isSettingsOpen);
-  const storeClose = useUIStore((s) => s.closeSettings);
+  const storeIsOpen = useSettingsStore((s) => s.isSettingsOpen);
+  const storeClose = useSettingsStore((s) => s.closeSettings);
 
   const isOpen = propsIsOpen !== undefined ? propsIsOpen : storeIsOpen;
   const onClose = propsOnClose ?? storeClose;

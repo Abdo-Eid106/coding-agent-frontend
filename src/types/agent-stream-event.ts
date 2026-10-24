@@ -1,4 +1,4 @@
-import type { SessionStatus } from "../features/sessions/enums/session-status";
+import { SessionStatus } from "@/features/sessions/types";
 
 export enum AgentEventEnum {
   DONE = "done",

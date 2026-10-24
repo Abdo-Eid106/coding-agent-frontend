@@ -9,11 +9,11 @@ import {
 import { useThemeStore } from "../hooks/useThemeStore";
 
 export function Toaster({ ...props }: ToasterProps) {
-  const effectiveTheme = useThemeStore((s) => s.effectiveTheme);
+  const theme = useThemeStore((s) => s.theme);
 
   return (
     <Sonner
-      theme={effectiveTheme}
+      theme={theme}
       className="toaster group font-sans"
       style={
         {

@@ -16,7 +16,7 @@ import {
   finishMessage,
 } from "../../features/chats/hooks/useMessages";
 
-import { SessionStatus } from "../../features/sessions/enums/session-status";
+import { SessionStatus } from "@/features/sessions/types";
 import { useActiveSessions } from "../../features/sessions/hooks/session.queries";
 import { addToolCall } from "../../features/tools/helpers/addToolCall";
 

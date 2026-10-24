@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronRight, Plus, Settings } from "lucide-react";
-import ProjectItem from "./ProjectItem";
+import ProjectItem from "../../projects/components/ProjectItem";
 import SessionItem from "../../sessions/components/SessionItem";
 import AddProjectModal from "@/features/projects/components/AddProjectModal";
 import { useProjectStore } from "../../projects/hooks/useProjectStore";
 import { useFetchSessions } from "../../sessions/hooks/session.queries";
-import { useUIStore } from "../hooks/useUIStore";
+import { useSidebarStore } from "../hooks/useSidebarStore";
+import { useSettingsStore } from "@/features/settings/hooks/useSettingsStore";
 import {
   Sidebar as ShadcnSidebar,
   SidebarContent,
@@ -31,12 +32,14 @@ export default function Sidebar() {
   const { setOpenMobile } = useSidebar();
 
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
-  const isProjectsOpen = useUIStore((s) => s.isProjectsOpen);
-  const toggleProjectsOpen = useUIStore((s) => s.toggleProjectsOpen);
-  const isConversationsOpen = useUIStore((s) => s.isConversationsOpen);
-  const toggleConversationsOpen = useUIStore((s) => s.toggleConversationsOpen);
-  const openSettings = useUIStore((s) => s.openSettings);
-  const ensureSessionVisible = useUIStore((s) => s.ensureSessionVisible);
+  const isProjectsOpen = useSidebarStore((s) => s.isProjectsOpen);
+  const toggleProjectsOpen = useSidebarStore((s) => s.toggleProjectsOpen);
+  const isConversationsOpen = useSidebarStore((s) => s.isConversationsOpen);
+  const toggleConversationsOpen = useSidebarStore(
+    (s) => s.toggleConversationsOpen,
+  );
+  const ensureSessionVisible = useSidebarStore((s) => s.ensureSessionVisible);
+  const openSettings = useSettingsStore((s) => s.openSettings);
 
   const { data, isLoading } = useFetchSessions();
   const projects = data?.projects ?? [];

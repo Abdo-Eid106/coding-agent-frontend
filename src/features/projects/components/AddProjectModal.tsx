@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import { Folder, FolderPlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateProject } from "../hooks/project.queries";
@@ -26,15 +26,13 @@ export default function AddProjectModal() {
   const path = directory.trim();
   const canSubmit = path.length > 0 && !isPending;
 
-  // Single place that handles every way of closing (button, Esc, overlay click),
-  // so state is always reset and the dialog can't be dismissed mid-request.
   const handleOpenChange = (next: boolean) => {
     if (!next && isPending) return;
     setOpen(next);
     if (!next) setDirectory("");
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!canSubmit) return;
 

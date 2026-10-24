@@ -1,96 +1,68 @@
-import { useState, useRef, useEffect } from "react";
-import { Sun, Moon, Monitor, Check } from "lucide-react";
+import { Sun, Moon, Monitor, type LucideIcon } from "lucide-react";
 import { useThemeStore, Theme } from "../hooks/useThemeStore";
-import Dropdown from "./Dropdown";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const THEME_OPTIONS: { id: Theme; label: string; icon: typeof Sun }[] = [
+const THEME_OPTIONS: { id: Theme; label: string; icon: LucideIcon }[] = [
   { id: Theme.Light, label: "Light", icon: Sun },
   { id: Theme.Dark, label: "Dark", icon: Moon },
   { id: Theme.System, label: "System", icon: Monitor },
 ];
 
 export default function ThemeToggle() {
-  const { theme, effectiveTheme, setTheme } = useThemeStore();
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const theme = useThemeStore((s) => s.theme);
+  const setTheme = useThemeStore((s) => s.setTheme);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
-
-  const CurrentIcon =
-    theme === Theme.System
-      ? Monitor
-      : effectiveTheme === Theme.Dark
-        ? Moon
-        : Sun;
+  const current =
+    THEME_OPTIONS.find((opt) => opt.id === theme) ?? THEME_OPTIONS[0];
+  const CurrentIcon = current.icon;
 
   return (
-    <div className="relative" ref={containerRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
-        className={`p-2 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
-          isOpen
-            ? "bg-accent text-foreground"
-            : "text-muted-foreground hover:text-foreground hover:bg-accent"
-        }`}
-        title={`Theme: ${theme.charAt(0).toUpperCase() + theme.slice(1)}`}
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            title={`Theme: ${current.label}`}
+            aria-label={`Theme: ${current.label}`}
+            className="cursor-pointer text-muted-foreground hover:text-foreground"
+          />
+        }
       >
-        <CurrentIcon className="size-4 shrink-0" />
-      </button>
+        <CurrentIcon className="size-4" />
+      </DropdownMenuTrigger>
 
-      <Dropdown
-        isOpen={isOpen}
-        direction="down"
-        className="absolute right-0 top-full mt-1.5 z-50"
-      >
-        <div className="min-w-35 rounded-lg border border-border bg-popover text-popover-foreground shadow-lg py-1 select-none">
-          <div className="px-3 py-1.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50">
-            Appearance
-          </div>
+      <DropdownMenuContent align="end" className="min-w-36">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+        </DropdownMenuGroup>
 
-          <div className="p-1 space-y-0.5">
-            {THEME_OPTIONS.map((opt) => {
-              const Icon = opt.icon;
-              const isSelected = theme === opt.id;
-
-              return (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => {
-                    setTheme(opt.id);
-                    setIsOpen(false);
-                  }}
-                  className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-colors ${
-                    isSelected
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Icon className="size-3.5 shrink-0" />
-                    <span>{opt.label}</span>
-                  </div>
-
-                  {isSelected && <Check className="size-3.5 text-primary" />}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </Dropdown>
-    </div>
+        <DropdownMenuRadioGroup
+          value={theme}
+          onValueChange={(value) => setTheme(value as Theme)}
+        >
+          {THEME_OPTIONS.map(({ id, label, icon: Icon }) => (
+            <DropdownMenuRadioItem
+              key={id}
+              value={id}
+              className="cursor-pointer"
+            >
+              <Icon className="size-3.5" />
+              {label}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -1,7 +1,6 @@
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useDeleteProject } from "../hooks/project.queries";
 import { useProjectStore } from "../hooks/useProjectStore";
-import { useUIStore } from "../../main/hooks/useUIStore";
 import { getErrorMessage } from "../../../shared/lib/get-error-message";
 import { toast } from "sonner";
 import {
@@ -14,39 +13,36 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-export type { ProjectToDelete } from "../../main/hooks/useUIStore";
+export type { ProjectToDelete } from "../hooks/useProjectStore";
 
 export default function DeleteProjectModal() {
-  const project = useUIStore((s) => s.projectToDelete);
-  const isOpen = useUIStore((s) => s.isDeleteProjectOpen);
-  const closeDeleteProject = useUIStore((s) => s.closeDeleteProject);
-
-  const { mutate: deleteProject, isPending } = useDeleteProject();
+  const project = useProjectStore((s) => s.projectToDelete);
+  const closeDeleteProject = useProjectStore((s) => s.closeDeleteProject);
   const selectedProjectId = useProjectStore((s) => s.selectedProjectId);
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
 
+  const { mutate: deleteProject, isPending } = useDeleteProject();
+
   if (!project) return null;
+
+  const onSuccess = () => {
+    if (selectedProjectId === project.id) setSelectedProjectId(null);
+    toast.success(`Project "${project.name}" deleted`);
+    closeDeleteProject();
+  };
+
+  const onError = (err: Error) => {
+    toast.error(getErrorMessage(err));
+  };
 
   const handleConfirmDelete = () => {
     if (isPending) return;
-
-    deleteProject(project.id, {
-      onSuccess: () => {
-        if (selectedProjectId === project.id) {
-          setSelectedProjectId(null);
-        }
-        toast.success(`Project "${project.name}" deleted`);
-        closeDeleteProject();
-      },
-      onError: (err) => {
-        toast.error(getErrorMessage(err));
-      },
-    });
+    deleteProject(project.id, { onSuccess, onError });
   };
 
   return (
     <Dialog
-      open={isOpen}
+      open={!!project}
       onOpenChange={(open) => {
         if (!open && !isPending) {
           closeDeleteProject();

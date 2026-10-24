@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useDeleteSession } from "../hooks/session.queries";
-import { useUIStore } from "../../main/hooks/useUIStore";
+import { useSessionStore } from "../hooks/useSessionStore";
 import { getErrorMessage } from "../../../shared/lib/get-error-message";
 import { toast } from "sonner";
 import {
@@ -13,42 +13,36 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-
-export type { SessionToDelete } from "../../main/hooks/useUIStore";
+export type { SessionToDelete } from "../hooks/useSessionStore";
 
 export default function DeleteSessionModal() {
-  const { sessionId } = useParams<{ sessionId?: string }>();
-  const { mutate: deleteSession, isPending } = useDeleteSession();
   const navigate = useNavigate();
+  const { sessionId } = useParams<{ sessionId?: string }>();
+  const session = useSessionStore((s) => s.sessionToDelete);
+  const closeDeleteSession = useSessionStore((s) => s.closeDeleteSession);
 
-  const session = useUIStore((s) => s.sessionToDelete);
-  const isOpen = useUIStore((s) => s.isDeleteSessionOpen);
-  const closeDeleteSession = useUIStore((s) => s.closeDeleteSession);
+  const { mutate: deleteSession, isPending } = useDeleteSession();
 
   if (!session) return null;
 
+  const onSuccess = () => {
+    if (sessionId === session.id) navigate("/");
+    toast.success(`Session "${session.title || "Untitled Session"}" deleted`);
+    closeDeleteSession();
+  };
+
+  const onError = (err: Error) => {
+    toast.error(getErrorMessage(err));
+  };
+
   const handleConfirmDelete = () => {
     if (isPending) return;
-
-    deleteSession(session.id, {
-      onSuccess: () => {
-        if (sessionId === session.id) {
-          navigate("/");
-        }
-        toast.success(
-          `Session "${session.title || "Untitled Session"}" deleted`,
-        );
-        closeDeleteSession();
-      },
-      onError: (err) => {
-        toast.error(getErrorMessage(err));
-      },
-    });
+    deleteSession(session.id, { onSuccess, onError });
   };
 
   return (
     <Dialog
-      open={isOpen}
+      open={!!session}
       onOpenChange={(open) => {
         if (!open && !isPending) {
           closeDeleteSession();
@@ -73,7 +67,7 @@ export default function DeleteSessionModal() {
         <div className="text-xs text-muted-foreground leading-relaxed">
           Are you sure you want to delete{" "}
           <span className="font-semibold text-foreground break-all">
-            &ldquo;{session.title || "Untitled Session"}&rdquo;
+            &ldquo;{session.title}&rdquo;
           </span>
           ? All messages and conversation history in this session will be
           permanently removed.

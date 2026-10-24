@@ -68,7 +68,7 @@ export function GenericTool({
   startedAt,
   finishedAt,
 }: GenericToolProps) {
-  const isDark = useThemeStore((s) => s.effectiveTheme) === Theme.Dark;
+  const isDark = useThemeStore((s) => s.theme) === Theme.Dark;
   const themeClass = isDark ? "hljs-dark" : "hljs-light";
 
   const isLoading = !output;

@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Trash2, CircleStop } from "lucide-react";
 import { type SessionDto } from "../types";
 import { useActiveSessions, useStopSession } from "../hooks/session.queries";
-import { useUIStore } from "../../main/hooks/useUIStore";
+import { useSessionStore } from "../hooks/useSessionStore";
 import {
   SidebarMenuItem,
   SidebarMenuButton,
@@ -26,30 +26,21 @@ export default function SessionItem({
   const { isMobile, setOpenMobile } = useSidebar();
   const { isActive: isSessionRunning } = useActiveSessions();
   const { mutate: stopSession, isPending: isStopping } = useStopSession();
-  const openDeleteSession = useUIStore((s) => s.openDeleteSession);
+  const openDeleteSession = useSessionStore((s) => s.openDeleteSession);
 
   const handleClick = () => {
     navigate(`/sessions/${session.id}`);
-    if (isMobile) {
-      setOpenMobile(false);
-    }
+    if (isMobile) setOpenMobile(false);
   };
 
   const handleStop = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (!isStopping) {
-      stopSession(session.id);
-    }
+    (e.stopPropagation(), e.preventDefault());
+    if (!isStopping) stopSession(session.id);
   };
 
   const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    openDeleteSession({
-      id: session.id,
-      title: session.title,
-    });
+    (e.stopPropagation(), e.preventDefault());
+    openDeleteSession({ id: session.id, title: session.title });
   };
 
   return (
@@ -62,9 +53,7 @@ export default function SessionItem({
           isSessionRunning(session.id) && "pr-12!",
         )}
       >
-        <span className="truncate">
-          {session.title || "Untitled Session"}
-        </span>
+        <span className="truncate">{session.title || "Untitled Session"}</span>
       </SidebarMenuButton>
 
       {isSessionRunning(session.id) && (
@@ -83,7 +72,7 @@ export default function SessionItem({
         showOnHover
         onClick={handleDelete}
         title="Delete session"
-        className="cursor-pointer"
+        className="cursor-pointer hover:text-destructive"
       >
         <Trash2 className="size-3.5" />
       </SidebarMenuAction>

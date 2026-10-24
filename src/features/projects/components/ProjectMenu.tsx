@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Plus, Trash2 } from "lucide-react";
 import { useProjectStore } from "../hooks/useProjectStore";
-import { useUIStore } from "../../main/hooks/useUIStore";
 import { useSidebar } from "@/components/ui/sidebar";
 
 interface ProjectMenuProps {
@@ -16,21 +15,16 @@ export default function ProjectMenu({
   const navigate = useNavigate();
   const { isMobile, setOpenMobile } = useSidebar();
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
-  const openDeleteProject = useUIStore((s) => s.openDeleteProject);
+  const openDeleteProject = useProjectStore((s) => s.openDeleteProject);
 
   const handleStartNewChatForProject = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    setSelectedProjectId(projectId);
-    navigate("/");
-    if (isMobile) {
-      setOpenMobile(false);
-    }
+    (e.stopPropagation(), e.preventDefault());
+    (setSelectedProjectId(projectId), navigate("/"));
+    if (isMobile) setOpenMobile(false);
   };
 
   const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
+    (e.stopPropagation(), e.preventDefault());
     openDeleteProject({ id: projectId, name: projectName || "this project" });
   };
 
