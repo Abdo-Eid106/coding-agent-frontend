@@ -2,6 +2,7 @@ import "./App.css";
 import { Routes, Route, Navigate, useParams } from "react-router-dom";
 import Sidebar from "./features/main/components/Sidebar";
 import ChatArea from "./features/chats/components/ChatArea";
+import SettingsModal from "./features/settings/components/SettingsModal";
 import DeleteProjectModal from "./features/projects/components/DeleteProjectModal";
 import DeleteSessionModal from "./features/sessions/components/DeleteSessionModal";
 import { Toaster } from "./features/main/components/Toaster";
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </SidebarInset>
+      <SettingsModal />
       <DeleteProjectModal />
       <DeleteSessionModal />
       <Toaster />

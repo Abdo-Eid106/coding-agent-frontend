@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronRight, Plus, Settings } from "lucide-react";
 import ProjectItem from "./ProjectItem";
 import SessionItem from "../../sessions/components/SessionItem";
 import AddProjectModal from "@/features/projects/components/AddProjectModal";
-import SettingsModal from "@/features/settings/components/SettingsModal";
 import { useProjectStore } from "../../projects/hooks/useProjectStore";
 import { useFetchSessions } from "../../sessions/hooks/session.queries";
+import { useUIStore } from "../hooks/useUIStore";
 import {
   Sidebar as ShadcnSidebar,
   SidebarContent,
@@ -28,31 +28,23 @@ import { cn } from "cn";
 export default function Sidebar() {
   const navigate = useNavigate();
   const { sessionId } = useParams<{ sessionId?: string }>();
-
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isProjectsOpen, setIsProjectsOpen] = useState(true);
-  const [isConversationsOpen, setIsConversationsOpen] = useState(true);
   const { setOpenMobile } = useSidebar();
+
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
+  const isProjectsOpen = useUIStore((s) => s.isProjectsOpen);
+  const toggleProjectsOpen = useUIStore((s) => s.toggleProjectsOpen);
+  const isConversationsOpen = useUIStore((s) => s.isConversationsOpen);
+  const toggleConversationsOpen = useUIStore((s) => s.toggleConversationsOpen);
+  const openSettings = useUIStore((s) => s.openSettings);
+  const ensureSessionVisible = useUIStore((s) => s.ensureSessionVisible);
 
   const { data, isLoading } = useFetchSessions();
   const projects = data?.projects ?? [];
   const sessions = data?.sessions ?? [];
 
   useEffect(() => {
-    if (!sessionId || !data) return;
-
-    const isStandalone = data.sessions.some((s) => s.id === sessionId);
-    if (isStandalone) {
-      setIsConversationsOpen(true);
-      return;
-    }
-
-    const inProject = data.projects.some((p) =>
-      p.sessions?.some((s) => s.id === sessionId),
-    );
-    if (inProject) setIsProjectsOpen(true);
-  }, [sessionId, data]);
+    ensureSessionVisible(sessionId, data);
+  }, [sessionId, data, ensureSessionVisible]);
 
   const handleNewConversation = () => {
     setSelectedProjectId(null);
@@ -61,7 +53,7 @@ export default function Sidebar() {
   };
 
   const handleOpenSettings = () => {
-    setIsSettingsOpen(true);
+    openSettings();
     setOpenMobile(false);
   };
 
@@ -89,7 +81,7 @@ export default function Sidebar() {
               render={
                 <button
                   type="button"
-                  onClick={() => setIsProjectsOpen((v) => !v)}
+                  onClick={toggleProjectsOpen}
                   aria-expanded={isProjectsOpen}
                   className="flex flex-1 items-center gap-1.5 cursor-pointer select-none text-muted-foreground hover:text-sidebar-foreground transition-colors p-0 h-7"
                 />
@@ -150,7 +142,7 @@ export default function Sidebar() {
               render={
                 <button
                   type="button"
-                  onClick={() => setIsConversationsOpen((v) => !v)}
+                  onClick={toggleConversationsOpen}
                   aria-expanded={isConversationsOpen}
                   className="flex flex-1 items-center gap-1.5 cursor-pointer select-none text-muted-foreground hover:text-sidebar-foreground transition-colors p-0 h-7"
                 />
@@ -220,10 +212,6 @@ export default function Sidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
       <SidebarRail />
     </ShadcnSidebar>
   );

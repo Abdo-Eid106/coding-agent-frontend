@@ -14,10 +14,11 @@ import SettingsSidebar from "./SettingsSidebar";
 import ProvidersTab from "../../providers/components/ProvidersTab";
 import ModelsTab from "../../providers/components/ModelsTab";
 import AppearanceTab from "./AppearanceTab";
+import { useUIStore } from "../../main/hooks/useUIStore";
 
 interface SettingsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const TAB_TITLES: Record<SettingsTab, { title: string; subtitle: string }> = {
@@ -40,7 +41,16 @@ const TAB_TITLES: Record<SettingsTab, { title: string; subtitle: string }> = {
   },
 };
 
-export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export default function SettingsModal({
+  isOpen: propsIsOpen,
+  onClose: propsOnClose,
+}: SettingsModalProps = {}) {
+  const storeIsOpen = useUIStore((s) => s.isSettingsOpen);
+  const storeClose = useUIStore((s) => s.closeSettings);
+
+  const isOpen = propsIsOpen !== undefined ? propsIsOpen : storeIsOpen;
+  const onClose = propsOnClose ?? storeClose;
+
   const [activeTab, setActiveTab] = useState<SettingsTab>(
     SettingsTab.PROVIDERS,
   );
