@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { v7 as uuidv7 } from "uuid";
 import { useAddMessage } from "../../hooks/useMessages";
-import { useChatStore } from "../../hooks/useChatStore";
 import {
   useActiveSessions,
   useStopSession,
 } from "../../../sessions/hooks/session.queries";
 import ChatInputBase from "./Base";
+import { useModelStore } from "@/features/providers/hooks/useModelStore";
 
 interface AddMessageInputProps {
   disabled?: boolean;
@@ -23,23 +23,18 @@ export default function AddMessageInput({
   const { sessionId } = useParams<{ sessionId: string }>();
 
   const [message, setMessage] = useState("");
-  const selectedModelId = useChatStore((state) => state.selectedModelId);
+  const selectedModelId = useModelStore((state) =>
+    state.getSelectedModel(sessionId),
+  );
 
-  const { mutate, isPending: isSending } = useAddMessage(sessionId!);
+  const { mutate, isPending } = useAddMessage(sessionId!);
   const { isActive } = useActiveSessions();
   const { mutate: stopSession, isPending: isStopping } = useStopSession();
-
-  const isRunning = (sessionId ? isActive(sessionId) : false) || isSending;
-
-  const handleStop = () => {
-    if (sessionId) {
-      stopSession(sessionId);
-    }
-  };
+  const isRunning = isActive(sessionId!);
 
   const handleSend = () => {
     const messageContent = message.trim();
-    if (!messageContent || isRunning) return;
+    if (!messageContent || isRunning || isPending || !selectedModelId) return;
     setMessage("");
 
     mutate(
@@ -61,8 +56,8 @@ export default function AddMessageInput({
       message={message}
       setMessage={setMessage}
       onSend={handleSend}
-      isPending={isRunning || isStopping}
-      onStop={handleStop}
+      isPending={isRunning || isStopping || isPending}
+      onStop={() => stopSession(sessionId!)}
       disabled={disabled}
       placeholder={placeholder}
       className={className}

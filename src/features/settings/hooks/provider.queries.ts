@@ -1,13 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { AddApiKeyDto, ConfiguredProviderDto } from "../types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { AddApiKeyDto } from "../types";
 import { Api, QueryKeys } from "../../../shared";
-
-const fetchConfiguredProviders = async (): Promise<ConfiguredProviderDto[]> => {
-  const { data } = await Api.get<ConfiguredProviderDto[]>(
-    "/providers/configured",
-  );
-  return data;
-};
 
 const addProviderApiKey = async ({
   providerId,
@@ -24,14 +17,6 @@ const addProviderApiKey = async ({
 const removeProviderApiKey = async (providerId: string): Promise<void> => {
   await Api.delete(`/providers/${providerId}/api-key`);
 };
-
-export const useFetchConfiguredProviders = () =>
-  useQuery({
-    queryKey: [QueryKeys.PROVIDERS, "configured"],
-    queryFn: fetchConfiguredProviders,
-  });
-
-export const useConfiguredProviders = useFetchConfiguredProviders;
 
 export const useAddProviderApiKey = () => {
   const queryClient = useQueryClient();
