@@ -10,17 +10,18 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { SelectionModal } from "@/shared/hooks/useSelectionModal";
 
 interface ProviderCardProps {
   provider: ProviderDto;
-  onEdit: (provider: ProviderDto) => void;
-  onDelete: (provider: ProviderDto) => void;
+  deleteModal: SelectionModal<ProviderDto>;
+  editModal: SelectionModal<ProviderDto>;
 }
 
 export default function ProviderCard({
   provider,
-  onEdit,
-  onDelete,
+  deleteModal,
+  editModal,
 }: ProviderCardProps) {
   const modelsCount = provider.models?.length || 0;
   const modelsList =
@@ -56,7 +57,7 @@ export default function ProviderCard({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => onEdit(provider)}
+            onClick={() => editModal.open(provider)}
             className="h-8 gap-1 px-2.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
             title="Edit provider"
           >
@@ -68,7 +69,7 @@ export default function ProviderCard({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => onDelete(provider)}
+            onClick={() => deleteModal.open(provider)}
             className="h-8 gap-1 px-2.5 text-xs text-muted-foreground hover:text-destructive cursor-pointer"
             title="Delete provider"
           >

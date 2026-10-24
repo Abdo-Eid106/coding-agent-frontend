@@ -12,20 +12,20 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sparkles } from "lucide-react";
+import type { Modal } from "@/shared/hooks/useModal";
 
 export interface AddProviderProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  modal: Modal;
 }
 
-export default function AddProvider({ open, onOpenChange }: AddProviderProps) {
+export default function AddProvider({ modal }: AddProviderProps) {
   const { mutate: addProvider, isPending } = useAddProvider();
 
   const handleSubmit = (payload: AddProviderDto) => {
     addProvider(payload, {
       onSuccess: () => {
         toast.success(`Provider "${payload.displayName}" added`);
-        onOpenChange(false);
+        modal.close();
       },
       onError: (err) => {
         toast.error(getErrorMessage(err));
@@ -34,7 +34,7 @@ export default function AddProvider({ open, onOpenChange }: AddProviderProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={modal.isOpen} onOpenChange={modal.setIsOpen}>
       <DialogContent
         onClick={(e) => e.stopPropagation()}
         className="z-70 flex h-[min(90vh,760px)] max-w-3xl flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl"
@@ -49,7 +49,7 @@ export default function AddProvider({ open, onOpenChange }: AddProviderProps) {
               Update provider configuration and models.
             </DialogDescription>
           </DialogHeader>
-          {open && (
+          {modal.isOpen && (
             <ProviderForm
               key={"new"}
               isLoading={isPending}

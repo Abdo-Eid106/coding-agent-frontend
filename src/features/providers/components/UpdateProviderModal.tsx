@@ -12,19 +12,14 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ProviderForm } from "./ProviderForm";
 import { Sparkles } from "lucide-react";
+import type { SelectionModal } from "@/shared/hooks/useSelectionModal";
 
 export interface UpdateProviderProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  provider?: ProviderDto | null;
+  modal: SelectionModal<ProviderDto>;
 }
 
-export default function UpdateProvider({
-  open,
-  onOpenChange,
-  provider,
-}: UpdateProviderProps) {
-  const providerId = provider?.id ?? "";
+export default function UpdateProvider({ modal }: UpdateProviderProps) {
+  const providerId = modal.selected?.id ?? "";
   const { mutate: updateProvider, isPending } = useUpdateProvider(providerId);
 
   const handleSubmit = ({
@@ -40,14 +35,20 @@ export default function UpdateProvider({
     updateProvider(payload, {
       onSuccess: () => {
         toast.success(`Provider "${displayName}" updated`);
-        onOpenChange(false);
+
+        modal.close();
       },
       onError: (err) => toast.error(getErrorMessage(err)),
     });
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={modal.isOpen}
+      onOpenChange={(open) => {
+        if (!open) modal.close();
+      }}
+    >
       <DialogContent
         onClick={(e) => e.stopPropagation()}
         className="z-70 flex h-[min(90vh,760px)] max-w-3xl flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl"
@@ -62,13 +63,13 @@ export default function UpdateProvider({
               Configure an OpenAI-compatible provider.
             </DialogDescription>
           </DialogHeader>
-          {open && (
+          {modal.isOpen && (
             <ProviderForm
               key={providerId}
               isLoading={isPending}
               onSubmit={handleSubmit}
               isEdit={true}
-              initialData={provider}
+              initialData={modal.selected}
             />
           )}
         </ScrollArea>

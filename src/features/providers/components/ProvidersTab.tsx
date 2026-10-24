@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Loader2, Plus, Globe } from "lucide-react";
 import ProviderCard from "@/features/providers/components/ProviderCard";
 import { useFetchProviders } from "@/features/providers/hooks/provider.queries";
@@ -7,33 +6,29 @@ import AddProvider from "./AddProviderModal";
 import UpdateProvider from "./UpdateProviderModal";
 import type { ProviderDto } from "@/features/providers/types";
 import { DeleteProviderModal } from "./DeleteProviderModal";
+import { useSelectionModal } from "@/shared/hooks/useSelectionModal";
+import { useModal } from "@/shared/hooks/useModal";
 
 export default function ProvidersTab() {
   const { data: providers = [], isLoading } = useFetchProviders();
 
-  const [isAddProviderOpen, setIsAddProviderOpen] = useState(false);
-  const [providerToEdit, setProviderToEdit] = useState<ProviderDto | null>(
-    null,
-  );
-  const [providerToDelete, setProviderToDelete] = useState<ProviderDto | null>(
-    null,
-  );
+  const addModal = useModal();
+  const editModal = useSelectionModal<ProviderDto>();
+  const deleteModal = useSelectionModal<ProviderDto>();
 
   return (
     <div className="space-y-6 max-w-3xl">
       {/* Action banner to add provider */}
       <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-border bg-card">
         <div className="space-y-0.5">
-          <h3 className="text-sm font-semibold text-foreground">
-            Providers
-          </h3>
+          <h3 className="text-sm font-semibold text-foreground">Providers</h3>
           <p className="text-xs text-muted-foreground">
             Connect any OpenAI-compatible API endpoint with your models.
           </p>
         </div>
         <Button
           type="button"
-          onClick={() => setIsAddProviderOpen(true)}
+          onClick={() => addModal.open()}
           className="gap-2 shrink-0 cursor-pointer"
           size="sm"
         >
@@ -61,7 +56,7 @@ export default function ProvidersTab() {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setIsAddProviderOpen(true)}
+            onClick={() => addModal.open()}
             className="mt-2"
           >
             <Plus className="size-4" />
@@ -74,28 +69,16 @@ export default function ProvidersTab() {
             <ProviderCard
               key={provider.id}
               provider={provider}
-              onEdit={setProviderToEdit}
-              onDelete={setProviderToDelete}
+              editModal={editModal}
+              deleteModal={deleteModal}
             />
           ))}
         </div>
       )}
 
-      <AddProvider
-        open={isAddProviderOpen}
-        onOpenChange={setIsAddProviderOpen}
-      />
-      <UpdateProvider
-        open={Boolean(providerToEdit)}
-        onOpenChange={(open) => {
-          if (!open) setProviderToEdit(null);
-        }}
-        provider={providerToEdit}
-      />
-      <DeleteProviderModal
-        providerToDelete={providerToDelete}
-        setProviderToDelete={setProviderToDelete}
-      />
+      <AddProvider modal={addModal} />
+      <UpdateProvider modal={editModal} />
+      <DeleteProviderModal modal={deleteModal} />
     </div>
   );
 }

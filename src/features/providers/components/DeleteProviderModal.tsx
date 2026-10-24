@@ -12,26 +12,24 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "@/features/main/components/Toaster";
 import { getErrorMessage } from "@/shared/lib/get-error-message";
+import type { SelectionModal } from "@/shared/hooks/useSelectionModal";
 
 interface Props {
-  providerToDelete: ProviderDto | null;
-  setProviderToDelete: (provider: ProviderDto | null) => void;
+  modal: SelectionModal<ProviderDto>;
 }
 
-export function DeleteProviderModal({
-  providerToDelete,
-  setProviderToDelete,
-}: Props) {
+export function DeleteProviderModal({ modal }: Props) {
   const { mutate, isPending } = useDeleteProvider();
+  const provider = modal.selected;
 
   const handleDelete = () => {
-    if (!providerToDelete) return;
-    const name = providerToDelete.displayName;
+    if (!provider) return;
+    const name = provider.displayName;
 
-    mutate(providerToDelete.id, {
+    mutate(provider.id, {
       onSuccess: () => {
         toast.success(`Provider "${name}" deleted`);
-        setProviderToDelete(null);
+        modal.close();
       },
       onError: (err) => {
         toast.error(getErrorMessage(err));
@@ -41,10 +39,10 @@ export function DeleteProviderModal({
 
   return (
     <Dialog
-      open={Boolean(providerToDelete)}
+      open={Boolean(provider)}
       onOpenChange={(open) => {
         if (!open && !isPending) {
-          setProviderToDelete(null);
+          modal.close();
         }
       }}
     >
@@ -57,7 +55,7 @@ export function DeleteProviderModal({
           <DialogDescription>
             Are you sure you want to delete{" "}
             <span className="font-semibold text-foreground">
-              "{providerToDelete?.displayName}"
+              "{provider?.displayName}"
             </span>
             ? This action cannot be undone and will permanently remove this
             provider and its associated models.
@@ -69,7 +67,7 @@ export function DeleteProviderModal({
             type="button"
             variant="outline"
             disabled={isPending}
-            onClick={() => setProviderToDelete(null)}
+            onClick={() => modal.close()}
           >
             Cancel
           </Button>
