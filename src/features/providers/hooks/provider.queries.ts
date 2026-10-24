@@ -8,11 +8,6 @@ const fetchProviders = async () => {
   return data;
 };
 
-const fetchConfiguredProviders = async (): Promise<ProviderDto[]> => {
-  const { data } = await Api.get<ProviderDto[]>("/providers/configured");
-  return data;
-};
-
 const addProvider = async (dto: AddProviderDto): Promise<void> => {
   await Api.post("/providers", dto);
 };
@@ -44,12 +39,6 @@ const removeProviderApiKey = async (providerId: string): Promise<void> => {
 export const useFetchProviders = () => {
   return useQuery({ queryKey: [QueryKeys.PROVIDERS], queryFn: fetchProviders });
 };
-
-export const useFetchConfiguredProviders = () =>
-  useQuery({
-    queryKey: [QueryKeys.PROVIDERS, "configured"],
-    queryFn: fetchConfiguredProviders,
-  });
 
 export const useAddProvider = () => {
   const queryClient = useQueryClient();
