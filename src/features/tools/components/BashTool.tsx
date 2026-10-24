@@ -1,7 +1,7 @@
 import { Terminal, Folder, Loader2 } from "lucide-react";
-import AccordionItem from "./AccordionItem";
-import CopyButton from "./CopyButton";
 import { formatToolDuration } from "../lib/duration";
+import ToolCallItem from "./ToolCalItem";
+import CopyButton from "./CopyButton";
 
 export interface BashToolCallProps {
   command?: string;
@@ -22,9 +22,9 @@ export function BashToolCall({
   const duration = formatToolDuration(startedAt, finishedAt);
 
   const header = (
-    <div className="flex min-w-0 items-center gap-2 w-full">
+    <div className="flex w-full min-w-0 items-center gap-2">
       <Terminal className="size-3.5 shrink-0 text-muted-foreground" />
-      <span className="truncate font-mono min-w-0 flex-1">
+      <span className="min-w-0 flex-1 truncate font-mono">
         {(command ?? "").split("\n")[0] || "Command"}
       </span>
 
@@ -38,11 +38,11 @@ export function BashToolCall({
         )}
         {cwd && (
           <div
-            className="hidden sm:flex min-w-0 shrink-0 items-center gap-1 font-mono"
+            className="hidden min-w-0 shrink-0 items-center gap-1 font-mono sm:flex"
             title={cwd}
           >
             <Folder className="size-3 shrink-0" />
-            <span className="max-w-32 md:max-w-48 truncate">{cwd}</span>
+            <span className="max-w-32 truncate md:max-w-48">{cwd}</span>
           </div>
         )}
       </div>
@@ -50,27 +50,20 @@ export function BashToolCall({
   );
 
   return (
-    <AccordionItem header={header}>
+    <ToolCallItem header={header}>
       {isLoading ? (
-        <div className="flex items-center justify-center gap-2 rounded-md border border-border/50 bg-muted/30 p-6 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin" />
           <span>Running command...</span>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-md border border-border/50 bg-muted/30 min-w-0">
-          {/* Output */}
-          <div className="flex items-start gap-3 px-3 py-2 min-w-0">
-            <pre className="max-h-96 min-w-0 flex-1 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono">
-              {output || "(no output)"}
-            </pre>
-            <CopyButton
-              text={output ?? ""}
-              label="output"
-              className="shrink-0"
-            />
-          </div>
+        <div className="flex min-w-0 items-start gap-3 py-1">
+          <pre className="max-h-96 min-w-0 flex-1 overflow-auto whitespace-pre-wrap font-mono text-xs text-foreground/85 wrap-anywhere">
+            {output || "(no output)"}
+          </pre>
+          <CopyButton text={output ?? ""} label="output" className="shrink-0" />
         </div>
       )}
-    </AccordionItem>
+    </ToolCallItem>
   );
 }

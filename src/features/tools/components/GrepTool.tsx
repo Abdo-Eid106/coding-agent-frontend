@@ -1,6 +1,6 @@
 import { Search, Loader2 } from "lucide-react";
-import AccordionItem from "./AccordionItem";
 import { formatToolDuration } from "../lib/duration";
+import ToolCallItem from "./ToolCalItem";
 
 export interface GrepToolCallProps {
   pattern: string;
@@ -50,14 +50,14 @@ export function GrepTool({
   );
 
   return (
-    <AccordionItem header={header}>
+    <ToolCallItem header={header}>
       {isLoading ? (
-        <div className="flex items-center justify-center gap-2 rounded-md border border-border/50 bg-muted/30 p-6 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin" />
           <span>Searching matches...</span>
         </div>
       ) : (
-        <pre className="max-h-96 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono rounded-md border border-border/50 bg-muted/30 p-2.5 min-w-0">
+        <pre className="max-h-96 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono text-xs py-1 min-w-0 text-foreground/85">
           {text || (
             <span className="italic text-muted-foreground">
               No matches found
@@ -65,6 +65,6 @@ export function GrepTool({
           )}
         </pre>
       )}
-    </AccordionItem>
+    </ToolCallItem>
   );
 }

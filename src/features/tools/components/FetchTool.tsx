@@ -1,7 +1,7 @@
 import ReactMarkdown, { type Components } from "react-markdown";
 import { Globe, Loader2 } from "lucide-react";
-import AccordionItem from "./AccordionItem";
 import { formatToolDuration } from "../lib/duration";
+import ToolCallItem from "./ToolCalItem";
 
 export interface FetchToolProps {
   url: string;
@@ -49,29 +49,27 @@ export function FetchTool({
             <span className="hidden sm:inline">Fetching...</span>
           </span>
         ) : (
-          <span>
-            {content.length.toLocaleString()} chars
-          </span>
+          <span>{content.length.toLocaleString()} chars</span>
         )}
       </div>
     </div>
   );
 
   return (
-    <AccordionItem header={header}>
+    <ToolCallItem header={header}>
       {isLoading ? (
-        <div className="flex items-center justify-center gap-2 rounded-md border border-border/50 bg-muted/30 p-6 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin" />
           <span>Fetching content...</span>
         </div>
       ) : (
         <>
           {isEmpty && (
-            <p className="italic text-muted-foreground">Empty response</p>
+            <p className="italic text-muted-foreground py-1">Empty response</p>
           )}
 
           {showMarkdown && (
-            <div className="prose prose-sm dark:prose-invert max-h-96 max-w-none overflow-auto wrap-anywhere min-w-0 text-xs">
+            <div className="prose prose-sm dark:prose-invert max-h-96 max-w-none overflow-auto wrap-anywhere min-w-0 text-xs py-1">
               <ReactMarkdown components={markdownComponents}>
                 {content}
               </ReactMarkdown>
@@ -79,12 +77,12 @@ export function FetchTool({
           )}
 
           {showText && (
-            <pre className="max-h-96 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono rounded-md border border-border/50 bg-muted/30 p-2.5 min-w-0">
+            <pre className="max-h-96 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono text-xs py-1 min-w-0 text-foreground/85">
               {content}
             </pre>
           )}
         </>
       )}
-    </AccordionItem>
+    </ToolCallItem>
   );
 }

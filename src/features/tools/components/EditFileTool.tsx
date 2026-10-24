@@ -1,8 +1,8 @@
 import { Pencil, Loader2 } from "lucide-react";
 import { DiffView, DiffModeEnum } from "@git-diff-view/react";
 import { generateDiffFile } from "@git-diff-view/file";
-import AccordionItem from "./AccordionItem";
 import { formatToolDuration } from "../lib/duration";
+import ToolCallItem from "./ToolCalItem";
 import "@git-diff-view/react/styles/diff-view.css";
 
 export interface EditFileToolCallProps {
@@ -62,7 +62,9 @@ export function EditFileToolCall({
             <span className="text-green-500">
               +{diffFile?.additionLength ?? 0}
             </span>{" "}
-            <span className="text-red-500">-{diffFile?.deletionLength ?? 0}</span>
+            <span className="text-red-500">
+              -{diffFile?.deletionLength ?? 0}
+            </span>
           </span>
         )}
       </div>
@@ -70,15 +72,15 @@ export function EditFileToolCall({
   );
 
   return (
-    <AccordionItem header={header}>
+    <ToolCallItem header={header}>
       {isLoading ? (
-        <div className="flex items-center justify-center gap-2 rounded-md border border-border/50 bg-muted/30 p-6 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin" />
           <span>Applying file changes...</span>
         </div>
       ) : (
         diffFile && (
-          <div className="w-full min-w-0 overflow-x-auto rounded-md border border-border/50">
+          <div className="w-full min-w-0 overflow-x-auto py-1">
             <DiffView
               className="cursor-text"
               diffFile={diffFile}
@@ -91,6 +93,6 @@ export function EditFileToolCall({
           </div>
         )
       )}
-    </AccordionItem>
+    </ToolCallItem>
   );
 }

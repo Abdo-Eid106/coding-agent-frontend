@@ -1,8 +1,8 @@
 import hljs from "highlight.js";
 import { FileText, Loader2 } from "lucide-react";
-import AccordionItem from "./AccordionItem";
-import CopyButton from "./CopyButton";
 import { formatToolDuration } from "../lib/duration";
+import CopyButton from "./CopyButton";
+import ToolCallItem from "./ToolCalItem";
 
 export interface ViewFileToolCallProps {
   filePath: string;
@@ -62,15 +62,15 @@ export function ViewFileToolCall({
   );
 
   return (
-    <AccordionItem header={header}>
+    <ToolCallItem header={header}>
       {isLoading ? (
-        <div className="flex items-center justify-center gap-2 rounded-md border border-border/50 bg-muted/30 p-6 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin" />
           <span>Reading file...</span>
         </div>
       ) : (
-        <div className="flex items-start gap-2 rounded-md border border-border/50 bg-muted/30 p-2.5 min-w-0">
-          <pre className="max-h-96 min-w-0 flex-1 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono">
+        <div className="flex items-start gap-2 py-1 min-w-0">
+          <pre className="max-h-96 min-w-0 flex-1 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono text-xs">
             <code className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
           </pre>
           {content && (
@@ -82,6 +82,6 @@ export function ViewFileToolCall({
           )}
         </div>
       )}
-    </AccordionItem>
+    </ToolCallItem>
   );
 }

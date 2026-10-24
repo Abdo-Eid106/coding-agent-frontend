@@ -130,10 +130,11 @@ export function GrepToolCallDemo() {
 }
 
 import { EditFileToolCall } from "./EditFileTool";
-import { Accordion } from "./AccordionItem";
+
 import { ViewFileToolCall } from "./ViewFile";
 import { BashToolCall } from "./BashTool";
 import { LsTool, type LsEntry } from "./LsTool";
+import ToolCallGroup from "./ToolCallGroup";
 
 // Shaped like the real `ls` tool output for { recursive: true, maxDepth: 3 }:
 // folders first, alphabetical, and each folder's children listed right after it.
@@ -175,7 +176,7 @@ export function LsToolCallDemo() {
 
 export function FileChanges() {
   return (
-    <Accordion>
+    <ToolCallGroup>
       <EditFileToolCall
         filePath="src/user.ts"
         original={`export function getUser(id: string) {
@@ -209,6 +210,6 @@ export const NODE_ENV = "development";`}
       <GrepToolCallDemo />
       <FetchToolCallDemo />
       <GenericToolCallDemo />
-    </Accordion>
+    </ToolCallGroup>
   );
 }

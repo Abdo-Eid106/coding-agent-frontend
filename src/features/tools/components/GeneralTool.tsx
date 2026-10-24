@@ -1,10 +1,10 @@
 import hljs from "highlight.js/lib/core";
 import json from "highlight.js/lib/languages/json";
 import { Wrench, Loader2 } from "lucide-react";
-import AccordionItem from "./AccordionItem";
 import CopyButton from "./CopyButton";
 import { useThemeStore, Theme } from "../../main/hooks/useThemeStore";
 import { formatToolDuration } from "../lib/duration";
+import ToolCallItem from "./ToolCalItem";
 
 hljs.registerLanguage("json", json);
 
@@ -17,15 +17,6 @@ export interface GenericToolProps {
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
 }
-
-const styles = {
-  section: "overflow-hidden rounded-md border border-border bg-muted/30",
-  label:
-    "flex items-center justify-between border-b border-border bg-muted/50 px-3 py-1 min-h-7.5",
-  labelText:
-    "text-[10px] font-medium uppercase tracking-wide text-muted-foreground",
-  code: "overflow-auto whitespace-pre-wrap wrap-anywhere p-3 font-mono leading-relaxed min-w-0",
-};
 
 const escapeHtml = (text: string) =>
   text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -103,13 +94,15 @@ export function GenericTool({
   );
 
   return (
-    <AccordionItem header={header} contentClassName="space-y-2">
-      <div className={styles.section}>
-        <div className={styles.label}>
-          <span className={styles.labelText}>Input</span>
+    <ToolCallItem header={header} contentClassName="space-y-2">
+      <div>
+        <div className="flex items-center justify-between text-[10px] font-medium uppercase tracking-wide text-muted-foreground py-0.5">
+          <span>Input</span>
           {inputRaw && <CopyButton text={inputRaw} label="input" />}
         </div>
-        <pre className={`${styles.code} max-h-60 ${themeClass}`}>
+        <pre
+          className={`overflow-auto whitespace-pre-wrap wrap-anywhere font-mono text-xs leading-relaxed max-h-60 py-1 text-foreground/85 ${themeClass}`}
+        >
           <code
             className="hljs"
             dangerouslySetInnerHTML={{ __html: inputHtml }}
@@ -117,20 +110,22 @@ export function GenericTool({
         </pre>
       </div>
 
-      <div className={styles.section}>
-        <div className={styles.label}>
-          <span className={styles.labelText}>Output</span>
+      <div>
+        <div className="flex items-center justify-between text-[10px] font-medium uppercase tracking-wide text-muted-foreground py-0.5">
+          <span>Output</span>
           {!isLoading && outputRaw && (
             <CopyButton text={outputRaw} label="output" />
           )}
         </div>
         {isLoading ? (
-          <div className="flex items-center justify-center gap-2 p-6 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
             <Loader2 className="size-3.5 animate-spin" />
             <span>Running tool...</span>
           </div>
         ) : (
-          <pre className={`${styles.code} max-h-96 ${themeClass}`}>
+          <pre
+            className={`overflow-auto whitespace-pre-wrap wrap-anywhere font-mono text-xs leading-relaxed max-h-96 py-1 text-foreground/85 ${themeClass}`}
+          >
             {outputHtml ? (
               <code
                 className="hljs"
@@ -142,6 +137,6 @@ export function GenericTool({
           </pre>
         )}
       </div>
-    </AccordionItem>
+    </ToolCallItem>
   );
 }

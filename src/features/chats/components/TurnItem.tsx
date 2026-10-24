@@ -1,9 +1,9 @@
 import remarkGfm from "remark-gfm";
-import { Accordion } from "../../tools/components/AccordionItem";
 import CopyButton from "../../tools/components/CopyButton";
 import ToolCall from "../../tools/components/ToolCall";
 import rehypeHighlight from "rehype-highlight";
 import ReactMarkdown from "react-markdown";
+import ToolCallGroup from "@/features/tools/components/ToolCallGroup";
 import type { MessageDto } from "../types";
 
 import { useRef, useState, type ComponentPropsWithoutRef } from "react";
@@ -27,11 +27,11 @@ export default function TurnItem({ message }: { message: MessageDto }) {
         </div>
       </div>
 
-      <Accordion>
+      <ToolCallGroup>
         {(message.toolCalls ?? []).map((toolCall) => (
           <ToolCall key={toolCall.id} toolCall={toolCall} />
         ))}
-      </Accordion>
+      </ToolCallGroup>
 
       {/* 2. Replies (AI responses) */}
       {replies.map((reply) => (

@@ -1,6 +1,6 @@
 import { File, Folder, FolderOpen, Loader2 } from "lucide-react";
-import AccordionItem from "./AccordionItem";
 import { formatToolDuration } from "../lib/duration";
+import ToolCallItem from "./ToolCalItem";
 
 export interface LsEntry {
   name: string;
@@ -51,14 +51,14 @@ export function LsTool({
   );
 
   return (
-    <AccordionItem header={header}>
+    <ToolCallItem header={header}>
       {isLoading ? (
-        <div className="flex items-center justify-center gap-2 rounded-md border border-border/50 bg-muted/30 p-6 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin" />
           <span>Listing directory...</span>
         </div>
       ) : count === 0 ? (
-        <p className="italic text-muted-foreground">Empty directory</p>
+        <p className="italic text-muted-foreground py-1">Empty directory</p>
       ) : (
         <ul className="max-h-96 space-y-0.5 overflow-x-auto overflow-y-auto font-mono text-xs min-w-0">
           {entries.map(({ name, type }) => {
@@ -85,6 +85,6 @@ export function LsTool({
           })}
         </ul>
       )}
-    </AccordionItem>
+    </ToolCallItem>
   );
 }
