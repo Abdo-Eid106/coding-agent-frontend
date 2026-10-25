@@ -5,4 +5,5 @@ export enum QueryKeys {
   SESSION = "SESSION",
   MESSAGES = "MESSAGES",
   PROVIDERS = "PROVIDERS",
+  SETTINGS = "SETTINGS",
 }

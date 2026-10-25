@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Sliders } from "lucide-react";
+import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +15,7 @@ import ProvidersTab from "../../providers/components/ProvidersTab";
 import ModelsTab from "../../providers/components/ModelsTab";
 import AppearanceTab from "./AppearanceTab";
 import type { Modal } from "@/shared/hooks/useModal";
+import GeneralTab from "./GeneralTab";
 
 interface SettingsModalProps {
   modal: Modal;
@@ -83,17 +84,7 @@ export default function SettingsModal({ modal }: SettingsModalProps) {
             {activeTab === SettingsTab.PROVIDERS && <ProvidersTab />}
             {activeTab === SettingsTab.MODELS && <ModelsTab />}
             {activeTab === SettingsTab.APPEARANCE && <AppearanceTab />}
-            {activeTab === SettingsTab.GENERAL && (
-              <div className="h-64 flex flex-col items-center justify-center text-center p-8 border border-dashed border-border rounded-xl">
-                <Sliders className="size-10 text-muted-foreground mb-3 opacity-60" />
-                <h4 className="text-sm font-medium text-foreground">
-                  General Settings
-                </h4>
-                <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                  This section will be configurable in a future update.
-                </p>
-              </div>
-            )}
+            {activeTab === SettingsTab.GENERAL && <GeneralTab />}
           </div>
         </main>
       </DialogContent>
