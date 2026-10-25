@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, ChevronDown, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -21,10 +21,10 @@ import { useParams } from "react-router-dom";
 import { useModelStore } from "../hooks/useModelStore";
 
 function ModelOption({ model }: { model: ModelDto }) {
-  const { sessionId = "default" } = useParams<{ sessionId?: string }>();
+  const { sessionId } = useParams<{ sessionId?: string }>();
 
   const selectedModelId = useModelStore((state) =>
-    state.selectedModelMap.get(sessionId),
+    state.getSelectedModel(sessionId),
   );
   const selectModel = useModelStore((state) => state.selectModel);
 
@@ -52,11 +52,12 @@ function ModelOption({ model }: { model: ModelDto }) {
 }
 
 export default function ModelSelector() {
-  const { sessionId = "default" } = useParams<{ sessionId?: string }>();
+  const { sessionId } = useParams<{ sessionId?: string }>();
 
   const selectedModelId = useModelStore((state) =>
-    state.selectedModelMap.get(sessionId),
+    state.getSelectedModel(sessionId),
   );
+  const selectModel = useModelStore((state) => state.selectModel);
   const [isOpen, setIsOpen] = useState(false);
 
   const { data: providers = [], isLoading, isError } = useFetchProviders();
@@ -64,6 +65,12 @@ export default function ModelSelector() {
   const models = groups.flatMap((provider) => provider.models);
 
   const currentModel = models.find((model) => model.id === selectedModelId);
+
+  useEffect(() => {
+    if (!currentModel && models.length > 0) {
+      selectModel({ sessionId, modelId: models[0].id });
+    }
+  }, [models, currentModel, sessionId]);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
