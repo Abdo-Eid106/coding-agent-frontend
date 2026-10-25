@@ -16,6 +16,7 @@ import ModelsTab from "../../providers/components/ModelsTab";
 import AppearanceTab from "./AppearanceTab";
 import type { Modal } from "@/shared/hooks/useModal";
 import GeneralTab from "./GeneralTab";
+import { McpServersTab } from "@/features/mcps/components/McpServerTab";
 
 interface SettingsModalProps {
   modal: Modal;
@@ -30,6 +31,10 @@ const TAB_TITLES: Record<SettingsTab, { title: string; subtitle: string }> = {
     title: "Models",
     subtitle:
       "Browse and inspect all available models, context windows, and readiness.",
+  },
+  [SettingsTab.MCP]: {
+    title: "MCP servers",
+    subtitle: "Manage the Model Context Protocol servers your agent can use.",
   },
   [SettingsTab.GENERAL]: {
     title: "General",
@@ -83,8 +88,9 @@ export default function SettingsModal({ modal }: SettingsModalProps) {
           <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
             {activeTab === SettingsTab.PROVIDERS && <ProvidersTab />}
             {activeTab === SettingsTab.MODELS && <ModelsTab />}
-            {activeTab === SettingsTab.APPEARANCE && <AppearanceTab />}
+            {activeTab === SettingsTab.MCP && <McpServersTab />}
             {activeTab === SettingsTab.GENERAL && <GeneralTab />}
+            {activeTab === SettingsTab.APPEARANCE && <AppearanceTab />}
           </div>
         </main>
       </DialogContent>

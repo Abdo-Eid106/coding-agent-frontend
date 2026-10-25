@@ -1,4 +1,4 @@
-import { KeyRound, Cpu, Sliders, Palette } from "lucide-react";
+import { KeyRound, Cpu, Sliders, Palette, Plug } from "lucide-react";
 import { SettingsTab } from "../types";
 
 interface SettingsSidebarProps {
@@ -20,6 +20,11 @@ export default function SettingsSidebar({
       id: SettingsTab.MODELS,
       label: "Models",
       icon: Cpu,
+    },
+    {
+      id: SettingsTab.MCP,
+      label: "MCP",
+      icon: Plug,
     },
     {
       id: SettingsTab.GENERAL,

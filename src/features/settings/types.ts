@@ -2,6 +2,7 @@ export enum SettingsTab {
   PROVIDERS = "providers",
   MODELS = "models",
   GENERAL = "general",
+  MCP = "mcp",
   APPEARANCE = "appearance",
 }
 
