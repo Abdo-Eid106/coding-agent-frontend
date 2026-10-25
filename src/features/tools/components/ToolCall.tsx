@@ -73,10 +73,12 @@ export default function ToolCall({ toolCall }: Props) {
   if (toolCall.name == ToolCallEnum.VIEW) {
     return (
       <ViewFileToolCall
+        mode="view"
         filePath={toolCall.input.filePath}
         content={toolCall.output?.content}
         startedAt={toolCall.startedAt}
         finishedAt={toolCall.finishedAt}
+        isLoading={toolCall.output === undefined && !toolCall.finishedAt}
       />
     );
   }
@@ -84,10 +86,13 @@ export default function ToolCall({ toolCall }: Props) {
   if (toolCall.name == ToolCallEnum.WRITE) {
     return (
       <ViewFileToolCall
+        mode="write"
         filePath={toolCall.input.filePath}
         content={toolCall.input.content}
+        overwrite={toolCall.input.overwrite}
         startedAt={toolCall.startedAt}
         finishedAt={toolCall.finishedAt}
+        isLoading={toolCall.output === undefined && !toolCall.finishedAt}
       />
     );
   }
