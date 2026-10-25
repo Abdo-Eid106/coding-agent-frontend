@@ -16,16 +16,6 @@ export interface MessageDto {
   toolCalls?: ToolCallDto[];
 }
 
-export interface GetMessagesQueryDto {
-  cursor?: string;
-  limit?: number | string;
-}
-
-export interface GetMessagesResponseDto {
-  items: MessageDto[];
-  nextCursor?: string;
-}
-
 export interface AddMessageDto {
   messageId?: string;
   messageContent: string;

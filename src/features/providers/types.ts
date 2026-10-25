@@ -32,10 +32,6 @@ export interface UpdateProviderDto {
   models: AddModelDto[];
 }
 
-export interface AddApiKeyDto {
-  apiKey: string;
-}
-
 export interface ModelDto {
   id: string;
   displayName: string;

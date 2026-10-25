@@ -1,7 +1,7 @@
 import type { AddProviderDto, UpdateProviderDto } from "../types";
 import { Api, QueryKeys } from "../../../shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { AddApiKeyDto, ProviderDto } from "../types";
+import type { ProviderDto } from "../types";
 
 const fetchProviders = async () => {
   const { data } = await Api.get<ProviderDto[]>("/providers");
@@ -20,22 +20,6 @@ const deleteProvider = async (providerId: string): Promise<void> => {
   await Api.delete(`/providers/${providerId}`);
 };
 
-const addProviderApiKey = async ({
-  providerId,
-  apiKey,
-}: {
-  providerId: string;
-  apiKey: string;
-}): Promise<unknown> => {
-  const body: AddApiKeyDto = { apiKey };
-  const { data } = await Api.post(`/providers/${providerId}/api-key`, body);
-  return data;
-};
-
-const removeProviderApiKey = async (providerId: string): Promise<void> => {
-  await Api.delete(`/providers/${providerId}/api-key`);
-};
-
 export const useFetchProviders = () => {
   return useQuery({ queryKey: [QueryKeys.PROVIDERS], queryFn: fetchProviders });
 };
@@ -52,30 +36,10 @@ export const useAddProvider = () => {
   });
 };
 
-export const useAddProviderApiKey = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: addProviderApiKey,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.PROVIDERS] });
-    },
-  });
-};
-
 export const useUpdateProvider = (id: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (dto: UpdateProviderDto) => updateProvider(id, dto),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.PROVIDERS] });
-    },
-  });
-};
-
-export const useRemoveProviderApiKey = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (providerId: string) => removeProviderApiKey(providerId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.PROVIDERS] });
     },
