@@ -23,13 +23,15 @@ function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
 
 function DialogOverlay({
   className,
+  forceRender = true,
   ...props
 }: DialogPrimitive.Backdrop.Props) {
   return (
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
+      forceRender={forceRender}
       className={cn(
-        "fixed inset-0 isolate z-[60] bg-black/60 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "fixed inset-0 isolate z-[60] bg-black/60 duration-100 backdrop-blur-xs supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
         className
       )}
       {...props}
@@ -41,13 +43,19 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  overlayClassName,
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean
+  overlayClassName?: string
 }) {
+  const isNested =
+    typeof className === "string" &&
+    (className.includes("z-70") || className.includes("z-[70]"));
+
   return (
     <DialogPortal>
-      <DialogOverlay />
+      <DialogOverlay className={cn(isNested && "z-[65]", overlayClassName)} />
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
