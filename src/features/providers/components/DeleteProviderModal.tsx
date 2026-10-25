@@ -49,7 +49,7 @@ export function DeleteProviderModal({ modal }: Props) {
       <DialogContent
         onClick={(e) => e.stopPropagation()}
         overlayClassName="z-[65]"
-        className="z-[70] sm:max-w-md"
+        className="z-70 sm:max-w-md"
       >
         <DialogHeader>
           <DialogTitle>Delete Provider</DialogTitle>

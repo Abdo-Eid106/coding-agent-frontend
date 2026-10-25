@@ -38,7 +38,7 @@ export default function AddProvider({ modal }: AddProviderProps) {
       <DialogContent
         onClick={(e) => e.stopPropagation()}
         overlayClassName="z-[65]"
-        className="z-[70] flex h-[min(90vh,760px)] max-w-3xl flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl"
+        className="z-70 flex h-[min(90vh,760px)] max-w-3xl flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl"
       >
         <ScrollArea className="min-h-0 flex-1 px-8 py-10">
           <DialogHeader className="gap-4 text-left pb-6">
