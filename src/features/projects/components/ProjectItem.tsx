@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { FolderOpen, ChevronRight, Trash2 } from "lucide-react";
 import { type ProjectDto } from "../types";
 import SessionItem from "../../sessions/components/SessionItem";
@@ -10,6 +9,8 @@ import {
 import { cn } from "cn";
 import { useParams } from "react-router-dom";
 import type { SelectionModal } from "@/shared/hooks/useSelectionModal";
+import { useSidebarStore } from "@/features/main/hooks/useSidebarStore";
+import { useEffect } from "react";
 
 interface ProjectItemProps {
   project: ProjectDto;
@@ -30,34 +31,41 @@ export default function ProjectItem({
 }: ProjectItemProps) {
   const { sessionId } = useParams<{ sessionId?: string }>();
 
+  const sessions = project.sessions ?? [];
+
+  const isProjectOpen = useSidebarStore((store) =>
+    store.isProjectOpen(project.id),
+  );
+  const toggleProject = useSidebarStore((store) => store.toggleProject);
+  const openProject = useSidebarStore((store) => store.openProject);
+
+  const openProjects = useSidebarStore((store) => store.openProjects);
+
+  useEffect(() => {
+    const containsOpenedSession =
+      !!sessionId && sessions.some((s) => s.id === sessionId);
+
+    if (containsOpenedSession) {
+      openProject(project.id);
+      openProjects();
+    }
+  }, [sessionId, sessions]);
+
   const handleDelete = (e: React.MouseEvent) => {
     (e.stopPropagation(), e.preventDefault());
     deleteProjectModal.open(project);
   };
 
-  const sessions = project.sessions ?? [];
-  const containsOpenedSession =
-    !!sessionId && sessions.some((s) => s.id === sessionId);
-  const [isOpen, setIsOpen] = useState(containsOpenedSession);
-
-  useEffect(() => {
-    if (containsOpenedSession) setIsOpen(true);
-  }, [sessionId, containsOpenedSession]);
-
-  const handleToggleSelect = () => {
-    setIsOpen((prev) => !prev);
-  };
-
   return (
     <SidebarMenuItem className="select-none">
       <SidebarMenuButton
-        onClick={handleToggleSelect}
+        onClick={() => toggleProject(project.id)}
         className="h-8 cursor-pointer select-none pr-16"
       >
         <ChevronRight
           className={cn(
             "size-3.5 shrink-0 text-muted-foreground transition-transform duration-200 ease-in-out",
-            isOpen && "rotate-90",
+            isProjectOpen && "rotate-90",
           )}
         />
         <FolderOpen className="size-4 shrink-0 text-muted-foreground" />
@@ -85,7 +93,7 @@ export default function ProjectItem({
       <div
         className={cn(
           "grid transition-[grid-template-rows,opacity] duration-200 ease-in-out",
-          isOpen
+          isProjectOpen
             ? "grid-rows-[1fr] opacity-100"
             : "grid-rows-[0fr] opacity-0 pointer-events-none",
         )}

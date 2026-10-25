@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ChevronRight, Plus, Settings } from "lucide-react";
 import ProjectItem from "../../projects/components/ProjectItem";
 import SessionItem from "../../sessions/components/SessionItem";
@@ -32,17 +31,15 @@ import DeleteSessionModal from "@/features/sessions/components/DeleteSessionModa
 
 export default function Sidebar() {
   const navigate = useNavigate();
-  const { sessionId } = useParams<{ sessionId?: string }>();
   const { setOpenMobile } = useSidebar();
 
   const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
+
   const isProjectsOpen = useSidebarStore((s) => s.isProjectsOpen);
-  const toggleProjectsOpen = useSidebarStore((s) => s.toggleProjectsOpen);
+  const toggleProjects = useSidebarStore((s) => s.toggleProjects);
+
   const isConversationsOpen = useSidebarStore((s) => s.isConversationsOpen);
-  const toggleConversationsOpen = useSidebarStore(
-    (s) => s.toggleConversationsOpen,
-  );
-  const ensureSessionVisible = useSidebarStore((s) => s.ensureSessionVisible);
+  const toggleConversations = useSidebarStore((s) => s.toggleConversations);
 
   const settingsModal = useModal();
   const deleteProjectModal = useSelectionModal<{ id: string; name: string }>();
@@ -51,10 +48,6 @@ export default function Sidebar() {
   const { data, isLoading } = useFetchSessions();
   const projects = data?.projects ?? [];
   const sessions = data?.sessions ?? [];
-
-  useEffect(() => {
-    ensureSessionVisible(sessionId, data);
-  }, [sessionId, data, ensureSessionVisible]);
 
   const handleNewConversation = () => {
     setSelectedProjectId(null);
@@ -91,7 +84,7 @@ export default function Sidebar() {
               render={
                 <button
                   type="button"
-                  onClick={toggleProjectsOpen}
+                  onClick={toggleProjects}
                   aria-expanded={isProjectsOpen}
                   className="flex flex-1 items-center gap-1.5 cursor-pointer select-none text-muted-foreground hover:text-sidebar-foreground transition-colors p-0 h-7"
                 />
@@ -157,7 +150,7 @@ export default function Sidebar() {
               render={
                 <button
                   type="button"
-                  onClick={toggleConversationsOpen}
+                  onClick={toggleConversations}
                   aria-expanded={isConversationsOpen}
                   className="flex flex-1 items-center gap-1.5 cursor-pointer select-none text-muted-foreground hover:text-sidebar-foreground transition-colors p-0 h-7"
                 />
