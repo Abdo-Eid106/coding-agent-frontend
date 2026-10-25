@@ -1,10 +1,12 @@
 import hljs from "highlight.js/lib/core";
 import json from "highlight.js/lib/languages/json";
-import { Wrench, Loader2 } from "lucide-react";
+import { Wrench, Loader2, AlertCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import CopyButton from "./CopyButton";
 import { useThemeStore, Theme } from "../../main/hooks/useThemeStore";
 import { formatToolDuration } from "../lib/duration";
 import ToolCallItem from "./ToolCalItem";
+import ToolErrorDisplay from "./ToolErrorDisplay";
 
 hljs.registerLanguage("json", json);
 
@@ -16,6 +18,7 @@ export interface GenericToolProps {
   output?: unknown;
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
+  error?: { message?: string } | null;
 }
 
 const escapeHtml = (text: string) =>
@@ -58,11 +61,13 @@ export function GenericTool({
   output,
   startedAt,
   finishedAt,
+  error,
 }: GenericToolProps) {
   const isDark = useThemeStore((s) => s.theme) === Theme.Dark;
   const themeClass = isDark ? "hljs-dark" : "hljs-light";
 
-  const isLoading = !output;
+  const isError = Boolean(error);
+  const isLoading = !isError && !output;
   const duration = formatToolDuration(startedAt, finishedAt);
   const inputHtml = toHtml(input);
   const outputHtml = toHtml(output);
@@ -89,12 +94,18 @@ export function GenericTool({
             <span className="hidden sm:inline">Running...</span>
           </span>
         )}
+        {isError && (
+          <Badge variant="destructive" className="gap-1 font-normal text-[11px] h-5 py-0 px-1.5">
+            <AlertCircle className="size-3 shrink-0" />
+            Failed
+          </Badge>
+        )}
       </div>
     </div>
   );
 
   return (
-    <ToolCallItem header={header} contentClassName="space-y-2">
+    <ToolCallItem defaultOpen={isError} header={header} contentClassName="space-y-2">
       <div>
         <div className="flex items-center justify-between text-[10px] font-medium uppercase tracking-wide text-muted-foreground py-0.5">
           <span>Input</span>
@@ -110,33 +121,37 @@ export function GenericTool({
         </pre>
       </div>
 
-      <div>
-        <div className="flex items-center justify-between text-[10px] font-medium uppercase tracking-wide text-muted-foreground py-0.5">
-          <span>Output</span>
-          {!isLoading && outputRaw && (
-            <CopyButton text={outputRaw} label="output" />
+      {isError && <ToolErrorDisplay error={error} />}
+
+      {(output !== undefined || !isError) && (
+        <div>
+          <div className="flex items-center justify-between text-[10px] font-medium uppercase tracking-wide text-muted-foreground py-0.5">
+            <span>Output</span>
+            {!isLoading && outputRaw && (
+              <CopyButton text={outputRaw} label="output" />
+            )}
+          </div>
+          {isLoading ? (
+            <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
+              <Loader2 className="size-3.5 animate-spin" />
+              <span>Running tool...</span>
+            </div>
+          ) : (
+            <pre
+              className={`overflow-auto whitespace-pre-wrap wrap-anywhere font-mono text-xs leading-relaxed max-h-96 py-1 text-foreground/85 ${themeClass}`}
+            >
+              {outputHtml ? (
+                <code
+                  className="hljs"
+                  dangerouslySetInnerHTML={{ __html: outputHtml }}
+                />
+              ) : (
+                <span className="italic text-muted-foreground">(no output)</span>
+              )}
+            </pre>
           )}
         </div>
-        {isLoading ? (
-          <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
-            <Loader2 className="size-3.5 animate-spin" />
-            <span>Running tool...</span>
-          </div>
-        ) : (
-          <pre
-            className={`overflow-auto whitespace-pre-wrap wrap-anywhere font-mono text-xs leading-relaxed max-h-96 py-1 text-foreground/85 ${themeClass}`}
-          >
-            {outputHtml ? (
-              <code
-                className="hljs"
-                dangerouslySetInnerHTML={{ __html: outputHtml }}
-              />
-            ) : (
-              <span className="italic text-muted-foreground">(no output)</span>
-            )}
-          </pre>
-        )}
-      </div>
+      )}
     </ToolCallItem>
   );
 }

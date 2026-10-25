@@ -20,6 +20,7 @@ export default function ToolCall({ toolCall }: Props) {
         output={toolCall.output?.stdout}
         startedAt={toolCall.startedAt}
         finishedAt={toolCall.finishedAt}
+        error={toolCall.error}
       />
     );
 
@@ -31,6 +32,7 @@ export default function ToolCall({ toolCall }: Props) {
         modified={toolCall.output?.modified}
         startedAt={toolCall.startedAt}
         finishedAt={toolCall.finishedAt}
+        error={toolCall.error}
       />
     );
   }
@@ -43,6 +45,7 @@ export default function ToolCall({ toolCall }: Props) {
         content={toolCall.output?.content}
         startedAt={toolCall.startedAt}
         finishedAt={toolCall.finishedAt}
+        error={toolCall.error}
       />
     );
   }
@@ -55,6 +58,7 @@ export default function ToolCall({ toolCall }: Props) {
         content={toolCall.output?.content}
         startedAt={toolCall.startedAt}
         finishedAt={toolCall.finishedAt}
+        error={toolCall.error}
       />
     );
   }
@@ -66,6 +70,7 @@ export default function ToolCall({ toolCall }: Props) {
         entries={toolCall.output}
         startedAt={toolCall.startedAt}
         finishedAt={toolCall.finishedAt}
+        error={toolCall.error}
       />
     );
   }
@@ -78,7 +83,12 @@ export default function ToolCall({ toolCall }: Props) {
         content={toolCall.output?.content}
         startedAt={toolCall.startedAt}
         finishedAt={toolCall.finishedAt}
-        isLoading={toolCall.output === undefined && !toolCall.finishedAt}
+        error={toolCall.error}
+        isLoading={
+          !toolCall.error &&
+          toolCall.output === undefined &&
+          !toolCall.finishedAt
+        }
       />
     );
   }
@@ -92,7 +102,12 @@ export default function ToolCall({ toolCall }: Props) {
         overwrite={toolCall.input.overwrite}
         startedAt={toolCall.startedAt}
         finishedAt={toolCall.finishedAt}
-        isLoading={toolCall.output === undefined && !toolCall.finishedAt}
+        error={toolCall.error}
+        isLoading={
+          !toolCall.error &&
+          toolCall.output === undefined &&
+          !toolCall.finishedAt
+        }
       />
     );
   }
@@ -104,6 +119,7 @@ export default function ToolCall({ toolCall }: Props) {
       output={toolCall.output}
       startedAt={toolCall.startedAt}
       finishedAt={toolCall.finishedAt}
+      error={toolCall.error}
     />
   );
 }

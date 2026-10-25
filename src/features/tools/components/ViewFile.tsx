@@ -1,8 +1,16 @@
 import hljs from "highlight.js";
-import { FileText, FilePenLine, Loader2, type LucideIcon } from "lucide-react";
+import {
+  FileText,
+  FilePenLine,
+  Loader2,
+  AlertCircle,
+  type LucideIcon,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { formatToolDuration } from "../lib/duration";
 import CopyButton from "./CopyButton";
 import ToolCallItem from "./ToolCalItem";
+import ToolErrorDisplay from "./ToolErrorDisplay";
 
 export interface ViewFileToolCallProps {
   filePath: string;
@@ -14,6 +22,7 @@ export interface ViewFileToolCallProps {
   icon?: LucideIcon | React.ComponentType<{ className?: string }>;
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
+  error?: { message?: string } | null;
 }
 
 export type ViewileToolCallProps = ViewFileToolCallProps;
@@ -29,14 +38,17 @@ export function ViewFileToolCall({
   icon,
   startedAt,
   finishedAt,
+  error,
 }: ViewFileToolCallProps) {
+  const isError = Boolean(error);
   const isWrite = mode === "write";
   const isLoading =
-    propIsLoading !== undefined
+    !isError &&
+    (propIsLoading !== undefined
       ? propIsLoading
       : isWrite
         ? Boolean(startedAt && !finishedAt)
-        : content === undefined;
+        : content === undefined);
 
   const duration = formatToolDuration(startedAt, finishedAt);
 
@@ -78,6 +90,11 @@ export function ViewFileToolCall({
             <Loader2 className="size-3 animate-spin" />
             <span className="hidden sm:inline">{loadingLabel}</span>
           </span>
+        ) : isError ? (
+          <Badge variant="destructive" className="gap-1 font-normal text-[11px] h-5 py-0 px-1.5">
+            <AlertCircle className="size-3 shrink-0" />
+            Failed
+          </Badge>
         ) : (
           <span>
             {lineCount} {lineCount === 1 ? "line" : "lines"}
@@ -88,8 +105,9 @@ export function ViewFileToolCall({
   );
 
   return (
-    <ToolCallItem header={header}>
-      {hasContent ? (
+    <ToolCallItem defaultOpen={isError} header={header}>
+      {isError && <ToolErrorDisplay error={error} />}
+      {!isError && hasContent ? (
         content === "" ? (
           <div className="py-2 text-xs text-muted-foreground italic">
             (empty file)
@@ -112,9 +130,11 @@ export function ViewFileToolCall({
           <span>{loadingBodyText}</span>
         </div>
       ) : (
-        <div className="py-2 text-xs text-muted-foreground italic">
-          (no content)
-        </div>
+        !isError && (
+          <div className="py-2 text-xs text-muted-foreground italic">
+            (no content)
+          </div>
+        )
       )}
     </ToolCallItem>
   );

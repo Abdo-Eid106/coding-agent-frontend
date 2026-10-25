@@ -58,6 +58,9 @@ export const useSSE = () => {
     const onToolEnd = (e: Event) =>
       handleEvent<ToolCallEvent>(e, (event) => addToolCall(queryClient, event));
 
+    const onToolError = (e: Event) =>
+      handleEvent<ToolCallEvent>(e, (event) => addToolCall(queryClient, event));
+
     const onSessionStatus = (e: Event) =>
       handleEvent<SessionEvent>(e, (event) => {
         if (event.data.status === SessionStatus.RUNNING) {
@@ -77,6 +80,7 @@ export const useSSE = () => {
     es.addEventListener(AgentEventEnum.SESSION_STATUS, onSessionStatus);
     es.addEventListener(AgentEventEnum.TOOL_START, onToolStart);
     es.addEventListener(AgentEventEnum.TOOL_END, onToolEnd);
+    es.addEventListener(AgentEventEnum.TOOL_ERROR, onToolError);
     es.addEventListener(AgentEventEnum.ERROR, onAgentError);
     es.addEventListener(AgentEventEnum.INTERRUPT, onInterrupt);
 

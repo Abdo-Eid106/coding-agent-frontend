@@ -1,5 +1,5 @@
 import { Children, type ComponentProps, type ReactNode } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, AlertCircle } from "lucide-react";
 
 import {
   Collapsible,
@@ -14,25 +14,38 @@ export interface ToolCallGroupProps extends Omit<
 > {
   title?: ReactNode;
   icon?: ReactNode;
+  hasError?: boolean;
 }
 
 export default function ToolCallGroup({
   children,
   title,
   icon,
+  hasError,
   className,
+  defaultOpen,
   ...props
 }: ToolCallGroupProps) {
   const count = Children.toArray(children).length;
   if (count === 0) return null;
 
   return (
-    <Collapsible className={cn("w-full min-w-0 text-xs", className)} {...props}>
+    <Collapsible
+      defaultOpen={defaultOpen ?? hasError}
+      className={cn("w-full min-w-0 text-xs", className)}
+      {...props}
+    >
       <CollapsibleTrigger className="group inline-flex cursor-pointer select-none items-center gap-1.5 py-1 text-left font-normal text-muted-foreground transition-colors hover:text-foreground focus-visible:rounded-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
         {icon && <span className="shrink-0">{icon}</span>}
         <span>
           {title ?? `${count} tool ${count === 1 ? "call" : "calls"}`}
         </span>
+        {hasError && (
+          <span className="inline-flex items-center gap-1 text-[11px] text-destructive">
+            <AlertCircle className="size-3 shrink-0" />
+            <span>(failed)</span>
+          </span>
+        )}
         <ChevronRight
           aria-hidden="true"
           className="size-3.5 shrink-0 text-muted-foreground/70 transition-transform duration-200 ease-in-out group-hover:text-foreground group-data-[state=open]:rotate-90 group-data-[state=open]:text-foreground group-data-[panel-open]:rotate-90 group-data-[panel-open]:text-foreground group-aria-expanded:rotate-90 group-aria-expanded:text-foreground"

@@ -1,8 +1,10 @@
 import ReactMarkdown, { type Components } from "react-markdown";
-import { Globe, Loader2 } from "lucide-react";
+import { Globe, Loader2, AlertCircle } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { formatToolDuration } from "../lib/duration";
 import ToolCallItem from "./ToolCalItem";
+import ToolErrorDisplay from "./ToolErrorDisplay";
 
 export interface FetchToolProps {
   url: string;
@@ -10,6 +12,7 @@ export interface FetchToolProps {
   format?: "text" | "markdown";
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
+  error?: { message?: string } | null;
 }
 
 const markdownComponents: Components = {
@@ -24,9 +27,11 @@ export function FetchTool({
   format = "text",
   startedAt,
   finishedAt,
+  error,
 }: FetchToolProps) {
-  const isLoading = content === undefined;
-  const isEmpty = !isLoading && content.trim() === "";
+  const isError = Boolean(error);
+  const isLoading = !isError && content === undefined;
+  const isEmpty = !isLoading && !isError && content?.trim() === "";
   const duration = formatToolDuration(startedAt, finishedAt);
 
   const header = (
@@ -44,15 +49,21 @@ export function FetchTool({
             <Loader2 className="size-3.5 animate-spin" />
             <span className="hidden sm:inline">Fetching...</span>
           </span>
+        ) : isError ? (
+          <Badge variant="destructive" className="gap-1 font-normal text-[11px] h-5 py-0 px-1.5">
+            <AlertCircle className="size-3 shrink-0" />
+            Failed
+          </Badge>
         ) : (
-          <span>{content.length.toLocaleString()} chars</span>
+          <span>{content?.length.toLocaleString()} chars</span>
         )}
       </div>
     </div>
   );
 
   return (
-    <ToolCallItem header={header}>
+    <ToolCallItem defaultOpen={isError} header={header}>
+      {isError && <ToolErrorDisplay error={error} />}
       {isLoading ? (
         <div className="flex items-center gap-2 py-3 text-xs text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin" />

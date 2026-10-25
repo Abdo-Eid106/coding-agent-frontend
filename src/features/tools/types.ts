@@ -25,6 +25,7 @@ export interface BashToolCall {
     stderr?: string;
     exitCode?: number;
   };
+  error?: { message: string };
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
 }
@@ -41,6 +42,7 @@ export interface EditFileToolCall {
     original: string;
     modified: string;
   };
+  error?: { message: string };
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
 }
@@ -56,6 +58,7 @@ export interface FetchToolCall {
   output?: {
     content: string;
   };
+  error?: { message: string };
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
 }
@@ -75,6 +78,7 @@ export interface GlobToolCall {
     total: number;
     truncated: boolean;
   };
+  error?: { message: string };
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
 }
@@ -92,6 +96,7 @@ export interface GrepToolCall {
   output?: {
     content: string;
   };
+  error?: { message: string };
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
 }
@@ -114,6 +119,7 @@ export interface LsToolCall {
     size?: number;
     modifiedAt?: string;
   }[];
+  error?: { message: string };
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
 }
@@ -129,6 +135,7 @@ export interface ViewToolCall {
   output?: {
     content: string;
   };
+  error?: { message: string };
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
 }
@@ -144,6 +151,7 @@ export interface WriteToolCall {
   output?: {
     content: string;
   };
+  error?: { message: string };
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
 }

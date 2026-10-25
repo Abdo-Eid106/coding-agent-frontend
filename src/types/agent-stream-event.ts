@@ -6,6 +6,7 @@ export enum AgentEventEnum {
   INTERRUPT = "interrupt",
   TOOL_START = "tool-started",
   TOOL_END = "tool-finished",
+  TOOL_ERROR = "tool-error",
   ERROR = "error",
   SESSION_STATUS = "session_status",
 }
@@ -22,13 +23,17 @@ export interface AgentStreamEvent {
 }
 
 export interface ToolCallEvent extends AgentStreamEvent {
-  type: AgentEventEnum.TOOL_START | AgentEventEnum.TOOL_END;
+  type:
+    | AgentEventEnum.TOOL_START
+    | AgentEventEnum.TOOL_END
+    | AgentEventEnum.TOOL_ERROR;
   data: {
     id: string;
     toolCallId: string;
     name: string;
     input?: object;
     output?: object;
+    error?: object;
     startedAt?: Date;
     finishedAt?: Date;
   };
@@ -53,13 +58,6 @@ export interface Interrupt {
 export interface InterruptEvent extends AgentStreamEvent {
   type: AgentEventEnum.INTERRUPT;
   data: Interrupt;
-}
-
-export interface ErrorEvent {
-  type: AgentEventEnum.ERROR;
-  data: {
-    message: string;
-  };
 }
 
 export interface ErrorEvent extends AgentStreamEvent {

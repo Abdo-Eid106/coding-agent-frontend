@@ -1,6 +1,8 @@
-import { File, Folder, FolderOpen, Loader2 } from "lucide-react";
+import { File, Folder, FolderOpen, Loader2, AlertCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { formatToolDuration } from "../lib/duration";
 import ToolCallItem from "./ToolCalItem";
+import ToolErrorDisplay from "./ToolErrorDisplay";
 
 export interface LsEntry {
   name: string;
@@ -14,6 +16,7 @@ export interface LsToolProps {
   entries?: LsEntry[];
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
+  error?: { message?: string } | null;
 }
 
 export function LsTool({
@@ -21,8 +24,10 @@ export function LsTool({
   entries,
   startedAt,
   finishedAt,
+  error,
 }: LsToolProps) {
-  const isLoading = !entries;
+  const isError = Boolean(error);
+  const isLoading = !isError && !entries;
   const count = entries?.length ?? 0;
   const duration = formatToolDuration(startedAt, finishedAt);
 
@@ -41,6 +46,11 @@ export function LsTool({
             <Loader2 className="size-3 animate-spin" />
             <span className="hidden sm:inline">Listing...</span>
           </span>
+        ) : isError ? (
+          <Badge variant="destructive" className="gap-1 font-normal text-[11px] h-5 py-0 px-1.5">
+            <AlertCircle className="size-3 shrink-0" />
+            Failed
+          </Badge>
         ) : (
           <span>
             {count} {count === 1 ? "item" : "items"}
@@ -51,15 +61,16 @@ export function LsTool({
   );
 
   return (
-    <ToolCallItem header={header}>
+    <ToolCallItem defaultOpen={isError} header={header}>
+      {isError && <ToolErrorDisplay error={error} />}
       {isLoading ? (
         <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin" />
           <span>Listing directory...</span>
         </div>
-      ) : count === 0 ? (
+      ) : !isError && count === 0 ? (
         <p className="italic text-muted-foreground py-1">Empty directory</p>
-      ) : (
+      ) : entries ? (
         <ul className="max-h-96 space-y-0.5 overflow-x-auto overflow-y-auto font-mono text-xs min-w-0">
           {entries.map(({ name, type }) => {
             // `name` is a path relative to `directory`, e.g. "src/utils/math.ts"
@@ -84,7 +95,7 @@ export function LsTool({
             );
           })}
         </ul>
-      )}
+      ) : null}
     </ToolCallItem>
   );
 }

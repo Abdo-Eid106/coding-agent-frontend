@@ -1,4 +1,4 @@
-import { Folder, Loader2, Terminal } from "lucide-react";
+import { Folder, Loader2, Terminal, AlertCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatToolDuration } from "../lib/duration";
 import ToolCallItem from "./ToolCalItem";
 import CopyButton from "./CopyButton";
+import ToolErrorDisplay from "./ToolErrorDisplay";
 
 export interface BashToolCallProps {
   command?: string;
@@ -19,6 +20,7 @@ export interface BashToolCallProps {
   cwd?: string;
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
+  error?: { message?: string } | null;
 }
 
 interface BashToolHeaderProps {
@@ -26,6 +28,7 @@ interface BashToolHeaderProps {
   cwd?: string;
   duration: string | null;
   isLoading: boolean;
+  isError: boolean;
 }
 
 function WorkingDirectory({ cwd }: { cwd: string }) {
@@ -53,6 +56,7 @@ function BashToolHeader({
   cwd,
   duration,
   isLoading,
+  isError,
 }: BashToolHeaderProps) {
   return (
     <div className="text-xs flex w-full min-w-0 items-center gap-2">
@@ -68,9 +72,16 @@ function BashToolHeader({
         )}
 
         {isLoading && (
-          <Badge variant="secondary" className="gap-1">
+          <Badge variant="secondary" className="gap-1 font-normal text-[11px] h-5 py-0 px-1.5">
             <Loader2 className="size-3 animate-spin" />
             Running
+          </Badge>
+        )}
+
+        {isError && (
+          <Badge variant="destructive" className="gap-1 font-normal text-[11px] h-5 py-0 px-1.5">
+            <AlertCircle className="size-3 shrink-0" />
+            Failed
           </Badge>
         )}
 
@@ -86,35 +97,44 @@ export function BashToolCall({
   cwd,
   startedAt,
   finishedAt,
+  error,
 }: BashToolCallProps) {
-  const isLoading = output === undefined;
+  const isError = Boolean(error);
+  const isLoading = !isError && output === undefined;
   const duration = formatToolDuration(startedAt, finishedAt);
 
   return (
     <ToolCallItem
+      defaultOpen={isError}
       header={
         <BashToolHeader
           command={command}
           cwd={cwd}
           duration={duration}
           isLoading={isLoading}
+          isError={isError}
         />
       }
     >
+      {isError && <ToolErrorDisplay error={error} />}
       {isLoading ? (
         <div className="flex items-center gap-2 py-3 text-xs text-muted-foreground">
           <Loader2 className="size-4 animate-spin" />
           <span>Running command...</span>
         </div>
       ) : (
-        <div className="flex min-w-0 items-start gap-3 py-1">
-          <ScrollArea className="max-h-96 min-w-0 flex-1">
-            <pre className="whitespace-pre-wrap break-all font-mono text-xs leading-relaxed text-foreground/85">
-              {output || "(no output)"}
-            </pre>
-          </ScrollArea>
-          <CopyButton text={output ?? ""} label="output" className="shrink-0" />
-        </div>
+        (output !== undefined || !isError) && (
+          <div className="flex min-w-0 items-start gap-3 py-1">
+            <ScrollArea className="max-h-96 min-w-0 flex-1">
+              <pre className="whitespace-pre-wrap break-all font-mono text-xs leading-relaxed text-foreground/85">
+                {output || "(no output)"}
+              </pre>
+            </ScrollArea>
+            {output && (
+              <CopyButton text={output} label="output" className="shrink-0" />
+            )}
+          </div>
+        )
       )}
     </ToolCallItem>
   );

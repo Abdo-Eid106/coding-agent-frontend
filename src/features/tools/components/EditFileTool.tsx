@@ -1,4 +1,4 @@
-import { Pencil, Loader2 } from "lucide-react";
+import { Pencil, Loader2, AlertCircle } from "lucide-react";
 import { DiffView, DiffModeEnum } from "@git-diff-view/react";
 import { generateDiffFile } from "@git-diff-view/file";
 
@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { formatToolDuration } from "../lib/duration";
 import ToolCallItem from "./ToolCalItem";
+import ToolErrorDisplay from "./ToolErrorDisplay";
 
 import "@git-diff-view/react/styles/diff-view.css";
 
@@ -16,18 +17,21 @@ export interface EditFileToolCallProps {
   mode?: DiffModeEnum;
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
+  error?: { message?: string } | null;
 }
 
 function EditFileHeader({
   filePath,
   duration,
   isLoading,
+  isError,
   additions,
   deletions,
 }: {
   filePath: string;
   duration: string | null;
   isLoading: boolean;
+  isError: boolean;
   additions: number;
   deletions: number;
 }) {
@@ -51,6 +55,11 @@ function EditFileHeader({
             <Loader2 className="size-3 animate-spin" />
             <span className="hidden sm:inline">Applying changes...</span>
           </span>
+        ) : isError ? (
+          <Badge variant="destructive" className="gap-1 font-normal text-[11px] h-5 py-0 px-1.5">
+            <AlertCircle className="size-3 shrink-0" />
+            Failed
+          </Badge>
         ) : (
           <span className="whitespace-nowrap">
             <span className="text-green-500">+{additions}</span>{" "}
@@ -69,12 +78,18 @@ export function EditFileToolCall({
   mode = DiffModeEnum.Unified,
   startedAt,
   finishedAt,
+  error,
 }: EditFileToolCallProps) {
-  const isLoading = original === undefined || modified === undefined;
+  const isError = Boolean(error);
+  const isLoading =
+    !isError && (original === undefined || modified === undefined);
   const duration = formatToolDuration(startedAt, finishedAt);
 
   const diffFile =
-    !isLoading && original !== undefined && modified !== undefined
+    !isLoading &&
+    !isError &&
+    original !== undefined &&
+    modified !== undefined
       ? generateDiffFile(
           filePath,
           original,
@@ -93,22 +108,25 @@ export function EditFileToolCall({
 
   return (
     <ToolCallItem
+      defaultOpen={isError}
       header={
         <EditFileHeader
           filePath={filePath}
           duration={duration}
           isLoading={isLoading}
+          isError={isError}
           additions={diffFile?.additionLength ?? 0}
           deletions={diffFile?.deletionLength ?? 0}
         />
       }
     >
+      {isError && <ToolErrorDisplay error={error} />}
       {isLoading ? (
         <div className="flex items-center gap-2 py-3 text-sm text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin" />
           <span>Applying file changes...</span>
         </div>
-      ) : !!diffFile ? (
+      ) : diffFile ? (
         <div className="w-full min-w-0 overflow-x-auto py-1">
           <DiffView
             className="cursor-text"

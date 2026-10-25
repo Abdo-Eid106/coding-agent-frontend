@@ -27,7 +27,9 @@ export default function TurnItem({ message }: { message: MessageDto }) {
         </div>
       </div>
 
-      <ToolCallGroup>
+      <ToolCallGroup
+        hasError={(message.toolCalls ?? []).some((t) => Boolean(t.error))}
+      >
         {(message.toolCalls ?? []).map((toolCall) => (
           <ToolCall key={toolCall.id} toolCall={toolCall} />
         ))}
