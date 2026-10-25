@@ -6,7 +6,7 @@ import type { ToolCallDto } from "../types";
 
 function upsertToolCall(
   toolCalls: ToolCallDto[] = [],
-  incoming: ToolCallEvent["payload"],
+  incoming: ToolCallEvent["data"],
 ): ToolCallDto[] {
   const index = toolCalls.findIndex((t) => t.id === incoming.id);
 
@@ -36,24 +36,30 @@ function upsertToolCall(
 }
 
 export const addToolCall = (queryClient: QueryClient, event: ToolCallEvent) => {
-  const { sessionId, messageId, payload: toolCall } = event;
+  const {
+    context: { sessionId, messageId },
+    data: toolCall,
+  } = event;
 
-  queryClient.setQueryData<MessageDto[]>(messagesKey(sessionId), (messages) => {
-    if (!messages) return messages;
+  queryClient.setQueryData<MessageDto[]>(
+    messagesKey(sessionId!),
+    (messages) => {
+      if (!messages) return messages;
 
-    let found = false;
+      let found = false;
 
-    const updatedMessages = messages.map((message) => {
-      if (message.id !== messageId) return message;
+      const updatedMessages = messages.map((message) => {
+        if (message.id !== messageId) return message;
 
-      found = true;
+        found = true;
 
-      return {
-        ...message,
-        toolCalls: upsertToolCall(message.toolCalls, toolCall),
-      };
-    });
+        return {
+          ...message,
+          toolCalls: upsertToolCall(message.toolCalls, toolCall),
+        };
+      });
 
-    return found ? updatedMessages : messages;
-  });
+      return found ? updatedMessages : messages;
+    },
+  );
 };

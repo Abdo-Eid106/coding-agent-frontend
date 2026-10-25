@@ -97,12 +97,11 @@ export const useResumeInterrupt = () => {
 
 export const addToken = (queryClient: QueryClient, event: TokenEvent) => {
   const {
-    sessionId,
-    messageId,
-    payload: { replyId, token },
+    context: { sessionId, messageId },
+    data: { replyId, token },
   } = event;
 
-  const key = messagesKey(sessionId);
+  const key = messagesKey(sessionId!);
 
   queryClient.setQueryData<MessageDto[]>(key, (old) => {
     if (!old) {
@@ -149,5 +148,7 @@ export const finishMessage = (
   queryClient: QueryClient,
   event: AgentStreamEvent,
 ) => {
-  queryClient.invalidateQueries({ queryKey: messagesKey(event.sessionId) });
+  queryClient.invalidateQueries({
+    queryKey: messagesKey(event.context.sessionId!),
+  });
 };

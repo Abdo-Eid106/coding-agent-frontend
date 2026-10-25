@@ -10,16 +10,22 @@ export enum AgentEventEnum {
   SESSION_STATUS = "session_status",
 }
 
+interface Context {
+  messageId?: string;
+  sessionId?: string;
+}
+
 export interface AgentStreamEvent {
   type: AgentEventEnum;
-  sessionId: string;
-  messageId: string;
-  payload: unknown;
+  context: Context;
+  data: unknown;
 }
 
 export interface ToolCallEvent extends AgentStreamEvent {
-  payload: {
+  type: AgentEventEnum.TOOL_START | AgentEventEnum.TOOL_END;
+  data: {
     id: string;
+    toolCallId: string;
     name: string;
     input?: object;
     output?: object;
@@ -29,21 +35,11 @@ export interface ToolCallEvent extends AgentStreamEvent {
 }
 
 export interface TokenEvent extends AgentStreamEvent {
-  payload: {
+  type: AgentEventEnum.TOKEN;
+  data: {
     replyId: string;
     token: string;
   };
-}
-
-export interface AgentErrorEvent {
-  sessionId?: string;
-  messageId: string;
-  error: string;
-}
-
-export interface SessionEvent {
-  sessionId: string;
-  status: SessionStatus;
 }
 
 export interface Interrupt {
@@ -55,5 +51,32 @@ export interface Interrupt {
 }
 
 export interface InterruptEvent extends AgentStreamEvent {
-  payload: Interrupt;
+  type: AgentEventEnum.INTERRUPT;
+  data: Interrupt;
+}
+
+export interface ErrorEvent {
+  type: AgentEventEnum.ERROR;
+  data: {
+    message: string;
+  };
+}
+
+export interface ErrorEvent extends AgentStreamEvent {
+  type: AgentEventEnum.ERROR;
+  data: {
+    message: string;
+  };
+}
+
+export interface SessionEvent extends AgentStreamEvent {
+  type: AgentEventEnum.SESSION_STATUS;
+  data: {
+    status: SessionStatus;
+  };
+}
+
+export interface DoneEvent extends AgentStreamEvent {
+  type: AgentEventEnum.DONE;
+  data: null;
 }
