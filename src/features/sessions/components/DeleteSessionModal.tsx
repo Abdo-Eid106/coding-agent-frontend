@@ -1,6 +1,7 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useDeleteSession } from "../hooks/session.queries";
+import { useCurrentSessionId } from "../hooks/useCurrentSessionId";
 import { getErrorMessage } from "../../../shared/lib/get-error-message";
 import { toast } from "sonner";
 import {
@@ -20,7 +21,7 @@ interface Props {
 
 export default function DeleteSessionModal({ modal }: Props) {
   const navigate = useNavigate();
-  const { sessionId } = useParams<{ sessionId?: string }>();
+  const sessionId = useCurrentSessionId();
 
   const { mutate: deleteSession, isPending } = useDeleteSession();
 

@@ -7,7 +7,7 @@ import {
   SidebarMenuSub,
 } from "@/components/ui/sidebar";
 import { cn } from "cn";
-import { useParams } from "react-router-dom";
+import { useCurrentSessionId } from "@/features/sessions/hooks/useCurrentSessionId";
 import type { SelectionModal } from "@/shared/hooks/useSelectionModal";
 import { useSidebarStore } from "@/features/main/hooks/useSidebarStore";
 import { useEffect } from "react";
@@ -29,7 +29,7 @@ export default function ProjectItem({
   deleteProjectModal,
   deleteSessionModal,
 }: ProjectItemProps) {
-  const { sessionId } = useParams<{ sessionId?: string }>();
+  const sessionId = useCurrentSessionId();
 
   const sessions = project.sessions ?? [];
 
@@ -52,7 +52,8 @@ export default function ProjectItem({
   }, [sessionId, sessions]);
 
   const handleDelete = (e: React.MouseEvent) => {
-    (e.stopPropagation(), e.preventDefault());
+    e.stopPropagation();
+    e.preventDefault();
     deleteProjectModal.open(project);
   };
 

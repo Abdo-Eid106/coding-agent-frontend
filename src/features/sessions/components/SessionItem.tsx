@@ -1,7 +1,8 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Trash2, CircleStop } from "lucide-react";
 import { type SessionDto } from "../types";
 import { useActiveSessions, useStopSession } from "../hooks/session.queries";
+import { useCurrentSessionId } from "../hooks/useCurrentSessionId";
 import {
   SidebarMenuItem,
   SidebarMenuButton,
@@ -21,7 +22,7 @@ export default function SessionItem({
   deleteModal,
 }: SessionItemProps) {
   const navigate = useNavigate();
-  const { sessionId } = useParams<{ sessionId?: string }>();
+  const sessionId = useCurrentSessionId();
 
   const { isMobile, setOpenMobile } = useSidebar();
   const { isActive: isSessionRunning } = useActiveSessions();
@@ -33,12 +34,14 @@ export default function SessionItem({
   };
 
   const handleStop = (e: React.MouseEvent) => {
-    (e.stopPropagation(), e.preventDefault());
+    e.stopPropagation();
+    e.preventDefault();
     if (!isStopping) stopSession(session.id);
   };
 
   const handleDelete = (e: React.MouseEvent) => {
-    (e.stopPropagation(), e.preventDefault());
+    e.stopPropagation();
+    e.preventDefault();
     deleteModal.open({
       id: session.id,
       title: session.title ?? "untitled session",
