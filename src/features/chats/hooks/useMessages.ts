@@ -13,7 +13,7 @@ import {
 import {
   type AgentStreamEvent,
   type TokenEvent,
-} from "../../../types/agent-stream-event";
+} from "../../../types/agent-event";
 import { QueryKeys } from "../../../shared";
 import { Api } from "../../../shared/api/axios-instance";
 import { useInterruptsStore } from "./useInterruptStore";

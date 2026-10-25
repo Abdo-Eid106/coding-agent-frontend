@@ -1,4 +1,4 @@
-import type { ToolCallEvent } from "../../../types/agent-stream-event";
+import type { ToolCallEvent } from "../../../types/agent-event";
 import { QueryClient } from "@tanstack/react-query";
 import type { MessageDto } from "../../chats/types";
 import { messagesKey } from "../../chats/hooks/useMessages";

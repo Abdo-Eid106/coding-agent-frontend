@@ -10,7 +10,7 @@ import {
   type SessionEvent,
   type ToolCallEvent,
   type InterruptEvent,
-} from "../../types/agent-stream-event";
+} from "../../types/agent-event";
 
 import {
   addToken,
