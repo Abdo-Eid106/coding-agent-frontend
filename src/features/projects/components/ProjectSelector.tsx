@@ -58,7 +58,6 @@ export default function ProjectSelector() {
         className="w-[calc(100vw-3rem)] max-w-80 overflow-hidden p-0 sm:w-72"
       >
         <Command>
-          <CommandInput placeholder="Search projects..." />
           <CommandList className="max-h-60">
             <CommandEmpty>No projects found.</CommandEmpty>
             <CommandGroup heading="Projects">
