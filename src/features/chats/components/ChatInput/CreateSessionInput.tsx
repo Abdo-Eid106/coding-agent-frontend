@@ -12,6 +12,7 @@ export default function CreateSessionInput() {
 
   const [message, setMessage] = useState("");
   const selectedModelId = useModelStore((state) => state.getSelectedModel());
+  const selectModel = useModelStore((state) => state.selectModel);
   const selectedProjectId = useProjectStore((state) => state.selectedProjectId);
 
   const { mutate, isPending } = useCreateSession();
@@ -29,6 +30,7 @@ export default function CreateSessionInput() {
       {
         onSuccess: (session) => {
           setMessage("");
+          selectModel({ sessionId: session.id, modelId: selectedModelId });
           navigate(`/sessions/${session.id}`);
         },
         onError: (error) => {
